@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Frank Mercado — Desarrollador Web</title>
+    <meta
+      name="description"
+      content="Frank Mercado, desarrollador web en Cartagena. Diseño y desarrollo de sitios web modernos y rápidos."
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: #0a0a0a;
+        --surface: #111111;
+        --border: #1e1e1e;
+        --text: #e8e8e8;
+        --muted: #666;
+        --accent: #c8f542;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          "Inter",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        line-height: 1.6;
+      }
+
+      /* NAV */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        padding: 1.25rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(10, 10, 10, 0.85);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .nav-logo {
+        font-size: 1rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        color: var(--text);
+        text-decoration: none;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+      }
+
+      .nav-links a {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.2s;
+      }
+
+      .nav-links a:hover {
+        color: var(--text);
+      }
+
+      /* HERO */
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 8rem 2rem 4rem;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .hero-label {
+        font-size: 0.8rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 1.5rem;
+      }
+
+      .hero h1 {
+        font-size: clamp(2.5rem, 7vw, 5rem);
+        font-weight: 700;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        margin-bottom: 1.5rem;
+      }
+
+      .hero h1 span {
+        color: var(--muted);
+      }
+
+      .hero-desc {
+        font-size: 1.1rem;
+        color: var(--muted);
+        max-width: 520px;
+        margin-bottom: 2.5rem;
+      }
+
+      .hero-cta {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: 0.75rem 1.75rem;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
+        cursor: pointer;
+      }
+
+      .btn-primary {
+        background: var(--accent);
+        color: #000;
+      }
+
+      .btn-primary:hover {
+        opacity: 0.85;
+      }
+
+      .btn-ghost {
+        border: 1px solid var(--border);
+        color: var(--text);
+      }
+
+      .btn-ghost:hover {
+        border-color: var(--muted);
+      }
+
+      /* ABOUT */
+      section {
+        padding: 6rem 2rem;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .section-label {
+        font-size: 0.75rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 1rem;
+      }
+
+      .section-title {
+        font-size: clamp(1.5rem, 4vw, 2.5rem);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin-bottom: 1.5rem;
+      }
+
+      .about-text {
+        color: var(--muted);
+        font-size: 1.05rem;
+        max-width: 600px;
+        line-height: 1.8;
+      }
+
+      .divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      /* PROJECTS */
+      .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 2.5rem;
+      }
+
+      .project-card {
+        background: var(--surface);
+        padding: 1.75rem;
+        text-decoration: none;
+        color: var(--text);
+        transition: background 0.2s;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .project-card:hover {
+        background: #161616;
+      }
+
+      .project-card .tag {
+        font-size: 0.75rem;
+        color: var(--muted);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .project-card h3 {
+        font-size: 1rem;
+        font-weight: 600;
+      }
+
+      .project-card p {
+        font-size: 0.875rem;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .project-card .arrow {
+        margin-top: auto;
+        padding-top: 1rem;
+        color: var(--muted);
+        font-size: 1.1rem;
+      }
+
+      /* CONTACT */
+      .contact-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 2rem;
+      }
+
+      .contact-link {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.75rem 1.25rem;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+      }
+
+      .contact-link:hover {
+        border-color: var(--muted);
+        color: var(--text);
+      }
+
+      /* FOOTER */
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 2rem;
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.8rem;
+      }
+
+      @media (max-width: 600px) {
+        nav {
+          padding: 1rem;
+        }
+        .nav-links {
+          gap: 1.25rem;
+        }
+        .hero {
+          padding: 7rem 1.25rem 3rem;
+        }
+        section {
+          padding: 4rem 1.25rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/" class="nav-logo">FM</a>
+      <ul class="nav-links">
+        <li><a href="#sobre-mi">Sobre mí</a></li>
+        <li><a href="#proyectos">Proyectos</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
+    </nav>
+
+    <!-- HERO -->
+    <div class="hero">
+      <p class="hero-label">Cartagena, Colombia</p>
+      <h1>Frank Mercado<br /><span>Desarrollador web.</span></h1>
+      <p class="hero-desc">
+        Diseño y desarrollo sitios web rápidos, modernos y orientados a
+        resultados para negocios y marcas personales.
+      </p>
+      <div class="hero-cta">
+        <a href="#proyectos" class="btn btn-primary">Ver proyectos</a>
+        <a href="#contacto" class="btn btn-ghost">Contactar</a>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- ABOUT -->
+    <section id="sobre-mi">
+      <p class="section-label">Sobre mí</p>
+      <h2 class="section-title">Construyo webs que funcionan.</h2>
+      <p class="about-text">
+        Soy desarrollador web independiente basado en Cartagena. Me especializo
+        en crear experiencias digitales limpias, rápidas y funcionales — desde
+        landing pages hasta aplicaciones web completas. Trabajo con negocios
+        locales e internacionales para llevar sus ideas a internet.
+      </p>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- PROJECTS -->
+    <section id="proyectos">
+      <p class="section-label">Proyectos</p>
+      <h2 class="section-title">Algunas webs creadas.</h2>
+
+      <div class="projects-grid">
+        <a
+          href="https://tech.frankmercado.com"
+          target="_blank"
+          class="project-card"
+        >
+          <span class="tag">Agencia</span>
+          <h3>FMTech</h3>
+          <p>Agencia de diseño y desarrollo web en Cartagena.</p>
+          <span class="arrow">↗</span>
+        </a>
+
+        <a href="#" class="project-card">
+          <span class="tag">Náutica</span>
+          <h3>Cartagena Boat Detailing</h3>
+          <p>Servicio de limpieza y mantenimiento de embarcaciones.</p>
+          <span class="arrow">↗</span>
+        </a>
+
+        <a href="#" class="project-card">
+          <span class="tag">Comercio</span>
+          <h3>Elan Parfums</h3>
+          <p>Tienda de perfumes y fragancias de lujo.</p>
+          <span class="arrow">↗</span>
+        </a>
+
+        <a href="#" class="project-card">
+          <span class="tag">Salud</span>
+          <h3>Dra. Loly Barrios</h3>
+          <p>Sitio web para consultorio médico en Cartagena.</p>
+          <span class="arrow">↗</span>
+        </a>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- CONTACT -->
+    <section id="contacto">
+      <p class="section-label">Contacto</p>
+      <h2 class="section-title">Hablemos.</h2>
+      <p class="about-text">
+        ¿Tienes un proyecto en mente? Escríbeme y lo construimos juntos.
+      </p>
+
+      <div class="contact-grid">
+        <a
+          href="https://wa.me/573XXXXXXXXX"
+          target="_blank"
+          class="contact-link"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+            />
+          </svg>
+          WhatsApp
+        </a>
+        <a href="mailto:frank@frankmercado.com" class="contact-link">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+            />
+            <polyline points="22,6 12,12 2,6" />
+          </svg>
+          Email
+        </a>
+        <a href="https://instagram.com/" target="_blank" class="contact-link">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+            <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+          </svg>
+          Instagram
+        </a>
+      </div>
+    </section>
+
+    <footer>
+      <p>
+        © 2026 Frank Mercado ·
+        <a
+          href="/finanzas"
+          style="color: inherit; opacity: 0.4; text-decoration: none"
+          >·</a
+        >
+      </p>
+    </footer>
+  </body>
+</html>
