@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>La transición — Frank Mercado</title>
+    <meta name="description" content="Diciembre de 2023. Nueve años en la Armada, una relación de seis años terminada y ningún plan claro. Sobre adaptarse, resistir y no rendirse en el dip." />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      :root {
+        --bg: #0a0a0a; --surface: #111111; --border: #1e1e1e;
+        --text: #e8e8e8; --muted: #666; --accent: #c8f542;
+      }
+      html { scroll-behavior: smooth; }
+      body { background: var(--bg); color: var(--text); font-family: "Inter", system-ui, -apple-system, sans-serif; line-height: 1.7; }
+      nav {
+        position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+        padding: 1.25rem 2rem; display: flex; justify-content: space-between;
+        align-items: center; background: rgba(10,10,10,0.85);
+        backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
+      }
+      .nav-logo { font-size: 1rem; font-weight: 600; letter-spacing: .05em; color: var(--text); text-decoration: none; }
+      .nav-links { display: flex; gap: 2rem; list-style: none; }
+      .nav-links a { color: var(--muted); text-decoration: none; font-size: .9rem; transition: color .2s; }
+      .nav-links a:hover { color: var(--text); }
+      .article-wrap { max-width: 680px; margin: 0 auto; padding: 8rem 2rem 6rem; }
+      .back-link { display: inline-flex; align-items: center; gap: .4rem; color: var(--muted); text-decoration: none; font-size: .85rem; margin-bottom: 3rem; transition: color .2s; }
+      .back-link:hover { color: var(--text); }
+      .post-label { font-size: .72rem; letter-spacing: .15em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+      .post-title { font-size: clamp(1.75rem, 5vw, 2.75rem); font-weight: 700; letter-spacing: -.025em; line-height: 1.2; margin-bottom: 1rem; }
+      .post-meta { font-size: .82rem; color: var(--muted); margin-bottom: 3rem; padding-bottom: 3rem; border-bottom: 1px solid var(--border); }
+      .post-body { font-size: 1.05rem; color: #c4c4c4; }
+      .post-body p { margin-bottom: 1.6rem; }
+      .post-body h2 { font-size: 1.2rem; font-weight: 700; color: var(--text); margin: 2.5rem 0 1rem; letter-spacing: -.015em; }
+      .post-body blockquote {
+        border-left: 3px solid var(--accent); padding: 1rem 1.5rem;
+        background: var(--surface); border-radius: 0 8px 8px 0;
+        margin: 2rem 0; color: var(--text); font-style: italic; font-size: 1rem;
+      }
+      .post-body blockquote cite { display: block; margin-top: .75rem; font-size: .8rem; color: var(--muted); font-style: normal; }
+      .post-body strong { color: var(--text); font-weight: 600; }
+      .post-footer { margin-top: 4rem; padding-top: 2.5rem; border-top: 1px solid var(--border); }
+      .post-footer p { font-size: .875rem; color: var(--muted); }
+      .post-footer strong { color: var(--text); }
+      .nav-post { display: flex; justify-content: flex-end; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+      .nav-post a { color: var(--muted); text-decoration: none; font-size: .875rem; transition: color .2s; }
+      .nav-post a:hover { color: var(--text); }
+      footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; color: var(--muted); font-size: .8rem; }
+      @media (max-width: 600px) { nav { padding: 1rem; } .nav-links { gap: 1.25rem; } .article-wrap { padding: 7rem 1.25rem 4rem; } }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/" class="nav-logo">FM</a>
+      <ul class="nav-links">
+        <li><a href="/">Inicio</a></li>
+        <li><a href="/blog/" style="color:var(--text)">Blog</a></li>
+        <li><a href="/#contacto">Contacto</a></li>
+      </ul>
+    </nav>
+
+    <article class="article-wrap">
+      <a href="/blog/" class="back-link">← Volver al blog</a>
+
+      <p class="post-label">Vida · Transición · 11 de mayo, 2026</p>
+      <h1 class="post-title">La transición.<br/>Cuando no sabes qué sigue.</h1>
+      <p class="post-meta">Por Frank Mercado · Torices, Cartagena · Leído en ~7 min</p>
+
+      <div class="post-body">
+
+        <p>
+          Diciembre de 2023. Firmé los papeles, entregué el uniforme y salí
+          de la Armada de Colombia después de nueve años. Sin fanfarria, sin
+          plan claro, sin la certeza de que lo que venía iba a ser mejor
+          que lo que dejaba. Solo con una formación técnica sólida, unas
+          cuantas licencias y la pregunta que nadie te prepara para responder:
+          <em>¿y ahora qué?</em>
+        </p>
+
+        <p>
+          Lo que nadie cuenta de retirarse de la vida militar es que el
+          problema no es la falta de habilidades. Es la falta de contexto.
+          Adentro, todo tiene estructura. Horarios, jerarquías, funciones
+          claras, un propósito definido desde arriba. Afuera, el mundo civil
+          no tiene manual. Y si llevas casi una década funcionando dentro de
+          un sistema, construir el tuyo propio desde cero es más difícil de
+          lo que parece desde adentro.
+        </p>
+
+        <h2>El plan que no funcionó</h2>
+
+        <p>
+          Mi primer plan fue convertirme en <strong>buzo industrial</strong>.
+          Tenía el título de Buzo Inspector Naval de la Armada, experiencia real
+          bajo el agua y el dominio del inglés para trabajar en el exterior.
+          Parecía lógico: mi perfil encajaba con lo que empresas internacionales
+          de buceo técnico e inspección submarina buscan.
+        </p>
+
+        <p>
+          Reuní todos los documentos. Los envié a los Estados Unidos.
+          Homologaciones, títulos, certificados OMI. Esperé. Y la respuesta,
+          cuando llegó, fue lo que ya temía: los títulos de buceo de la Armada
+          colombiana no tienen el reconocimiento directo que necesitan para
+          competir en ese mercado sin un proceso de revalidación costoso y
+          largo. La puerta no estaba cerrada del todo, pero tampoco estaba
+          abierta. Estaba trabada.
+        </p>
+
+        <p>
+          Eso duele de una manera particular. No es el fracaso de no haberlo
+          intentado. Es el fracaso de haberlo intentado bien y que el sistema
+          simplemente no esté hecho para ti.
+        </p>
+
+        <h2>Embarcando pilotos bajo la lluvia de Cartagena</h2>
+
+        <p>
+          Mientras eso se resolvía — o no se resolvía — entré a trabajar en
+          <strong>Transportes Acuáticos PROMAR LTDA.</strong> como piloto de
+          lancha. El trabajo consistía en embarcar pilotos prácticos en los
+          buques mercantes que entraban y salían por la bahía de Cartagena.
+          Jornadas extenuantes. Salario mínimo. Bajo la lluvia, bajo el sol,
+          con la brisa seca de diciembre cortándote la cara a las cinco de la
+          mañana en plena bahía.
+        </p>
+
+        <p>
+          No me quejo del trabajo. El mar siempre ha sido mi lugar, y hay
+          algo en la operación de una lancha a toda velocidad hacia un buque
+          de carga que todavía me parece con una dignidad propia. Pero sí me
+          pregunté muchas veces, parado en esa lancha con el casco verde del
+          buque delante, si ese era el techo o si era solo un piso temporal.
+        </p>
+
+        <p>
+          Un tiempo después tuve la oportunidad de trabajar un par de meses
+          en <strong>las Bahamas</strong>, a bordo de un yate privado. Fue
+          una experiencia completamente distinta. Otro nivel de operación,
+          otro tipo de cliente, otra exigencia. Y me confirmó algo que ya
+          intuía: yo podía moverse en ese mundo. El problema era encontrar
+          la forma correcta de entrar a él de manera sostenible, desde
+          Cartagena, con lo que tenía.
+        </p>
+
+        <h2>La relación que también terminó</h2>
+
+        <p>
+          En medio de todo eso, acabó una relación de seis años.
+        </p>
+
+        <p>
+          No voy a entrar en detalles porque no es lo que importa aquí.
+          Lo que sí importa es lo que significa perder una relación larga
+          al mismo tiempo que estás construyendo una identidad nueva. Cuando
+          te retiras de la Armada, pierdes una estructura. Cuando termina
+          una relación larga, pierdes otra. Y si las dos cosas pasan en
+          el mismo período, hay momentos en que no sabes muy bien quién
+          eres fuera de los roles que venías cumpliendo.
+        </p>
+
+        <p>
+          Lo que me salvó en ese momento fue lo de siempre:
+          <strong>el cuerpo y la rutina</strong>. Seguí entrenando todos
+          los días. Seguí comiendo bien. Seguí estudiando. No porque tuviera
+          la claridad de que iba a servir para algo concreto, sino porque
+          esas tres cosas son las que me mantienen funcional cuando todo lo
+          demás está en el aire. El deporte no resuelve los problemas, pero
+          te pone en el estado mental para enfrentarlos.
+        </p>
+
+        <h2>El Dip: saber cuándo seguir y cuándo soltar</h2>
+
+        <p>
+          Fue durante ese período que leí <em>The Dip</em>, de
+          <strong>Seth Godin</strong>. Es un libro corto, de esos que se leen
+          en una tarde pero que se procesan durante meses.
+        </p>
+
+        <blockquote>
+          "The dip is the long slog between starting and mastery. The dip
+          is the combination of bureaucracy and busywork you must deal with
+          in order to get to the next level… If it were easy, there'd be no
+          reward."
+          <cite>— Seth Godin, <em>The Dip</em></cite>
+        </blockquote>
+
+        <p>
+          La tesis central de Godin es esta: los ganadores no son los que
+          nunca renuncian. Son los que renuncian estratégicamente. Renuncian
+          a las cosas que los llevan a un callejón sin salida —
+          lo que Godin llama un <em>cul-de-sac</em> — y persisten en las
+          cosas que tienen un dip, es decir, una caída temporal antes de
+          una recompensa real.
+        </p>
+
+        <p>
+          La diferencia es crucial y no siempre es obvia desde adentro.
+          El buceo industrial era un callejón. No imposible, pero el
+          costo de revalidar títulos, reubicarse, construir reputación
+          en ese mercado desde cero era desproporcionado con respecto al
+          retorno posible en el tiempo que yo tenía. Abandonar esa ruta
+          no fue rendirse. Fue leer bien el mapa.
+        </p>
+
+        <p>
+          Cartagena Boat Detailing, en cambio, tiene todas las
+          características de un dip verdadero. Es duro. El mercado local
+          no conoce lo que ofrezco. Construir confianza con propietarios
+          de yates toma tiempo. El capital propio pone presión constante.
+          Pero cada uno de esos obstáculos tiene solución técnica:
+          se resuelve con trabajo, con comunicación, con resultados
+          que hablen solos. No es un callejón. Es una curva empinada
+          con salida.
+        </p>
+
+        <h2>La disciplina que no negocia</h2>
+
+        <p>
+          Lo que más me sorprende de ese período — y de este también —
+          es que la disciplina no se negocia con el estado de ánimo.
+          Hay días en que entrenar no da ganas. Hay noches en que estudiar
+          parece una pérdida de tiempo. Hay momentos en que el negocio no
+          avanza y lo más fácil sería cerrar el computador y ver algo en
+          Netflix.
+        </p>
+
+        <p>
+          Pero la Armada me enseñó algo que no se puede desaprender:
+          <strong>la consistencia no depende de la motivación</strong>.
+          La motivación es un recurso volátil. La disciplina es un sistema.
+          Y los sistemas funcionan aunque no tengas ganas, aunque estés
+          cansado, aunque el resultado no se vea todavía.
+        </p>
+
+        <p>
+          Hoy estoy estudiando Desarrollo Web y Marketing Digital de
+          manera virtual. No porque sea fácil encajarlo con el trabajo
+          en el muelle y el negocio, sino porque sé que lo que aprendo
+          hoy lo aplico mañana. Cada herramienta nueva es una ventaja
+          que alguien en mi posición no tiene por defecto. Y eso,
+          acumulado en el tiempo, es lo que construye la diferencia.
+        </p>
+
+        <h2>La transición no termina</h2>
+
+        <p>
+          Dos años y medio después de retirarme de la Armada, todavía
+          estoy en transición. Creo que siempre lo estaré. Y ya no me
+          parece un problema — me parece la condición normal de alguien
+          que no se conforma con donde está.
+        </p>
+
+        <p>
+          La Armada me dio la base. PROMAR me recordó lo que vale levantarse
+          a trabajar aunque no sea lo que sueñas. Las Bahamas me mostraron
+          el estándar al que quiero llegar. La relación terminada me
+          enseñó a conocerme sin el apoyo de nadie más. Y Cartagena Boat
+          Detailing es donde confluye todo eso: la técnica naval, el mercado
+          que identifiqué, la disciplina que no se apaga y las ganas de
+          construir algo propio desde cero.
+        </p>
+
+        <p>
+          No sé si esto es el dip o si ya estoy saliendo de él.
+          Pero sé que no es un callejón.
+        </p>
+
+        <p>
+          Y eso es suficiente para seguir.
+        </p>
+
+      </div>
+
+      <div class="nav-post">
+        <a href="/blog/paciencia-y-el-intento/">Siguiente: La paciencia y el intento →</a>
+      </div>
+
+      <div class="post-footer">
+        <p>Escrito por <strong>Frank Mercado</strong> — Fundador, Cartagena Boat Detailing.<br/>
+        Tecnólogo Electromecánico Naval · Torices, Cartagena, Colombia.</p>
+      </div>
+    </article>
+
+    <footer>© 2026 Frank Mercado · Torices, Cartagena</footer>
+  </body>
+</html>
