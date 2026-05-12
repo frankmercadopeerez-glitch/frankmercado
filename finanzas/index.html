@@ -737,8 +737,14 @@
                 type="button"
                 onclick="resetAllTransactions()"
                 class="text-xs font-semibold px-3 py-1.5 rounded-lg"
-                style="background:rgba(220,38,38,0.12);color:#f87171;border:1px solid rgba(220,38,38,0.3);"
-              >🗑 Borrar todo</button>
+                style="
+                  background: rgba(220, 38, 38, 0.12);
+                  color: #f87171;
+                  border: 1px solid rgba(220, 38, 38, 0.3);
+                "
+              >
+                🗑 Borrar todo
+              </button>
             </div>
             <!-- Alertas de presupuesto -->
             <div id="budget-alerts" class="space-y-2 mb-4"></div>
@@ -1554,7 +1560,12 @@
 
       // ── Reset ─────────────────────────────────────────────
       async function resetAllTransactions() {
-        if (!confirm("¿Seguro? Esto borrará TODOS los registros de Firestore permanentemente.")) return;
+        if (
+          !confirm(
+            "¿Seguro? Esto borrará TODOS los registros de Firestore permanentemente.",
+          )
+        )
+          return;
         const snap = await db.collection("transacciones_frank").get();
         const batch = db.batch();
         snap.docs.forEach((d) => batch.delete(d.ref));
