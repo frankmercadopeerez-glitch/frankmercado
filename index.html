@@ -268,6 +268,112 @@
         color: var(--text);
       }
 
+      /* EDUCATION & CERTS */
+      .edu-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 2.5rem;
+        margin-bottom: 3rem;
+      }
+
+      .edu-card {
+        background: var(--surface);
+        padding: 1.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+
+      .edu-card .tag {
+        font-size: 0.75rem;
+        color: var(--muted);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .edu-card h3 {
+        font-size: 0.95rem;
+        font-weight: 600;
+        line-height: 1.4;
+      }
+
+      .edu-card .edu-meta {
+        font-size: 0.825rem;
+        color: var(--muted);
+      }
+
+      .certs-group {
+        margin-top: 1.5rem;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .certs-group + .certs-group {
+        margin-top: 1rem;
+      }
+
+      .certs-group summary {
+        padding: 1.25rem 1.75rem;
+        background: var(--surface);
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.9rem;
+        font-weight: 600;
+        list-style: none;
+        user-select: none;
+        transition: background 0.2s;
+      }
+
+      .certs-group summary::-webkit-details-marker { display: none; }
+
+      .certs-group summary:hover {
+        background: #161616;
+      }
+
+      .certs-group summary .chevron {
+        color: var(--muted);
+        font-size: 0.75rem;
+        transition: transform 0.2s;
+      }
+
+      .certs-group[open] summary .chevron {
+        transform: rotate(180deg);
+      }
+
+      .certs-list {
+        padding: 1.25rem 1.75rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 0.6rem;
+        border-top: 1px solid var(--border);
+        background: var(--bg);
+      }
+
+      .cert-item {
+        font-size: 0.85rem;
+        color: var(--muted);
+        padding-left: 1rem;
+        position: relative;
+        line-height: 1.5;
+      }
+
+      .cert-item::before {
+        content: "—";
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+        font-size: 0.7rem;
+        top: 3px;
+      }
+
       /* FOOTER */
       footer {
         border-top: 1px solid var(--border);
@@ -298,6 +404,7 @@
       <a href="/" class="nav-logo">FM</a>
       <ul class="nav-links">
         <li><a href="#sobre-mi">Sobre mí</a></li>
+        <li><a href="#educacion">Formación</a></li>
         <li><a href="#proyectos">Proyectos</a></li>
         <li><a href="#contacto">Contacto</a></li>
       </ul>
@@ -329,6 +436,79 @@
         landing pages hasta aplicaciones web completas. Trabajo con negocios
         locales e internacionales para llevar sus ideas a internet.
       </p>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- EDUCATION & CERTS -->
+    <section id="educacion">
+      <p class="section-label">Formación</p>
+      <h2 class="section-title">Educación y certificaciones.</h2>
+
+      <div class="edu-grid">
+        <div class="edu-card">
+          <span class="tag">Fitness · 2025</span>
+          <h3>Personal Fitness Trainer</h3>
+          <span class="edu-meta">National Academy of Sports Medicine</span>
+        </div>
+        <div class="edu-card">
+          <span class="tag">Ingeniería · 2022</span>
+          <h3>Especialista en Sistemas Electrohidráulicos y Electroneumáticos</h3>
+          <span class="edu-meta">Escuela Naval de Suboficiales ARC "Barranquilla"</span>
+        </div>
+        <div class="edu-card">
+          <span class="tag">Ingeniería · 2016</span>
+          <h3>Tecnólogo Naval Electromecánico</h3>
+          <span class="edu-meta">Escuela Naval de Suboficiales ARC "Barranquilla"</span>
+        </div>
+        <div class="edu-card">
+          <span class="tag">Bachillerato · 2014</span>
+          <h3>Bachiller Académico</h3>
+          <span class="edu-meta">Institución Educativa Islas del Rosario</span>
+        </div>
+      </div>
+
+      <details class="certs-group" open>
+        <summary>
+          Fitness &amp; Nutrición — NASM
+          <span class="chevron">▼</span>
+        </summary>
+        <div class="certs-list">
+          <span class="cert-item">Personal Fitness Trainer</span>
+          <span class="cert-item">Holistic Weight Management (Especialización)</span>
+          <span class="cert-item">Nutrition Mastery for Fitness and Wellness (Especialización)</span>
+          <span class="cert-item">Science of Diet and Exercise (Especialización)</span>
+          <span class="cert-item">Nutrition Education for the Consumer (Especialización)</span>
+          <span class="cert-item">Psychology of Weight Loss</span>
+          <span class="cert-item">Psychosocial Aspects of Obesity</span>
+          <span class="cert-item">Nutrition and Medical Weight Loss</span>
+          <span class="cert-item">Optimal Nutrition After 40</span>
+          <span class="cert-item">NASM Nutrition Essentials</span>
+          <span class="cert-item">Nutrition for Optimal Mental Health</span>
+          <span class="cert-item">Popular Fitness Supplements</span>
+          <span class="cert-item">Pre- and Post-Workout Supplements for the Beginner</span>
+          <span class="cert-item">Smart Grocery Shopping Choices for Optimal Nutrition</span>
+          <span class="cert-item">Optimal Living: Nutrition Hot Topics and Controversies</span>
+          <span class="cert-item">OPTimal Living: Making Sense of Supplements</span>
+          <span class="cert-item">Plant-Based Diets</span>
+          <span class="cert-item">Navigating Diets</span>
+          <span class="cert-item">Nutrition and Weight Management for Fitness Professionals</span>
+          <span class="cert-item">Nutrition and Obesity: Weight Control — UNAM</span>
+        </div>
+      </details>
+
+      <details class="certs-group">
+        <summary>
+          Gestión, Liderazgo y Habilidades Directivas
+          <span class="chevron">▼</span>
+        </summary>
+        <div class="certs-list">
+          <span class="cert-item">Managing People and Teams — IESE Business School</span>
+          <span class="cert-item">Human Talent Management — UNAM</span>
+          <span class="cert-item">Authority, Direction, and Leadership — UNAM</span>
+          <span class="cert-item">How to Solve Problems and Make Decisions Effectively — UC Irvine</span>
+        </div>
+      </details>
     </section>
 
     <hr class="divider" />
