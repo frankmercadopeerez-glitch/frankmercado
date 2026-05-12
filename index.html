@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Frank Mercado — Desarrollador Web</title>
+    <title>Frank Javier Mercado Pérez — Tecnólogo Naval · Web · Fitness</title>
     <meta
       name="description"
-      content="Frank Mercado, desarrollador web en Cartagena. Diseño y desarrollo de sitios web modernos y rápidos."
+      content="Frank Javier Mercado Pérez — Tecnólogo Electromecánico Naval con +7 años en la Armada de Colombia, desarrollador web independiente y Personal Trainer certificado por NASM. Cartagena, Colombia."
     />
     <style>
       *,
@@ -332,7 +332,9 @@
         transition: background 0.2s;
       }
 
-      .certs-group summary::-webkit-details-marker { display: none; }
+      .certs-group summary::-webkit-details-marker {
+        display: none;
+      }
 
       .certs-group summary:hover {
         background: #161616;
@@ -374,6 +376,134 @@
         top: 3px;
       }
 
+      /* EXPERIENCE TIMELINE */
+      .exp-timeline {
+        margin-top: 2.5rem;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .exp-item {
+        background: var(--surface);
+        padding: 1.75rem;
+        border-bottom: 1px solid var(--border);
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 0.25rem 2rem;
+        transition: background 0.2s;
+      }
+
+      .exp-item:last-child {
+        border-bottom: none;
+      }
+
+      .exp-item:hover {
+        background: #161616;
+      }
+
+      .exp-role {
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+
+      .exp-org {
+        font-size: 0.875rem;
+        color: var(--accent);
+        margin-top: 0.15rem;
+      }
+
+      .exp-meta {
+        text-align: right;
+      }
+
+      .exp-dates {
+        font-size: 0.8rem;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      .exp-location {
+        font-size: 0.8rem;
+        color: var(--muted);
+        text-align: right;
+        margin-top: 0.15rem;
+      }
+
+      .exp-bullets {
+        list-style: none;
+        grid-column: 1 / -1;
+        margin-top: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .exp-bullets li {
+        font-size: 0.875rem;
+        color: var(--muted);
+        padding-left: 1.25rem;
+        position: relative;
+        line-height: 1.6;
+      }
+
+      .exp-bullets li::before {
+        content: "→";
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+        font-size: 0.75rem;
+        top: 3px;
+      }
+
+      .exp-bullets strong {
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      /* SKILLS */
+      .skills-section {
+        margin-top: 2.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+
+      .skills-group-title {
+        font-size: 0.72rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 0.75rem;
+      }
+
+      .skills-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .skill-tag {
+        padding: 0.4rem 0.9rem;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        font-size: 0.825rem;
+        color: var(--text);
+        background: var(--surface);
+      }
+
+      @media (max-width: 600px) {
+        .exp-item {
+          grid-template-columns: 1fr;
+        }
+        .exp-meta {
+          text-align: left;
+        }
+        .exp-location {
+          text-align: left;
+        }
+      }
+
       /* FOOTER */
       footer {
         border-top: 1px solid var(--border);
@@ -404,6 +534,7 @@
       <a href="/" class="nav-logo">FM</a>
       <ul class="nav-links">
         <li><a href="#sobre-mi">Sobre mí</a></li>
+        <li><a href="#experiencia">Experiencia</a></li>
         <li><a href="#educacion">Formación</a></li>
         <li><a href="#proyectos">Proyectos</a></li>
         <li><a href="#contacto">Contacto</a></li>
@@ -412,14 +543,15 @@
 
     <!-- HERO -->
     <div class="hero">
-      <p class="hero-label">Cartagena, Colombia</p>
-      <h1>Frank Mercado<br /><span>Desarrollador web.</span></h1>
+      <p class="hero-label">Barranquilla / Cartagena, Colombia</p>
+      <h1>Frank Mercado<br /><span>Naval · Digital · Fitness.</span></h1>
       <p class="hero-desc">
-        Diseño y desarrollo sitios web rápidos, modernos y orientados a
-        resultados para negocios y marcas personales.
+        Tecnólogo Electromecánico Naval con +7 años en la Armada de Colombia.
+        Desarrollador web independiente. Personal Trainer certificado por NASM.
+        Tres disciplinas, una sola mentalidad: precisión y resultados.
       </p>
       <div class="hero-cta">
-        <a href="#proyectos" class="btn btn-primary">Ver proyectos</a>
+        <a href="#sobre-mi" class="btn btn-primary">Mi historia</a>
         <a href="#contacto" class="btn btn-ghost">Contactar</a>
       </div>
     </div>
@@ -429,13 +561,128 @@
     <!-- ABOUT -->
     <section id="sobre-mi">
       <p class="section-label">Sobre mí</p>
-      <h2 class="section-title">Construyo webs que funcionan.</h2>
+      <h2 class="section-title">Una trayectoria construida con disciplina.</h2>
       <p class="about-text">
-        Soy desarrollador web independiente basado en Cartagena. Me especializo
-        en crear experiencias digitales limpias, rápidas y funcionales — desde
-        landing pages hasta aplicaciones web completas. Trabajo con negocios
-        locales e internacionales para llevar sus ideas a internet.
+        Soy Frank Javier Mercado Pérez, Tecnólogo Electromecánico Naval formado en la Escuela Naval de Suboficiales ARC "Barranquilla". Durante más de 7 años serví en la Armada de Colombia, navegando el Pacífico y el Caribe a bordo de patrulleros oceánicos y buques balizadores. En los cuartos de máquinas aprendí que la excelencia técnica no es opcional — es una responsabilidad de vida o muerte.
       </p>
+      <p class="about-text" style="margin-top: 1.25rem;">
+        Como Jefe de Máquinas del ARC Isla Palma mantuve una disponibilidad operativa del <strong style="color:var(--text)">98%</strong> en sistemas críticos de propulsión y maquinaria auxiliar. En el ARC Valle del Cauca lideré programas de mantenimiento que aumentaron la eficiencia de equipos en un <strong style="color:var(--text)">15%</strong> y supervisé pruebas de automatización con <strong style="color:var(--text)">100% de cumplimiento</strong> en protocolos técnicos y de seguridad. Cada misión me entrenó para diagnosticar rápido, ejecutar con precisión y anticipar los fallos antes de que ocurran.
+      </p>
+      <p class="about-text" style="margin-top: 1.25rem;">
+        Hoy esa disciplina naval vive en varios frentes: opero como Piloto de Lancha en las aguas de Cartagena, construyo sitios web para negocios locales e internacionales a través de FMTech, y me certifiqué como Personal Trainer por NASM con más de 20 especializaciones en nutrición y bienestar. Un perfil técnico, versátil y orientado a resultados — en el mar, en la web y en el gimnasio.
+      </p>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- EXPERIENCE -->
+    <section id="experiencia">
+      <p class="section-label">Trayectoria</p>
+      <h2 class="section-title">Experiencia laboral.</h2>
+
+      <div class="exp-timeline">
+        <div class="exp-item">
+          <div>
+            <p class="exp-role">Piloto de Lancha</p>
+            <p class="exp-org">Transportes Acuáticos PROMAR LTDA.</p>
+          </div>
+          <div class="exp-meta">
+            <p class="exp-dates">Ago 2024 — Actualidad</p>
+            <p class="exp-location">Cartagena, Colombia</p>
+          </div>
+          <ul class="exp-bullets">
+            <li>Garantizo la operatividad y seguridad de la maquinaria de la embarcación mediante la inspección rigurosa de sistemas electromecánicos antes de cada zarpe.</li>
+            <li>Aplico procedimientos de navegación segura y control de maniobras en el embarque de pilotos prácticos hacia buques mercantes.</li>
+          </ul>
+        </div>
+
+        <div class="exp-item">
+          <div>
+            <p class="exp-role">Técnico Electromecánico</p>
+            <p class="exp-org">Armada de Colombia — Patrullero Oceánico "ARC Valle del Cauca"</p>
+          </div>
+          <div class="exp-meta">
+            <p class="exp-dates">Jul 2022 — Dic 2023</p>
+            <p class="exp-location">Bahía Málaga, Valle del Cauca</p>
+          </div>
+          <ul class="exp-bullets">
+            <li>Lideré el programa de mantenimiento preventivo y correctivo para la maquinaria principal y generadores, <strong>aumentando la disponibilidad de los equipos en un 15%</strong>.</li>
+            <li>Supervisé y ejecuté pruebas en sistemas de automatización, asegurando el <strong>100% de cumplimiento</strong> con los protocolos técnicos y de seguridad.</li>
+          </ul>
+        </div>
+
+        <div class="exp-item">
+          <div>
+            <p class="exp-role">Jefe de Máquinas</p>
+            <p class="exp-org">Armada de Colombia — Buque Balizador "ARC Isla Palma"</p>
+          </div>
+          <div class="exp-meta">
+            <p class="exp-dates">Ene 2018 — Ene 2022</p>
+            <p class="exp-location">Buenaventura, Valle del Cauca</p>
+          </div>
+          <ul class="exp-bullets">
+            <li>Ejecuté el plan de mantenimiento preventivo y correctivo del sistema hidráulico de la grúa de cubierta, asegurando total disponibilidad para operaciones logísticas.</li>
+            <li>Gestioné el funcionamiento integral de todos los sistemas de propulsión y maquinaria auxiliar, alcanzando una <strong>disponibilidad del 98%</strong> en operaciones críticas.</li>
+            <li>Realicé inspecciones técnicas detalladas para diagnosticar y documentar el estado de los equipos, gestionando acciones correctivas que preservaron su rendimiento.</li>
+          </ul>
+        </div>
+
+        <div class="exp-item">
+          <div>
+            <p class="exp-role">Técnico Electromecánico</p>
+            <p class="exp-org">Armada de Colombia — Patrullero Oceánico "ARC San Andrés"</p>
+          </div>
+          <div class="exp-meta">
+            <p class="exp-dates">Ene 2017 — Ene 2018</p>
+            <p class="exp-location">Cartagena, Colombia</p>
+          </div>
+          <ul class="exp-bullets">
+            <li>Apliqué un riguroso plan de mantenimiento preventivo a sistemas de propulsión y generación, asegurando máxima eficiencia y fiabilidad en operaciones continuas.</li>
+            <li>Gestioné el inventario y la organización del pañol de herramientas, asegurando la disponibilidad de equipos para todas las tareas de mantenimiento.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- SKILLS -->
+    <section id="habilidades">
+      <p class="section-label">Competencias</p>
+      <h2 class="section-title">Habilidades profesionales.</h2>
+
+      <div class="skills-section">
+        <div>
+          <p class="skills-group-title">Técnicas — Electromecánica Naval</p>
+          <div class="skills-tags">
+            <span class="skill-tag">Mantenimiento de Grúas</span>
+            <span class="skill-tag">Maquinaria Principal y Equipos Auxiliares</span>
+            <span class="skill-tag">Mantenimiento Preventivo y Correctivo</span>
+            <span class="skill-tag">Diagnóstico de Fallas Electromecánicas</span>
+            <span class="skill-tag">Sistemas Electrohidráulicos</span>
+            <span class="skill-tag">Sistemas Electroneumáticos</span>
+            <span class="skill-tag">Electricidad y Control Industrial</span>
+            <span class="skill-tag">Interpretación de Planos Eléctricos e Hidráulicos</span>
+          </div>
+        </div>
+        <div>
+          <p class="skills-group-title">Digitales & Gestión</p>
+          <div class="skills-tags">
+            <span class="skill-tag">Desarrollo Web</span>
+            <span class="skill-tag">Diseño de Sitios Web</span>
+            <span class="skill-tag">Office Avanzado</span>
+            <span class="skill-tag">Gestión de Personas y Equipos</span>
+            <span class="skill-tag">Toma de Decisiones bajo Presión</span>
+          </div>
+        </div>
+        <div>
+          <p class="skills-group-title">Idiomas</p>
+          <div class="skills-tags">
+            <span class="skill-tag">Español — Nativo</span>
+            <span class="skill-tag">Inglés — C1</span>
+          </div>
+        </div>
+      </div>
     </section>
 
     <hr class="divider" />
@@ -453,13 +700,19 @@
         </div>
         <div class="edu-card">
           <span class="tag">Ingeniería · 2022</span>
-          <h3>Especialista en Sistemas Electrohidráulicos y Electroneumáticos</h3>
-          <span class="edu-meta">Escuela Naval de Suboficiales ARC "Barranquilla"</span>
+          <h3>
+            Especialista en Sistemas Electrohidráulicos y Electroneumáticos
+          </h3>
+          <span class="edu-meta"
+            >Escuela Naval de Suboficiales ARC "Barranquilla"</span
+          >
         </div>
         <div class="edu-card">
           <span class="tag">Ingeniería · 2016</span>
           <h3>Tecnólogo Naval Electromecánico</h3>
-          <span class="edu-meta">Escuela Naval de Suboficiales ARC "Barranquilla"</span>
+          <span class="edu-meta"
+            >Escuela Naval de Suboficiales ARC "Barranquilla"</span
+          >
         </div>
         <div class="edu-card">
           <span class="tag">Bachillerato · 2014</span>
@@ -475,10 +728,18 @@
         </summary>
         <div class="certs-list">
           <span class="cert-item">Personal Fitness Trainer</span>
-          <span class="cert-item">Holistic Weight Management (Especialización)</span>
-          <span class="cert-item">Nutrition Mastery for Fitness and Wellness (Especialización)</span>
-          <span class="cert-item">Science of Diet and Exercise (Especialización)</span>
-          <span class="cert-item">Nutrition Education for the Consumer (Especialización)</span>
+          <span class="cert-item"
+            >Holistic Weight Management (Especialización)</span
+          >
+          <span class="cert-item"
+            >Nutrition Mastery for Fitness and Wellness (Especialización)</span
+          >
+          <span class="cert-item"
+            >Science of Diet and Exercise (Especialización)</span
+          >
+          <span class="cert-item"
+            >Nutrition Education for the Consumer (Especialización)</span
+          >
           <span class="cert-item">Psychology of Weight Loss</span>
           <span class="cert-item">Psychosocial Aspects of Obesity</span>
           <span class="cert-item">Nutrition and Medical Weight Loss</span>
@@ -486,14 +747,26 @@
           <span class="cert-item">NASM Nutrition Essentials</span>
           <span class="cert-item">Nutrition for Optimal Mental Health</span>
           <span class="cert-item">Popular Fitness Supplements</span>
-          <span class="cert-item">Pre- and Post-Workout Supplements for the Beginner</span>
-          <span class="cert-item">Smart Grocery Shopping Choices for Optimal Nutrition</span>
-          <span class="cert-item">Optimal Living: Nutrition Hot Topics and Controversies</span>
-          <span class="cert-item">OPTimal Living: Making Sense of Supplements</span>
+          <span class="cert-item"
+            >Pre- and Post-Workout Supplements for the Beginner</span
+          >
+          <span class="cert-item"
+            >Smart Grocery Shopping Choices for Optimal Nutrition</span
+          >
+          <span class="cert-item"
+            >Optimal Living: Nutrition Hot Topics and Controversies</span
+          >
+          <span class="cert-item"
+            >OPTimal Living: Making Sense of Supplements</span
+          >
           <span class="cert-item">Plant-Based Diets</span>
           <span class="cert-item">Navigating Diets</span>
-          <span class="cert-item">Nutrition and Weight Management for Fitness Professionals</span>
-          <span class="cert-item">Nutrition and Obesity: Weight Control — UNAM</span>
+          <span class="cert-item"
+            >Nutrition and Weight Management for Fitness Professionals</span
+          >
+          <span class="cert-item"
+            >Nutrition and Obesity: Weight Control — UNAM</span
+          >
         </div>
       </details>
 
@@ -503,10 +776,34 @@
           <span class="chevron">▼</span>
         </summary>
         <div class="certs-list">
-          <span class="cert-item">Managing People and Teams — IESE Business School</span>
+          <span class="cert-item"
+            >Managing People and Teams — IESE Business School</span
+          >
           <span class="cert-item">Human Talent Management — UNAM</span>
-          <span class="cert-item">Authority, Direction, and Leadership — UNAM</span>
-          <span class="cert-item">How to Solve Problems and Make Decisions Effectively — UC Irvine</span>
+          <span class="cert-item"
+            >Authority, Direction, and Leadership — UNAM</span
+          >
+          <span class="cert-item"
+            >How to Solve Problems and Make Decisions Effectively — UC
+            Irvine</span
+          >
+        </div>
+      </details>
+
+      <details class="certs-group">
+        <summary>
+          Técnicas &amp; Marítimas
+          <span class="chevron">▼</span>
+        </summary>
+        <div class="certs-list">
+          <span class="cert-item">Control Automático</span>
+          <span class="cert-item">Prevención de Riesgos Laborales</span>
+          <span class="cert-item">Salud Ocupacional</span>
+          <span class="cert-item">Herramientas de Office Avanzado</span>
+          <span class="cert-item">Licencia Patrón de Yate</span>
+          <span class="cert-item">Licencia de Marinero de Máquinas</span>
+          <span class="cert-item">Licencia de Conducir B1</span>
+          <span class="cert-item">Cursos OMI para Gente de Mar</span>
         </div>
       </details>
     </section>
