@@ -188,12 +188,6 @@
         border-color: #b8904d;
         box-shadow: 0 0 0 3px rgba(184, 144, 77, 0.15);
       }
-      #ai-overlay {
-        display: none;
-      }
-      #ai-overlay.active {
-        display: flex;
-      }
       #ios-banner {
         display: none;
         padding-bottom: calc(1rem + var(--sab));
@@ -348,18 +342,6 @@
     </style>
   </head>
   <body class="antialiased min-h-screen">
-    <!-- AI OVERLAY -->
-    <div
-      id="ai-overlay"
-      class="fixed inset-0 z-50 bg-black/70 flex-col items-center justify-center gap-4 text-white"
-    >
-      <div
-        class="w-14 h-14 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"
-      ></div>
-      <p class="text-lg font-semibold">Analizando imagen con IA...</p>
-      <p class="text-sm text-slate-300">Extrayendo datos del comprobante</p>
-    </div>
-
     <!-- iOS BANNER -->
     <div
       id="ios-banner"
@@ -1039,43 +1021,7 @@
                   ></i>
                   Nuevo Registro
                 </h2>
-                <div class="flex gap-2">
-                  <button
-                    type="button"
-                    onclick="document.getElementById('factura-camara').click()"
-                    class="flex items-center gap-1.5 text-xs font-semibold text-white px-3 py-2 rounded-xl transition"
-                    style="background: #1a365d"
-                  >
-                    <i data-lucide="camera" class="w-3.5 h-3.5"></i
-                    ><span class="hidden sm:inline">Foto</span>
-                  </button>
-                  <button
-                    type="button"
-                    onclick="document.getElementById('factura-galeria').click()"
-                    class="flex items-center gap-1.5 text-xs font-semibold text-white px-3 py-2 rounded-xl transition"
-                    style="background: #1a365d"
-                  >
-                    <i data-lucide="image" class="w-3.5 h-3.5"></i
-                    ><span class="hidden sm:inline">Galería</span>
-                  </button>
-                </div>
-                <input
-                  type="file"
-                  id="factura-camara"
-                  accept="image/*"
-                  capture="environment"
-                  class="hidden"
-                  onchange="escanearFactura(this)"
-                />
-                <input
-                  type="file"
-                  id="factura-galeria"
-                  accept="image/*"
-                  class="hidden"
-                  onchange="escanearFactura(this)"
-                />
-              </div>
-              <form id="tx-form" class="space-y-4">
+                <form id="tx-form" class="space-y-4">
                 <div>
                   <label
                     class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide"
@@ -1165,9 +1111,13 @@
                     <option value="Nequi">Nequi</option>
                     <option value="Efectivo">Efectivo</option>
                     <option value="Bolsillo Arriendo">Bolsillo Arriendo</option>
-                    <option value="Bolsillo Colchón $">Bolsillo Colchón $</option>
+                    <option value="Bolsillo Colchón $">
+                      Bolsillo Colchón $
+                    </option>
                     <option value="Bolsillo Viaje">Bolsillo Viaje Anual</option>
-                    <option value="Bolsillo Cuota Carro">Bolsillo Cuota Carro (Nu Bank)</option>
+                    <option value="Bolsillo Cuota Carro">
+                      Bolsillo Cuota Carro (Nu Bank)
+                    </option>
                   </select>
                 </div>
                 <div id="campo-categoria">
@@ -1520,9 +1470,6 @@
         messagingSenderId: "1010842230328",
         appId: "1:1010842230328:web:d1af6ce4d8336de4cfd0cd",
       };
-
-      // Reemplaza con tu Groq API Key (no subir al repositorio)
-      const GROQ_KEY = "";
 
       let db = null,
         auth = null;
@@ -2645,84 +2592,6 @@
           showToast(wasEditing ? "Cambios guardados ✓" : "Registro guardado ✓");
           showTab("resumen");
         });
-
-      // ── Escanear factura ──────────────────────────────────
-      async function escanearFactura(input) {
-        const file = input.files[0];
-        if (!file) return;
-        document.getElementById("ai-overlay").classList.add("active");
-        try {
-          const base64 = await new Promise((res, rej) => {
-            const r = new FileReader();
-            r.onload = () => res(r.result.split(",")[1]);
-            r.onerror = rej;
-            r.readAsDataURL(file);
-          });
-          const mime = file.type?.startsWith("image/")
-            ? file.type
-            : "image/jpeg";
-          const prompt = `Eres un asistente contable. Analiza esta imagen (factura, recibo o comprobante de pago colombiano).
-Devuelve UNICAMENTE un objeto JSON valido, sin ningun texto adicional, sin markdown:
-{"monto":<numero entero>,"descripcion":"<descripcion corta maximo 60 caracteres>","fecha":"<YYYY-MM-DD o null>","categoria":"<una de: Mercado | Gasolina y Movilidad | Comida Afuera / Salidas | Compras / Ropa / Zapatos | Servicios (Luz, Agua, Gas) | Suscripciones | Otros Gastos>"}`;
-          const resp = await fetch(
-            "https://api.groq.com/openai/v1/chat/completions",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + GROQ_KEY,
-              },
-              body: JSON.stringify({
-                model: "meta-llama/llama-4-scout-17b-16e-instruct",
-                temperature: 0,
-                max_tokens: 512,
-                messages: [
-                  {
-                    role: "user",
-                    content: [
-                      { type: "text", text: prompt },
-                      {
-                        type: "image_url",
-                        image_url: { url: `data:${mime};base64,${base64}` },
-                      },
-                    ],
-                  },
-                ],
-              }),
-            },
-          );
-          if (!resp.ok) throw new Error("API " + resp.status);
-          const data = await resp.json();
-          const raw = (data.choices?.[0]?.message?.content || "").trim();
-          const start = raw.indexOf("{"),
-            end = raw.lastIndexOf("}");
-          if (start === -1 || end === -1) throw new Error("No JSON");
-          const parsed = JSON.parse(raw.slice(start, end + 1));
-          setTipo("gasto");
-          if (parsed.monto) setMontoValue(parsed.monto);
-          if (parsed.descripcion)
-            document.getElementById("tx-descripcion").value =
-              parsed.descripcion;
-          if (parsed.fecha && parsed.fecha !== "null")
-            document.getElementById("tx-fecha").value = parsed.fecha;
-          if (parsed.categoria) {
-            const sel = document.getElementById("tx-categoria");
-            for (const opt of sel.options) {
-              if (opt.value === parsed.categoria) {
-                sel.value = parsed.categoria;
-                break;
-              }
-            }
-          }
-          showTab("nuevo");
-        } catch (err) {
-          console.error("Groq error:", err);
-          alert("Error al analizar la imagen.\n\n" + err.message);
-        } finally {
-          document.getElementById("ai-overlay").classList.remove("active");
-          input.value = "";
-        }
-      }
 
       // ── Helpers ───────────────────────────────────────────
       const fmt = (n) =>
