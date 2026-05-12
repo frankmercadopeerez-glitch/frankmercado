@@ -577,7 +577,13 @@
             >
             <button
               type="button"
-              onclick="showTab('nuevo'); setTipo('transferencia'); document.getElementById('panel-nuevo').scrollIntoView({behavior:'smooth', block:'start'});"
+              onclick="
+                showTab('nuevo');
+                setTipo('transferencia');
+                document
+                  .getElementById('panel-nuevo')
+                  .scrollIntoView({ behavior: 'smooth', block: 'start' });
+              "
               class="ml-auto text-xs font-semibold px-2 py-1 rounded-lg"
               style="background: rgba(184, 144, 77, 0.1); color: #b8904d"
             >
@@ -1378,9 +1384,11 @@
         "Bolsillo Cuota Carro": "#14b8a6",
       };
 
-      // Saldos iniciales (capital ya existente, no proviene de transacciones)
+      // Saldos iniciales (capital real al momento de empezar a registrar — 11 may 2026)
       const SALDOS_INICIALES = {
+        Bancolombia: 10000,
         "Nu Bank": 80000,
+        Falabella: 11000,
       };
 
       const CATS = {
@@ -1550,7 +1558,9 @@
               .classList.toggle("active", t === tab);
           },
         );
-        document.getElementById("panel-" + tab).scrollIntoView({ behavior: "smooth", block: "start" });
+        document
+          .getElementById("panel-" + tab)
+          .scrollIntoView({ behavior: "smooth", block: "start" });
         const fab = document.getElementById("fab-nuevo");
         if (fab) fab.classList.toggle("hidden", tab === "nuevo");
         if (tab === "estadisticas") renderCharts();
