@@ -1453,53 +1453,62 @@
       };
 
       // Semilla de deudas iniciales (se crean en Firestore si no existen)
+      // montoNegociado = valor acordado tras negociación (CFG específico; resto ≈40% del original)
       const DEUDAS_SEMILLA = [
         {
           nombre: "Compra Cartera CFG",
           montoInicial: 32000000,
-          saldo: 32000000,
+          montoNegociado: 12000000,
+          saldo: 12000000,
           tipo: "largo",
         },
         {
           nombre: "Crédito BBVA",
           montoInicial: 5000000,
-          saldo: 5000000,
+          montoNegociado: 2000000,
+          saldo: 2000000,
           tipo: "largo",
         },
         {
           nombre: "Crédito Bayport",
           montoInicial: 3000000,
-          saldo: 3000000,
+          montoNegociado: 1200000,
+          saldo: 1200000,
           tipo: "largo",
         },
         {
           nombre: "Crédito Comfenalco",
           montoInicial: 2000000,
-          saldo: 2000000,
+          montoNegociado: 800000,
+          saldo: 800000,
           tipo: "largo",
         },
         {
           nombre: "Tarjeta BBVA",
           montoInicial: 4000000,
-          saldo: 4000000,
+          montoNegociado: 1600000,
+          saldo: 1600000,
           tipo: "largo",
         },
         {
           nombre: "Rappi Card",
           montoInicial: 5400000,
-          saldo: 5400000,
+          montoNegociado: 2160000,
+          saldo: 2160000,
           tipo: "largo",
         },
         {
           nombre: "NAF NAF Davivienda",
           montoInicial: 1800000,
-          saldo: 1800000,
+          montoNegociado: 720000,
+          saldo: 720000,
           tipo: "largo",
         },
         {
           nombre: "Lifemiles Colpatria",
           montoInicial: 4000000,
-          saldo: 4000000,
+          montoNegociado: 1600000,
+          saldo: 1600000,
           tipo: "largo",
         },
       ];
@@ -1698,6 +1707,26 @@
                   batch.commit();
                 } else {
                   deudas = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+                  // Migrar montoNegociado y saldo si faltan
+                  const batch = db.batch();
+                  let needsPatch = false;
+                  deudas.forEach((d) => {
+                    if (d.montoNegociado === undefined) {
+                      const seed = DEUDAS_SEMILLA.find(
+                        (s) => s.nombre === d.nombre,
+                      );
+                      if (seed && seed.montoNegociado !== undefined) {
+                        batch.update(
+                          db.collection("deudas_frank").doc(d.id),
+                          { montoNegociado: seed.montoNegociado, saldo: seed.saldo },
+                        );
+                        d.montoNegociado = seed.montoNegociado;
+                        d.saldo = seed.saldo;
+                        needsPatch = true;
+                      }
+                    }
+                  });
+                  if (needsPatch) batch.commit();
                   if (currentTab === "deudas") renderDeudas();
                   renderNetWorth();
                 }
@@ -2074,13 +2103,22 @@
         list
           .sort((a, b) => b.saldo - a.saldo)
           .forEach((d) => {
-            const pagado = (d.montoInicial || d.saldo) - d.saldo;
-            const pct = d.montoInicial
-              ? Math.min(Math.round((pagado / d.montoInicial) * 100), 100)
+            const negociado = d.montoNegociado || d.montoInicial || d.saldo;
+            const pagado = Math.max(0, negociado - d.saldo);
+            const pct = negociado
+              ? Math.min(Math.round((pagado / negociado) * 100), 100)
               : 0;
+            const tieneNegociado =
+              d.montoNegociado && d.montoNegociado !== d.montoInicial;
+            const ahorroTag = tieneNegociado
+              ? `<span style="background:rgba(34,197,94,0.12);color:#22c55e;border-radius:4px;padding:1px 6px;font-size:0.65rem;font-weight:700;margin-left:6px">-${Math.round((1 - d.montoNegociado / d.montoInicial) * 100)}%</span>`
+              : "";
+            const origenLine = tieneNegociado
+              ? `<p class="text-xs mt-0.5" style="color:#6e7681">Original: <span style="text-decoration:line-through;color:#6e7681">${fmt(d.montoInicial)}</span>${ahorroTag}</p><p class="text-xs" style="color:#b8904d;font-weight:600">&#128077; Negociado: ${fmt(negociado)}</p>`
+              : `<p class="text-xs mt-0.5" style="color:#6e7681">Original: ${fmt(d.montoInicial)}</p>`;
             const div = document.createElement("div");
             div.className = "deuda-card";
-            div.innerHTML = `<div class="flex justify-between items-start mb-2"><div><p class="font-semibold text-slate-800 text-sm">${d.nombre}</p><p class="text-xs text-slate-400">Saldo: <span class="font-bold text-red-600">${fmt(d.saldo)}</span>${d.montoInicial ? " de " + fmt(d.montoInicial) : ""}</p></div><div class="flex gap-1.5"><button onclick="abrirModalAbonar('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl text-white" style="background:#16a34a">Abonar</button><button onclick="archivarDeuda('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl border border-slate-200 text-slate-400 hover:text-red-500">✓ Pagada</button></div></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%;background:#22c55e"></div></div><p class="text-xs text-slate-400 mt-1">${pct}% pagado</p>`;
+            div.innerHTML = `<div class="flex justify-between items-start mb-2"><div class="flex-1 min-w-0 pr-2"><p class="font-semibold text-sm" style="color:#e2e8f0">${d.nombre}</p>${origenLine}<p class="text-xs mt-1">Saldo restante: <span style="font-weight:700;color:#ef4444">${fmt(d.saldo)}</span></p></div><div class="flex flex-col gap-1.5"><button onclick="abrirModalAbonar('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl text-white" style="background:#16a34a">Abonar</button><button onclick="archivarDeuda('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl border text-center" style="border-color:#252d3f;color:#6e7681">✓ Pagada</button></div></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%;background:${pct >= 100 ? '#22c55e' : '#b8904d'}"></div></div><p class="text-xs mt-1" style="color:#6e7681">${pct}% pagado de ${fmt(negociado)}</p>`;
             el.appendChild(div);
           });
       }
