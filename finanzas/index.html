@@ -46,7 +46,8 @@
       }
       body {
         font-family: "Poppins", system-ui, sans-serif;
-        background: #f1f5f9;
+        background: #0f1117;
+        color: #e2e8f0;
       }
       nav#main-nav {
         padding-top: env(safe-area-inset-top, 0px);
@@ -58,22 +59,21 @@
         }
       }
       .glass-card {
-        background: #fff;
+        background: #161b27;
         border-radius: 14px;
-        border: 1px solid #e2e8f0;
-        box-shadow:
-          0 1px 3px rgba(0, 0, 0, 0.06),
-          0 1px 2px rgba(0, 0, 0, 0.04);
+        border: 1px solid #252d3f;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
       }
       .glass-card:hover {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.09);
-        transition: box-shadow 0.2s;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+        border-color: rgba(184, 144, 77, 0.25);
+        transition: box-shadow 0.2s, border-color 0.2s;
       }
       .kpi-card {
-        background: #fff;
+        background: #161b27;
         border-radius: 14px;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+        border: 1px solid #252d3f;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
         padding: 1rem 1.25rem;
         position: relative;
         overflow: hidden;
@@ -105,7 +105,7 @@
       }
       .tab-btn {
         position: relative;
-        color: #64748b;
+        color: #7c8fa6;
         font-weight: 500;
         font-size: 0.82rem;
         padding: 0.65rem 1rem;
@@ -125,11 +125,11 @@
         transition: background 0.15s;
       }
       .tab-btn:hover {
-        color: #1a365d;
-        background: #f8fafc;
+        color: #e2e8f0;
+        background: rgba(255, 255, 255, 0.04);
       }
       .tab-btn.active {
-        color: #1a365d;
+        color: #e2e8f0;
         font-weight: 600;
       }
       .tab-btn.active::after {
@@ -163,14 +163,14 @@
         font-weight: 700;
       }
       .toggle-btn.inactive {
-        border-color: #e2e8f0;
-        background: white;
-        color: #94a3b8;
+        border-color: #252d3f;
+        background: #1a1f2e;
+        color: #6e7681;
       }
       select {
         appearance: none;
         -webkit-appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23b8904d' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
         background-repeat: no-repeat;
         background-position: right 0.75rem center;
         padding-right: 2.5rem !important;
@@ -178,13 +178,13 @@
       input[type="date"] {
         -webkit-appearance: none;
         appearance: none;
-        color: #1e293b;
+        color: #e2e8f0;
       }
       input:focus,
       select:focus {
         outline: none;
-        border-color: #1a365d;
-        box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
+        border-color: #b8904d;
+        box-shadow: 0 0 0 3px rgba(184, 144, 77, 0.15);
       }
       #ai-overlay {
         display: none;
@@ -204,7 +204,7 @@
         background: transparent;
       }
       ::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
+        background: #334155;
         border-radius: 10px;
       }
       @media (max-width: 640px) {
@@ -255,13 +255,13 @@
       }
       .deuda-card {
         border-radius: 14px;
-        border: 1px solid #e2e8f0;
-        background: #fff;
+        border: 1px solid #252d3f;
+        background: #161b27;
         padding: 1rem;
       }
       .progress-bar-track {
         height: 8px;
-        background: #f1f5f9;
+        background: #252d3f;
         border-radius: 9999px;
         overflow: hidden;
       }
@@ -279,9 +279,32 @@
         font-size: 0.7rem;
         font-weight: 600;
       }
+      /* ── Dark Theme Overrides ─────────────────────────── */
+      #main-app .bg-white { background-color: #161b27 !important; }
+      #main-app .bg-slate-50 { background-color: #0f1117 !important; }
+      #main-app .bg-slate-100 { background-color: #1d2235 !important; }
+      #main-app .text-slate-800 { color: #e2e8f0 !important; }
+      #main-app .text-slate-700 { color: #c9d1d9 !important; }
+      #main-app .text-slate-600 { color: #a0aec0 !important; }
+      #main-app .text-slate-500 { color: #8b949e !important; }
+      #main-app .text-slate-400 { color: #6e7681 !important; }
+      #main-app .border-slate-100,
+      #main-app .border-slate-200 { border-color: #252d3f !important; }
+      #main-app .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+      #main-app .divide-slate-50 > :not([hidden]) ~ :not([hidden]) { border-color: #252d3f !important; }
+      #main-app input:not([type="checkbox"]):not([type="radio"]),
+      #main-app select { background-color: #0f1117 !important; color: #e2e8f0 !important; border-color: #252d3f !important; }
+      #main-app thead[style] { background: #1d2235 !important; }
+      #main-app .hover\:bg-slate-50:hover { background-color: #1d2235 !important; }
+      #main-app .bg-green-50 { background-color: rgba(34,197,94,0.08) !important; }
+      #main-app .bg-red-50 { background-color: rgba(239,68,68,0.08) !important; }
+      #main-app .bg-yellow-50 { background-color: rgba(234,179,8,0.08) !important; }
+      #main-app .bg-blue-50 { background-color: rgba(59,130,246,0.08) !important; }
+      #main-app .rounded-xl.border.border-slate-200 { background-color: #0f1117 !important; }
+      .tabs-wrapper { background: #161b27 !important; border-color: #252d3f !important; }
     </style>
   </head>
-  <body class="text-slate-800 antialiased min-h-screen">
+  <body class="antialiased min-h-screen">
     <!-- AI OVERLAY -->
     <div
       id="ai-overlay"
@@ -518,7 +541,7 @@
             <i data-lucide="wallet" class="w-4 h-4" style="color: #b8904d"></i>
             <span
               class="text-xs font-bold uppercase tracking-widest"
-              style="color: #1a365d"
+              style="color: #b8904d"
               >Mis Cuentas</span
             >
             <button
@@ -581,7 +604,7 @@
           </div>
           <div
             class="kpi-card"
-            style="background: #f0fdf4; border-left: 4px solid #22c55e"
+            style="background: rgba(34,197,94,0.08); border-left: 4px solid #22c55e"
           >
             <p class="kpi-label">
               Flujo Neto
@@ -1067,9 +1090,10 @@
                     id="tx-cuenta"
                     class="block w-full rounded-xl border border-slate-200 bg-white p-3 text-sm focus:outline-none"
                   >
-                    <option value="Nu Bank">Nu Bank</option>
-                    <option value="Falabella">Banco Falabella</option>
+                    <option value="Bancolombia">Bancolombia</option>
+                    <option value="Davivienda">Davivienda</option>
                     <option value="Nequi">Nequi</option>
+                    <option value="Daviplata">Daviplata</option>
                     <option value="Efectivo">Efectivo</option>
                   </select>
                 </div>
@@ -1083,17 +1107,14 @@
                     id="tx-destino"
                     class="block w-full rounded-xl border border-slate-200 bg-white p-3 text-sm focus:outline-none"
                   >
-                    <option value="Nu Bank">Nu Bank</option>
-                    <option value="Falabella">Banco Falabella</option>
+                    <option value="Bancolombia">Bancolombia</option>
+                    <option value="Davivienda">Davivienda</option>
                     <option value="Nequi">Nequi</option>
+                    <option value="Daviplata">Daviplata</option>
                     <option value="Efectivo">Efectivo</option>
-                    <option value="Bolsillo Arriendo">
-                      Bolsillo Arriendo (Día 20)
-                    </option>
-                    <option value="Bolsillo Jair">Bolsillo Cuota Jair</option>
-                    <option value="Bolsillo Carro">
-                      Fondo Mantenimiento Carro
-                    </option>
+                    <option value="Bolsillo Arriendo">Bolsillo Arriendo</option>
+                    <option value="Bolsillo Colchón $">Bolsillo Colchón $</option>
+                    <option value="Bolsillo Viaje">Bolsillo Viaje Anual</option>
                   </select>
                 </div>
                 <div id="campo-categoria">
@@ -1270,9 +1291,10 @@
               id="abonar-cuenta"
               class="block w-full rounded-xl border border-slate-200 bg-white p-3 text-sm focus:outline-none"
             >
-              <option value="Nu Bank">Nu Bank</option>
-              <option value="Falabella">Banco Falabella</option>
+              <option value="Bancolombia">Bancolombia</option>
+              <option value="Davivienda">Davivienda</option>
               <option value="Nequi">Nequi</option>
+              <option value="Daviplata">Daviplata</option>
               <option value="Efectivo">Efectivo</option>
             </select>
           </div>
@@ -1299,43 +1321,49 @@
 
     <script>
       // ── Constantes ────────────────────────────────────────
-      const CUENTAS = ["Nu Bank", "Falabella", "Nequi", "Efectivo"];
+      const CUENTAS = ["Bancolombia", "Davivienda", "Nequi", "Daviplata", "Efectivo"];
       const BOLSILLOS = [
         "Bolsillo Arriendo",
-        "Bolsillo Jair",
-        "Bolsillo Carro",
+        "Bolsillo Colchón $",
+        "Bolsillo Viaje",
       ];
       const CUENTA_COLORS = {
-        "Nu Bank": "#8b5cf6",
-        Falabella: "#3b82f6",
-        Nequi: "#ec4899",
+        Bancolombia: "#f97316",
+        Davivienda: "#ef4444",
+        Nequi: "#8b5cf6",
+        Daviplata: "#ec4899",
         Efectivo: "#22c55e",
         "Bolsillo Arriendo": "#f59e0b",
-        "Bolsillo Jair": "#f97316",
-        "Bolsillo Carro": "#14b8a6",
+        "Bolsillo Colchón $": "#06b6d4",
+        "Bolsillo Viaje": "#3b82f6",
       };
 
       const CATS = {
         ingreso: [
-          "Sueldo Lancha",
+          "Quincena PROMAR",
+          "Bono / Extras Lancha",
           "Producido Carro",
-          "Ingresos Detailing Naval",
-          "Criptos / Binance",
+          "Criptos / Inversión",
           "Otros Ingresos",
         ],
         gasto: [
           "Arriendo Casa",
-          "Servicios (Luz, Agua, Gas)",
-          "WiFi y Teléfono",
-          "Mercado",
+          "Servicios / Luz",
+          "WiFi y Plan Móvil",
+          "Mercado y Comida",
           "Suscripciones",
-          "Cuota Jair",
-          "Gasolina y Movilidad",
-          "Comida Afuera / Salidas",
-          "Compras / Ropa / Zapatos",
-          "Pasajes Viajes Familiares",
-          "Imprevistos / Mantenimiento Carro",
-          "Pago de Deudas",
+          "Gimnasio",
+          "Gasolina",
+          "Salidas / Entretenimiento",
+          "Compras / Ropa",
+          "Pasajes y Viajes",
+          "Hogar / Casa",
+          "Pago Tarjetas",
+          "Cuota Crédito CFG",
+          "Cuota Bayport",
+          "Cuota Comfenalco",
+          "Familia / Pareja",
+          "Imprevistos",
           "Otros Gastos",
         ],
         transferencia: ["Transferencia Interna"],
@@ -1343,37 +1371,45 @@
 
       // Presupuestos de referencia (mensuales en COP)
       const PRESUPUESTOS = {
-        "Arriendo Casa": 750000,
-        "Servicios (Luz, Agua, Gas)": 250000,
-        "WiFi y Teléfono": 120000,
-        Mercado: 600000,
+        "Arriendo Casa": 500000,
+        "Servicios / Luz": 80000,
+        "WiFi y Plan Móvil": 119000,
+        "Mercado y Comida": 500000,
         Suscripciones: 100000,
-        "Cuota Jair": 1200000,
-        "Gasolina y Movilidad": 300000,
-        "Comida Afuera / Salidas": 200000,
-        "Imprevistos / Mantenimiento Carro": 150000,
+        Gimnasio: 100000,
+        Gasolina: 150000,
+        "Salidas / Entretenimiento": 300000,
+        "Pasajes y Viajes": 200000,
+        "Compras / Ropa": 200000,
+        "Pago Tarjetas": 500000,
+        "Cuota Crédito CFG": 1000000,
       };
 
       // Semilla de deudas iniciales (se crean en Firestore si no existen)
       const DEUDAS_SEMILLA = [
-        { nombre: "Mamá", montoInicial: 700000, saldo: 700000, tipo: "corto" },
         {
-          nombre: "Jair (Atraso)",
-          montoInicial: 400000,
-          saldo: 400000,
-          tipo: "corto",
+          nombre: "Compra Cartera CFG",
+          montoInicial: 32000000,
+          saldo: 32000000,
+          tipo: "largo",
         },
         {
-          nombre: "Amazon (Amigo)",
-          montoInicial: 170000,
-          saldo: 170000,
-          tipo: "corto",
+          nombre: "Crédito BBVA",
+          montoInicial: 5000000,
+          saldo: 5000000,
+          tipo: "largo",
         },
         {
-          nombre: "Pauta Ads",
-          montoInicial: 60000,
-          saldo: 60000,
-          tipo: "corto",
+          nombre: "Crédito Bayport",
+          montoInicial: 3000000,
+          saldo: 3000000,
+          tipo: "largo",
+        },
+        {
+          nombre: "Crédito Comfenalco",
+          montoInicial: 2000000,
+          saldo: 2000000,
+          tipo: "largo",
         },
         {
           nombre: "Tarjeta BBVA",
@@ -1382,7 +1418,7 @@
           tipo: "largo",
         },
         {
-          nombre: "RappiCard",
+          nombre: "Rappi Card",
           montoInicial: 5400000,
           saldo: 5400000,
           tipo: "largo",
@@ -1394,15 +1430,9 @@
           tipo: "largo",
         },
         {
-          nombre: "Crédito Compra Cartera",
-          montoInicial: 32000000,
-          saldo: 32000000,
-          tipo: "largo",
-        },
-        {
-          nombre: "Crédito Bayport",
-          montoInicial: 3000000,
-          saldo: 3000000,
+          nombre: "Lifemiles Colpatria",
+          montoInicial: 4000000,
+          saldo: 4000000,
           tipo: "largo",
         },
       ];
@@ -2153,7 +2183,7 @@
                       : (v / 1e3).toFixed(0) + "k"),
                   font: { size: 10 },
                 },
-                grid: { color: "#f1f5f9" },
+                grid: { color: "#252d3f" },
               },
               x: { ticks: { font: { size: 10 } }, grid: { display: false } },
             },
@@ -2198,7 +2228,7 @@
                   data: catEntries.map(([, v]) => v),
                   backgroundColor: CAT_COLORS,
                   borderWidth: 2,
-                  borderColor: "#fff",
+                  borderColor: "#161b27",
                 },
               ],
             },
@@ -2290,7 +2320,7 @@
                       : (v / 1e3).toFixed(0) + "k"),
                   font: { size: 10 },
                 },
-                grid: { color: "#f1f5f9" },
+                grid: { color: "#252d3f" },
               },
               x: { ticks: { font: { size: 10 } }, grid: { display: false } },
             },
@@ -2343,7 +2373,7 @@
                         : (v / 1e3).toFixed(0) + "k"),
                     font: { size: 10 },
                   },
-                  grid: { color: "#f1f5f9" },
+                  grid: { color: "#252d3f" },
                 },
                 y: {
                   ticks: { font: { size: 11, family: "Poppins" } },
