@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog — Frank Mercado</title>
+    <meta name="description" content="Reflexiones de Frank Mercado sobre emprendimiento, disciplina naval, el mar y la vida." />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      :root {
+        --bg: #0a0a0a; --surface: #111111; --border: #1e1e1e;
+        --text: #e8e8e8; --muted: #666; --accent: #c8f542;
+      }
+      html { scroll-behavior: smooth; }
+      body { background: var(--bg); color: var(--text); font-family: "Inter", system-ui, -apple-system, sans-serif; line-height: 1.6; }
+      nav {
+        position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+        padding: 1.25rem 2rem; display: flex; justify-content: space-between;
+        align-items: center; background: rgba(10,10,10,0.85);
+        backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
+      }
+      .nav-logo { font-size: 1rem; font-weight: 600; letter-spacing: .05em; color: var(--text); text-decoration: none; }
+      .nav-links { display: flex; gap: 2rem; list-style: none; }
+      .nav-links a { color: var(--muted); text-decoration: none; font-size: .9rem; transition: color .2s; }
+      .nav-links a:hover { color: var(--text); }
+      .container { max-width: 760px; margin: 0 auto; padding: 8rem 2rem 6rem; }
+      .page-label { font-size: .75rem; letter-spacing: .15em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+      .page-title { font-size: clamp(1.8rem, 5vw, 3rem); font-weight: 700; letter-spacing: -.02em; margin-bottom: .75rem; }
+      .page-desc { color: var(--muted); font-size: 1rem; margin-bottom: 3rem; }
+      .post-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+      .post-item { background: var(--surface); padding: 1.75rem; text-decoration: none; color: var(--text); transition: background .2s; display: flex; flex-direction: column; gap: .4rem; }
+      .post-item:hover { background: #161616; }
+      .post-meta { font-size: .75rem; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+      .post-title { font-size: 1.05rem; font-weight: 600; line-height: 1.4; }
+      .post-excerpt { font-size: .875rem; color: var(--muted); line-height: 1.6; margin-top: .2rem; }
+      .post-arrow { margin-top: .75rem; color: var(--accent); font-size: .85rem; }
+      footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; color: var(--muted); font-size: .8rem; }
+      @media (max-width: 600px) { nav { padding: 1rem; } .nav-links { gap: 1.25rem; } .container { padding: 7rem 1.25rem 4rem; } }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/" class="nav-logo">FM</a>
+      <ul class="nav-links">
+        <li><a href="/">Inicio</a></li>
+        <li><a href="/blog/" style="color:var(--text)">Blog</a></li>
+        <li><a href="/#contacto">Contacto</a></li>
+      </ul>
+    </nav>
+
+    <div class="container">
+      <p class="page-label">Reflexiones</p>
+      <h1 class="page-title">Blog</h1>
+      <p class="page-desc">Emprendimiento, mar, disciplina y todo lo que se aprende en el camino.</p>
+
+      <div class="post-list">
+        <a href="/blog/paciencia-y-el-intento/" class="post-item">
+          <span class="post-meta">11 de mayo, 2026 · Emprendimiento</span>
+          <span class="post-title">La paciencia y el intento — Son las 2 de la madrugada</span>
+          <span class="post-excerpt">El obstáculo no es el enemigo. Arrancar Cartagena Boat Detailing con capital propio, confiar en las personas correctas y no rendirse cuando nadie te lo garantiza.</span>
+          <span class="post-arrow">Leer →</span>
+        </a>
+      </div>
+    </div>
+
+    <footer>© 2026 Frank Mercado · Torices, Cartagena</footer>
+  </body>
+</html>
