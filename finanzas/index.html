@@ -67,7 +67,9 @@
       .glass-card:hover {
         box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
         border-color: rgba(184, 144, 77, 0.25);
-        transition: box-shadow 0.2s, border-color 0.2s;
+        transition:
+          box-shadow 0.2s,
+          border-color 0.2s;
       }
       .kpi-card {
         background: #161b27;
@@ -280,28 +282,69 @@
         font-weight: 600;
       }
       /* ── Dark Theme Overrides ─────────────────────────── */
-      #main-app .bg-white { background-color: #161b27 !important; }
-      #main-app .bg-slate-50 { background-color: #0f1117 !important; }
-      #main-app .bg-slate-100 { background-color: #1d2235 !important; }
-      #main-app .text-slate-800 { color: #e2e8f0 !important; }
-      #main-app .text-slate-700 { color: #c9d1d9 !important; }
-      #main-app .text-slate-600 { color: #a0aec0 !important; }
-      #main-app .text-slate-500 { color: #8b949e !important; }
-      #main-app .text-slate-400 { color: #6e7681 !important; }
+      #main-app .bg-white {
+        background-color: #161b27 !important;
+      }
+      #main-app .bg-slate-50 {
+        background-color: #0f1117 !important;
+      }
+      #main-app .bg-slate-100 {
+        background-color: #1d2235 !important;
+      }
+      #main-app .text-slate-800 {
+        color: #e2e8f0 !important;
+      }
+      #main-app .text-slate-700 {
+        color: #c9d1d9 !important;
+      }
+      #main-app .text-slate-600 {
+        color: #a0aec0 !important;
+      }
+      #main-app .text-slate-500 {
+        color: #8b949e !important;
+      }
+      #main-app .text-slate-400 {
+        color: #6e7681 !important;
+      }
       #main-app .border-slate-100,
-      #main-app .border-slate-200 { border-color: #252d3f !important; }
+      #main-app .border-slate-200 {
+        border-color: #252d3f !important;
+      }
       #main-app .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
-      #main-app .divide-slate-50 > :not([hidden]) ~ :not([hidden]) { border-color: #252d3f !important; }
+      #main-app .divide-slate-50 > :not([hidden]) ~ :not([hidden]) {
+        border-color: #252d3f !important;
+      }
       #main-app input:not([type="checkbox"]):not([type="radio"]),
-      #main-app select { background-color: #0f1117 !important; color: #e2e8f0 !important; border-color: #252d3f !important; }
-      #main-app thead[style] { background: #1d2235 !important; }
-      #main-app .hover\:bg-slate-50:hover { background-color: #1d2235 !important; }
-      #main-app .bg-green-50 { background-color: rgba(34,197,94,0.08) !important; }
-      #main-app .bg-red-50 { background-color: rgba(239,68,68,0.08) !important; }
-      #main-app .bg-yellow-50 { background-color: rgba(234,179,8,0.08) !important; }
-      #main-app .bg-blue-50 { background-color: rgba(59,130,246,0.08) !important; }
-      #main-app .rounded-xl.border.border-slate-200 { background-color: #0f1117 !important; }
-      .tabs-wrapper { background: #161b27 !important; border-color: #252d3f !important; }
+      #main-app select {
+        background-color: #0f1117 !important;
+        color: #e2e8f0 !important;
+        border-color: #252d3f !important;
+      }
+      #main-app thead[style] {
+        background: #1d2235 !important;
+      }
+      #main-app .hover\:bg-slate-50:hover {
+        background-color: #1d2235 !important;
+      }
+      #main-app .bg-green-50 {
+        background-color: rgba(34, 197, 94, 0.08) !important;
+      }
+      #main-app .bg-red-50 {
+        background-color: rgba(239, 68, 68, 0.08) !important;
+      }
+      #main-app .bg-yellow-50 {
+        background-color: rgba(234, 179, 8, 0.08) !important;
+      }
+      #main-app .bg-blue-50 {
+        background-color: rgba(59, 130, 246, 0.08) !important;
+      }
+      #main-app .rounded-xl.border.border-slate-200 {
+        background-color: #0f1117 !important;
+      }
+      .tabs-wrapper {
+        background: #161b27 !important;
+        border-color: #252d3f !important;
+      }
     </style>
   </head>
   <body class="antialiased min-h-screen">
@@ -604,7 +647,10 @@
           </div>
           <div
             class="kpi-card"
-            style="background: rgba(34,197,94,0.08); border-left: 4px solid #22c55e"
+            style="
+              background: rgba(34, 197, 94, 0.08);
+              border-left: 4px solid #22c55e;
+            "
           >
             <p class="kpi-label">
               Flujo Neto
@@ -1113,7 +1159,9 @@
                     <option value="Daviplata">Daviplata</option>
                     <option value="Efectivo">Efectivo</option>
                     <option value="Bolsillo Arriendo">Bolsillo Arriendo</option>
-                    <option value="Bolsillo Colchón $">Bolsillo Colchón $</option>
+                    <option value="Bolsillo Colchón $">
+                      Bolsillo Colchón $
+                    </option>
                     <option value="Bolsillo Viaje">Bolsillo Viaje Anual</option>
                   </select>
                 </div>
@@ -1293,6 +1341,8 @@
             >
               <option value="Bancolombia">Bancolombia</option>
               <option value="Davivienda">Davivienda</option>
+              <option value="Nu Bank">Nu Bank</option>
+              <option value="Falabella">Banco Falabella</option>
               <option value="Nequi">Nequi</option>
               <option value="Daviplata">Daviplata</option>
               <option value="Efectivo">Efectivo</option>
@@ -1321,21 +1371,38 @@
 
     <script>
       // ── Constantes ────────────────────────────────────────
-      const CUENTAS = ["Bancolombia", "Davivienda", "Nequi", "Daviplata", "Efectivo"];
+      const CUENTAS = [
+        "Bancolombia",
+        "Davivienda",
+        "Nu Bank",
+        "Falabella",
+        "Nequi",
+        "Daviplata",
+        "Efectivo",
+      ];
       const BOLSILLOS = [
         "Bolsillo Arriendo",
         "Bolsillo Colchón $",
         "Bolsillo Viaje",
+        "Bolsillo Cuota Carro",
       ];
       const CUENTA_COLORS = {
         Bancolombia: "#f97316",
         Davivienda: "#ef4444",
-        Nequi: "#8b5cf6",
-        Daviplata: "#ec4899",
+        "Nu Bank": "#8b5cf6",
+        Falabella: "#3b82f6",
+        Nequi: "#ec4899",
+        Daviplata: "#a855f7",
         Efectivo: "#22c55e",
         "Bolsillo Arriendo": "#f59e0b",
         "Bolsillo Colchón $": "#06b6d4",
-        "Bolsillo Viaje": "#3b82f6",
+        "Bolsillo Viaje": "#10b981",
+        "Bolsillo Cuota Carro": "#14b8a6",
+      };
+
+      // Saldos iniciales (capital ya existente, no proviene de transacciones)
+      const SALDOS_INICIALES = {
+        "Nu Bank": 80000,
       };
 
       const CATS = {
@@ -1708,7 +1775,9 @@
       // ── Saldos de cuentas (calculado desde transacciones) ──
       function calcularSaldoCuentas() {
         const saldos = {};
-        [...CUENTAS, ...BOLSILLOS].forEach((c) => (saldos[c] = 0));
+        [...CUENTAS, ...BOLSILLOS].forEach(
+          (c) => (saldos[c] = SALDOS_INICIALES[c] || 0),
+        );
         transactions.forEach((t) => {
           if (t.tipo === "ingreso") {
             saldos[t.cuenta] = (saldos[t.cuenta] || 0) + t.monto;
