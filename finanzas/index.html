@@ -1210,7 +1210,10 @@
       id="modal-deuda"
       class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
     >
-      <div class="rounded-2xl p-6 w-full max-w-sm shadow-2xl" style="background:#161b27; border:1px solid #252d3f;">
+      <div
+        class="rounded-2xl p-6 w-full max-w-sm shadow-2xl"
+        style="background: #161b27; border: 1px solid #252d3f"
+      >
         <h3 class="font-bold text-white mb-4 flex items-center gap-2">
           <i
             data-lucide="credit-card"
@@ -1225,7 +1228,7 @@
             id="deuda-nombre"
             placeholder="Nombre (ej. Tarjeta BBVA)"
             class="block w-full rounded-xl p-3 text-sm focus:outline-none text-white placeholder-slate-500"
-            style="background:#0f1117; border:1px solid #252d3f;"
+            style="background: #0f1117; border: 1px solid #252d3f"
           />
           <input
             type="text"
@@ -1234,12 +1237,12 @@
             inputmode="numeric"
             oninput="formatMontoInput(this)"
             class="block w-full rounded-xl p-3 text-sm focus:outline-none font-semibold text-white placeholder-slate-500"
-            style="background:#0f1117; border:1px solid #252d3f;"
+            style="background: #0f1117; border: 1px solid #252d3f"
           />
           <select
             id="deuda-tipo"
             class="block w-full rounded-xl p-3 text-sm focus:outline-none text-white"
-            style="background:#0f1117; border:1px solid #252d3f;"
+            style="background: #0f1117; border: 1px solid #252d3f"
           >
             <option value="corto">Corto Plazo</option>
             <option value="largo">Mediano / Largo Plazo</option>
@@ -1249,7 +1252,11 @@
           <button
             onclick="cerrarModalDeuda()"
             class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
-            style="border:2px solid #252d3f; color:#94a3b8; background:transparent;"
+            style="
+              border: 2px solid #252d3f;
+              color: #94a3b8;
+              background: transparent;
+            "
           >
             Cancelar
           </button>
@@ -1269,17 +1276,24 @@
       id="modal-abonar"
       class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
     >
-      <div class="rounded-2xl p-6 w-full max-w-sm shadow-2xl" style="background:#161b27; border:1px solid #252d3f;">
+      <div
+        class="rounded-2xl p-6 w-full max-w-sm shadow-2xl"
+        style="background: #161b27; border: 1px solid #252d3f"
+      >
         <h3 class="font-bold text-white mb-1 flex items-center gap-2">
           <i data-lucide="minus-circle" class="w-4 h-4 text-green-500"></i
           >Abonar a Deuda
         </h3>
-        <p id="modal-abonar-nombre" class="text-xs mb-4" style="color:#b8904d;"></p>
+        <p
+          id="modal-abonar-nombre"
+          class="text-xs mb-4"
+          style="color: #b8904d"
+        ></p>
         <div class="space-y-3">
           <div>
             <label
               class="block text-xs font-semibold mb-1.5 uppercase tracking-wide"
-              style="color:#94a3b8;"
+              style="color: #94a3b8"
               >Monto del abono</label
             >
             <input
@@ -1289,19 +1303,19 @@
               inputmode="numeric"
               oninput="formatMontoInput(this)"
               class="block w-full rounded-xl p-3 text-sm focus:outline-none font-semibold text-white"
-              style="background:#0f1117; border:1px solid #252d3f;"
+              style="background: #0f1117; border: 1px solid #252d3f"
             />
           </div>
           <div>
             <label
               class="block text-xs font-semibold mb-1.5 uppercase tracking-wide"
-              style="color:#94a3b8;"
+              style="color: #94a3b8"
               >Débitar de cuenta</label
             >
             <select
               id="abonar-cuenta"
               class="block w-full rounded-xl p-3 text-sm focus:outline-none text-white"
-              style="background:#0f1117; border:1px solid #252d3f;"
+              style="background: #0f1117; border: 1px solid #252d3f"
             >
               <option value="Bancolombia">Bancolombia</option>
               <option value="Nu Bank">Nu Bank</option>
@@ -1315,7 +1329,11 @@
           <button
             onclick="cerrarModalAbonar()"
             class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
-            style="border:2px solid #252d3f; color:#94a3b8; background:transparent;"
+            style="
+              border: 2px solid #252d3f;
+              color: #94a3b8;
+              background: transparent;
+            "
           >
             Cancelar
           </button>
@@ -1385,13 +1403,14 @@
           "Compras / Ropa",
           "Pasajes y Viajes",
           "Hogar / Casa",
+          "Publicidad / Meta Ads",
+          "Familia / Pareja",
+          "Imprevistos",
+          "Otros Gastos",
           "Pago Tarjetas",
           "Cuota Crédito CFG",
           "Cuota Bayport",
           "Cuota Comfenalco",
-          "Familia / Pareja",
-          "Imprevistos",
-          "Otros Gastos",
         ],
         transferencia: ["Transferencia Interna"],
       };
