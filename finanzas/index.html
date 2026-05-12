@@ -576,7 +576,8 @@
               >Mis Cuentas</span
             >
             <button
-              onclick="showTab('nuevo')"
+              type="button"
+              onclick="showTab('nuevo'); setTipo('transferencia'); document.getElementById('panel-nuevo').scrollIntoView({behavior:'smooth', block:'start'});"
               class="ml-auto text-xs font-semibold px-2 py-1 rounded-lg"
               style="background: rgba(184, 144, 77, 0.1); color: #b8904d"
             >
@@ -1549,6 +1550,7 @@
               .classList.toggle("active", t === tab);
           },
         );
+        document.getElementById("panel-" + tab).scrollIntoView({ behavior: "smooth", block: "start" });
         const fab = document.getElementById("fab-nuevo");
         if (fab) fab.classList.toggle("hidden", tab === "nuevo");
         if (tab === "estadisticas") renderCharts();
