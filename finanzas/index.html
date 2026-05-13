@@ -1397,12 +1397,12 @@
         "Bolsillo Cuota Carro": "#14b8a6",
       };
 
-      // Saldos iniciales (capital real al momento de empezar a registrar — 11 may 2026)
+      // Saldos iniciales (capital real al momento de empezar a registrar — 13 may 2026)
       const SALDOS_INICIALES = {
-        Bancolombia: 10000,
-        "Nu Bank": 80000,
-        Falabella: 11000,
-        Efectivo: 7000,
+        Bancolombia: 0,
+        "Nu Bank": 0,
+        Falabella: 0,
+        Efectivo: 0,
       };
 
       const CATS = {
@@ -1528,7 +1528,8 @@
         auth = null;
       let transactions = [];
       let deudas = [];
-      const todayStr = new Date().toISOString().split("T")[0];
+      const _td = new Date();
+      const todayStr = _td.getFullYear() + "-" + String(_td.getMonth() + 1).padStart(2, "0") + "-" + String(_td.getDate()).padStart(2, "0");
       const nowD = new Date();
       let mesSel = { y: nowD.getFullYear(), m: nowD.getMonth() };
       const MESES = [
