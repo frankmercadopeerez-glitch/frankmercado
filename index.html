@@ -534,7 +534,11 @@
 
       /* Custom cursor — desktop only */
       @media (hover: hover) and (pointer: fine) {
-        *, *::before, *::after { cursor: none !important; }
+        *,
+        *::before,
+        *::after {
+          cursor: none !important;
+        }
 
         #cursor-dot {
           position: fixed;
@@ -545,7 +549,9 @@
           border-radius: 50%;
           background: var(--accent);
           transform: translate(-50%, -50%);
-          transition: width 0.18s, height 0.18s;
+          transition:
+            width 0.18s,
+            height 0.18s;
           will-change: left, top;
         }
 
@@ -565,10 +571,23 @@
           will-change: left, top;
         }
 
-        body.cur-hover #cursor-dot  { width: 11px; height: 11px; }
-        body.cur-hover #cursor-ring { width: 50px; height: 50px; border-color: rgba(200, 245, 66, 0.65); }
-        body.cur-click #cursor-dot  { width: 4px; height: 4px; }
-        body.cur-click #cursor-ring { width: 20px; height: 20px; }
+        body.cur-hover #cursor-dot {
+          width: 11px;
+          height: 11px;
+        }
+        body.cur-hover #cursor-ring {
+          width: 50px;
+          height: 50px;
+          border-color: rgba(200, 245, 66, 0.65);
+        }
+        body.cur-click #cursor-dot {
+          width: 4px;
+          height: 4px;
+        }
+        body.cur-click #cursor-ring {
+          width: 20px;
+          height: 20px;
+        }
       }
 
       /* Film grain overlay */
@@ -583,13 +602,21 @@
         animation: grain-shift 0.9s steps(2) infinite;
       }
       @keyframes grain-shift {
-        0%   { background-position: 0 0; }
-        50%  { background-position: -15px 10px; }
-        100% { background-position: 10px -15px; }
+        0% {
+          background-position: 0 0;
+        }
+        50% {
+          background-position: -15px 10px;
+        }
+        100% {
+          background-position: 10px -15px;
+        }
       }
 
       /* Hero ambient glow orbs */
-      .hero { position: relative; }
+      .hero {
+        position: relative;
+      }
       .hero-orb {
         position: absolute;
         border-radius: 50%;
@@ -601,31 +628,57 @@
       .hero-orb-1 {
         width: 380px;
         height: 380px;
-        background: radial-gradient(circle, rgba(200, 245, 66, 0.1) 0%, transparent 65%);
+        background: radial-gradient(
+          circle,
+          rgba(200, 245, 66, 0.1) 0%,
+          transparent 65%
+        );
         top: 5%;
         right: 0;
       }
       .hero-orb-2 {
         width: 240px;
         height: 240px;
-        background: radial-gradient(circle, rgba(200, 245, 66, 0.07) 0%, transparent 65%);
+        background: radial-gradient(
+          circle,
+          rgba(200, 245, 66, 0.07) 0%,
+          transparent 65%
+        );
         bottom: 10%;
         left: 0;
         animation-delay: -5s;
       }
       @keyframes orb-drift {
-        from { transform: translate(0, 0) scale(1); }
-        to   { transform: translate(25px, -35px) scale(1.06); }
+        from {
+          transform: translate(0, 0) scale(1);
+        }
+        to {
+          transform: translate(25px, -35px) scale(1.06);
+        }
       }
 
       /* Hero entrance animations */
-      .hero-label { animation: hero-in 0.9s 0.10s cubic-bezier(0.16, 1, 0.3, 1) both; }
-      .hero h1    { animation: hero-in 0.9s 0.25s cubic-bezier(0.16, 1, 0.3, 1) both; }
-      .hero-desc  { animation: hero-in 0.9s 0.40s cubic-bezier(0.16, 1, 0.3, 1) both; }
-      .hero-cta   { animation: hero-in 0.9s 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+      .hero-label {
+        animation: hero-in 0.9s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+      .hero h1 {
+        animation: hero-in 0.9s 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+      .hero-desc {
+        animation: hero-in 0.9s 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+      .hero-cta {
+        animation: hero-in 0.9s 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
       @keyframes hero-in {
-        from { opacity: 0; transform: translateY(28px); }
-        to   { opacity: 1; transform: none; }
+        from {
+          opacity: 0;
+          transform: translateY(28px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
       }
 
       /* Scroll reveal */
@@ -642,9 +695,11 @@
       }
 
       /* Nav underline slide */
-      .nav-links a { position: relative; }
+      .nav-links a {
+        position: relative;
+      }
       .nav-links a::after {
-        content: '';
+        content: "";
         position: absolute;
         bottom: -3px;
         left: 0;
@@ -654,12 +709,19 @@
         transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .nav-links a:hover::after,
-      .nav-links a.nav-active::after { width: 100%; }
-      .nav-links a.nav-active { color: var(--text); }
+      .nav-links a.nav-active::after {
+        width: 100%;
+      }
+      .nav-links a.nav-active {
+        color: var(--text);
+      }
 
       /* Skill tag hover glow */
       .skill-tag {
-        transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
+        transition:
+          border-color 0.2s,
+          color 0.2s,
+          box-shadow 0.2s;
       }
       .skill-tag:hover {
         border-color: rgba(200, 245, 66, 0.5);
@@ -668,18 +730,25 @@
       }
 
       /* Project card — accent top line on hover */
-      .project-card { position: relative; overflow: hidden; }
+      .project-card {
+        position: relative;
+        overflow: hidden;
+      }
       .project-card::before {
-        content: '';
+        content: "";
         position: absolute;
-        top: 0; left: 0;
-        width: 100%; height: 2px;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
         background: var(--accent);
         transform: scaleX(0);
         transform-origin: left;
         transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
       }
-      .project-card:hover::before { transform: scaleX(1); }
+      .project-card:hover::before {
+        transform: scaleX(1);
+      }
 
       /* Contact link hover glow */
       .contact-link:hover {
@@ -690,14 +759,24 @@
       /* Exp item — left accent on hover */
       .exp-item {
         border-left: 2px solid transparent;
-        transition: border-color 0.25s, background 0.2s;
+        transition:
+          border-color 0.25s,
+          background 0.2s;
       }
-      .exp-item:hover { border-left-color: rgba(200, 245, 66, 0.45); }
+      .exp-item:hover {
+        border-left-color: rgba(200, 245, 66, 0.45);
+      }
 
       /* Button magnetic ease */
-      .btn { transition: all 0.2s, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+      .btn {
+        transition:
+          all 0.2s,
+          transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      }
     </style>
-    <script>document.documentElement.className += ' js';</script>
+    <script>
+      document.documentElement.className += " js";
+    </script>
   </head>
   <body>
     <div id="cursor-dot" aria-hidden="true"></div>
@@ -1202,114 +1281,154 @@
 
     <script>
       (function () {
-        'use strict';
+        "use strict";
 
         /* ── Hero orbs (inject via JS) ── */
-        var hero = document.querySelector('.hero');
+        var hero = document.querySelector(".hero");
         if (hero) {
           [1, 2].forEach(function (n) {
-            var orb = document.createElement('div');
-            orb.className = 'hero-orb hero-orb-' + n;
-            orb.setAttribute('aria-hidden', 'true');
+            var orb = document.createElement("div");
+            orb.className = "hero-orb hero-orb-" + n;
+            orb.setAttribute("aria-hidden", "true");
             hero.appendChild(orb);
           });
         }
 
         /* ── Scroll reveal setup ── */
         var revealSelectors = [
-          '.section-label', '.section-title', '.about-text',
-          '.exp-item', '.edu-card', '.skills-group-title',
-          '.skills-tags', '.project-card', '.contact-link', '.certs-group',
+          ".section-label",
+          ".section-title",
+          ".about-text",
+          ".exp-item",
+          ".edu-card",
+          ".skills-group-title",
+          ".skills-tags",
+          ".project-card",
+          ".contact-link",
+          ".certs-group",
         ];
         revealSelectors.forEach(function (sel) {
           document.querySelectorAll(sel).forEach(function (el) {
             if (hero && hero.contains(el)) return; /* hero uses CSS animation */
-            el.setAttribute('data-reveal', '');
+            el.setAttribute("data-reveal", "");
           });
         });
 
         /* Stagger children within container grids */
-        ['.exp-timeline', '.edu-grid', '.projects-grid', '.contact-grid', '.skills-section'].forEach(function (wrapSel) {
+        [
+          ".exp-timeline",
+          ".edu-grid",
+          ".projects-grid",
+          ".contact-grid",
+          ".skills-section",
+        ].forEach(function (wrapSel) {
           var wrap = document.querySelector(wrapSel);
           if (!wrap) return;
-          wrap.querySelectorAll('[data-reveal]').forEach(function (el, i) {
-            el.style.transitionDelay = Math.min(i * 0.09, 0.45) + 's';
+          wrap.querySelectorAll("[data-reveal]").forEach(function (el, i) {
+            el.style.transitionDelay = Math.min(i * 0.09, 0.45) + "s";
           });
         });
 
-        var io = new IntersectionObserver(function (entries) {
-          entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('revealed');
-              io.unobserve(entry.target);
-            }
-          });
-        }, { threshold: 0.08, rootMargin: '0px 0px -20px 0px' });
+        var io = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("revealed");
+                io.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.08, rootMargin: "0px 0px -20px 0px" },
+        );
 
-        document.querySelectorAll('[data-reveal]').forEach(function (el) {
+        document.querySelectorAll("[data-reveal]").forEach(function (el) {
           io.observe(el);
         });
 
         /* ── Custom cursor (non-touch only) ── */
-        if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+        if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches)
+          return;
 
-        var dot  = document.getElementById('cursor-dot');
-        var ring = document.getElementById('cursor-ring');
+        var dot = document.getElementById("cursor-dot");
+        var ring = document.getElementById("cursor-ring");
         if (!dot || !ring) return;
 
-        var mx = -200, my = -200, rx = -200, ry = -200;
+        var mx = -200,
+          my = -200,
+          rx = -200,
+          ry = -200;
 
-        document.addEventListener('mousemove', function (e) {
+        document.addEventListener("mousemove", function (e) {
           mx = e.clientX;
           my = e.clientY;
-          dot.style.left = mx + 'px';
-          dot.style.top  = my + 'px';
+          dot.style.left = mx + "px";
+          dot.style.top = my + "px";
         });
 
-        document.addEventListener('mousedown', function () { document.body.classList.add('cur-click'); });
-        document.addEventListener('mouseup',   function () { document.body.classList.remove('cur-click'); });
-
-        document.querySelectorAll('a, button, summary, .skill-tag, .project-card').forEach(function (el) {
-          el.addEventListener('mouseenter', function () { document.body.classList.add('cur-hover'); });
-          el.addEventListener('mouseleave', function () { document.body.classList.remove('cur-hover'); });
+        document.addEventListener("mousedown", function () {
+          document.body.classList.add("cur-click");
+        });
+        document.addEventListener("mouseup", function () {
+          document.body.classList.remove("cur-click");
         });
 
-        function lerp(a, b, t) { return a + (b - a) * t; }
+        document
+          .querySelectorAll("a, button, summary, .skill-tag, .project-card")
+          .forEach(function (el) {
+            el.addEventListener("mouseenter", function () {
+              document.body.classList.add("cur-hover");
+            });
+            el.addEventListener("mouseleave", function () {
+              document.body.classList.remove("cur-hover");
+            });
+          });
+
+        function lerp(a, b, t) {
+          return a + (b - a) * t;
+        }
 
         (function raf() {
           rx = lerp(rx, mx, 0.1);
           ry = lerp(ry, my, 0.1);
-          ring.style.left = rx + 'px';
-          ring.style.top  = ry + 'px';
+          ring.style.left = rx + "px";
+          ring.style.top = ry + "px";
           requestAnimationFrame(raf);
         })();
 
         /* ── Magnetic buttons ── */
-        document.querySelectorAll('.btn').forEach(function (btn) {
-          btn.addEventListener('mousemove', function (e) {
-            var r  = btn.getBoundingClientRect();
-            var dx = (e.clientX - (r.left + r.width  / 2)) * 0.3;
-            var dy = (e.clientY - (r.top  + r.height / 2)) * 0.3;
-            btn.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
+        document.querySelectorAll(".btn").forEach(function (btn) {
+          btn.addEventListener("mousemove", function (e) {
+            var r = btn.getBoundingClientRect();
+            var dx = (e.clientX - (r.left + r.width / 2)) * 0.3;
+            var dy = (e.clientY - (r.top + r.height / 2)) * 0.3;
+            btn.style.transform = "translate(" + dx + "px, " + dy + "px)";
           });
-          btn.addEventListener('mouseleave', function () {
-            btn.style.transform = '';
+          btn.addEventListener("mouseleave", function () {
+            btn.style.transform = "";
           });
         });
 
         /* ── Nav scroll-spy ── */
         var navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
-        var spy = new IntersectionObserver(function (entries) {
-          entries.forEach(function (entry) {
-            if (!entry.isIntersecting) return;
-            var id = entry.target.id;
-            navLinks.forEach(function (a) {
-              a.classList.toggle('nav-active', a.getAttribute('href') === '#' + id);
+        var spy = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (!entry.isIntersecting) return;
+              var id = entry.target.id;
+              navLinks.forEach(function (a) {
+                a.classList.toggle(
+                  "nav-active",
+                  a.getAttribute("href") === "#" + id,
+                );
+              });
             });
-          });
-        }, { rootMargin: '-30% 0px -60% 0px' });
+          },
+          { rootMargin: "-30% 0px -60% 0px" },
+        );
 
-        document.querySelectorAll('section[id]').forEach(function (s) { spy.observe(s); });
+        document.querySelectorAll("section[id]").forEach(function (s) {
+          spy.observe(s);
+        });
       })();
     </script>
   </body>
