@@ -6,6 +6,8 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+    <link rel="shortcut icon" href="../favicon.svg" />
     <title>Finanzas Frank</title>
     <meta name="robots" content="noindex, nofollow" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -1151,6 +1153,17 @@
                     class="block w-full rounded-xl border border-slate-200 bg-white p-3 text-sm focus:outline-none"
                   ></select>
                 </div>
+                <div id="campo-crear-deuda" class="hidden">
+                  <label
+                    class="flex items-start gap-2 cursor-pointer select-none"
+                  >
+                    <input type="checkbox" id="tx-crear-deuda" class="mt-0.5" />
+                    <span class="text-xs text-slate-400"
+                      >Me prestan a mi: crear deuda automaticamente en la lista
+                      de deudas</span
+                    >
+                  </label>
+                </div>
                 <div>
                   <label
                     class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide"
@@ -1410,6 +1423,8 @@
           "Quincena El Gaviero",
           "Bono / Extras Lancha",
           "Producido Carro",
+          "Profit de Negocios",
+          "Prestamos Personales",
           "Criptos / Inversión",
           "Otros Ingresos",
         ],
@@ -1420,15 +1435,21 @@
           "Mercado y Comida",
           "Suscripciones",
           "Gimnasio",
+          "Transporte",
           "Gasolina",
+          "Gastos del Carro",
           "Salidas / Entretenimiento",
           "Compras / Ropa",
           "Pasajes y Viajes",
           "Hogar / Casa",
+          "Gastos en Empresa",
           "Publicidad / Meta Ads",
           "Familia / Pareja",
           "Imprevistos",
           "Otros Gastos",
+          "Cuota de Vehiculo",
+          "Prestamos Personales",
+          "Pago de Deudas",
           "Pago Tarjetas",
           "Cuota Crédito CFG",
           "Cuota Bayport",
@@ -1443,9 +1464,10 @@
         "Servicios / Luz": 80000,
         "WiFi y Plan Móvil": 119000,
         "Mercado y Comida": 500000,
-        Suscripciones: 100000,
+        Suscripciones: 120000,
         Gimnasio: 100000,
-        Gasolina: 150000,
+        Transporte: 300000,
+        Gasolina: 300000,
         "Salidas / Entretenimiento": 300000,
         "Pasajes y Viajes": 200000,
         "Compras / Ropa": 200000,
@@ -1832,7 +1854,20 @@
             sel.appendChild(o);
           });
         }
+        syncPrestamoDeudaOption();
         lucide.createIcons();
+      }
+
+      function syncPrestamoDeudaOption() {
+        const tipo = document.getElementById("tx-tipo").value;
+        const categoriaEl = document.getElementById("tx-categoria");
+        const categoria = categoriaEl ? categoriaEl.value : "";
+        const mostrar =
+          tipo === "ingreso" && categoria === "Prestamos Personales";
+        const wrap = document.getElementById("campo-crear-deuda");
+        const check = document.getElementById("tx-crear-deuda");
+        wrap.classList.toggle("hidden", !mostrar);
+        if (!mostrar) check.checked = false;
       }
 
       // ── Monto ─────────────────────────────────────────────
@@ -2655,6 +2690,21 @@
             editandoId = null;
           } else {
             await db.collection("transacciones_frank").add(tx);
+            const crearDeudaPrestamo =
+              tipo === "ingreso" &&
+              cat === "Prestamos Personales" &&
+              document.getElementById("tx-crear-deuda").checked;
+            if (crearDeudaPrestamo) {
+              await db.collection("deudas_frank").add({
+                nombre:
+                  tx.descripcion ||
+                  "Prestamo personal " + (tx.fecha || todayStr),
+                montoInicial: monto,
+                saldo: monto,
+                tipo: "corto",
+                creadoEn: new Date().toISOString(),
+              });
+            }
           }
           btn.disabled = false;
           btn.innerHTML =
@@ -2662,6 +2712,7 @@
           document
             .getElementById("btn-cancelar-edicion")
             .classList.add("hidden");
+          document.getElementById("tx-crear-deuda").checked = false;
           e.target.reset();
           document.getElementById("tx-fecha").value = todayStr;
           document.getElementById("tx-hora").value = new Date()
@@ -2759,6 +2810,9 @@
       document
         .getElementById("filter-semana")
         .addEventListener("change", renderMovimientos);
+      document
+        .getElementById("tx-categoria")
+        .addEventListener("change", syncPrestamoDeudaOption);
 
       // Cerrar modales al click fuera
       document.getElementById("modal-deuda").addEventListener("click", (e) => {
