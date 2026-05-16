@@ -1514,50 +1514,50 @@
         {
           nombre: "Crédito BBVA",
           montoInicial: 5000000,
-          montoNegociado: 2000000,
-          saldo: 2000000,
+          montoNegociado: 5000000,
+          saldo: 5000000,
           tipo: "largo",
         },
         {
           nombre: "Crédito Bayport",
           montoInicial: 3000000,
-          montoNegociado: 1200000,
-          saldo: 1200000,
+          montoNegociado: 3000000,
+          saldo: 3000000,
           tipo: "largo",
         },
         {
           nombre: "Crédito Comfenalco",
           montoInicial: 2000000,
-          montoNegociado: 800000,
-          saldo: 800000,
+          montoNegociado: 2000000,
+          saldo: 2000000,
           tipo: "largo",
         },
         {
           nombre: "Tarjeta BBVA",
           montoInicial: 4000000,
-          montoNegociado: 1600000,
-          saldo: 1600000,
+          montoNegociado: 4000000,
+          saldo: 4000000,
           tipo: "largo",
         },
         {
           nombre: "Rappi Card",
           montoInicial: 5400000,
-          montoNegociado: 2700000,
-          saldo: 2700000,
+          montoNegociado: 5400000,
+          saldo: 5400000,
           tipo: "largo",
         },
         {
           nombre: "NAF NAF Davivienda",
           montoInicial: 1800000,
-          montoNegociado: 720000,
-          saldo: 720000,
+          montoNegociado: 1800000,
+          saldo: 1800000,
           tipo: "largo",
         },
         {
           nombre: "Lifemiles Colpatria",
           montoInicial: 4000000,
-          montoNegociado: 1600000,
-          saldo: 1600000,
+          montoNegociado: 4000000,
+          saldo: 4000000,
           tipo: "largo",
         },
         {
@@ -1818,6 +1818,27 @@
                     d.saldo = seed.saldo;
                     needsPatch = true;
                   });
+
+                  // Solo CFG queda negociada; el resto se deja con valor original.
+                  deudas.forEach((d) => {
+                    const nombre = (d.nombre || "").toLowerCase();
+                    const esCfg = nombre.includes("cfg");
+                    if (esCfg) return;
+                    const montoInicial = d.montoInicial || 0;
+                    const montoNegociado = d.montoNegociado;
+                    if (!montoInicial || montoNegociado === montoInicial) return;
+
+                    const patch = { montoNegociado: montoInicial };
+                    // Si el saldo actual coincide con el valor negociado anterior,
+                    // asumimos que no ha habido abonos reales y lo regresamos al original.
+                    if (d.saldo === montoNegociado) {
+                      patch.saldo = montoInicial;
+                    }
+                    batch.update(db.collection("deudas_frank").doc(d.id), patch);
+                    d.montoNegociado = montoInicial;
+                    if (patch.saldo !== undefined) d.saldo = patch.saldo;
+                    needsPatch = true;
+                  });
                   // Añadir deudas de la semilla que no existan en Firestore
                   DEUDAS_SEMILLA.forEach((seed) => {
                     if (!deudas.some((d) => d.nombre === seed.nombre)) {
@@ -1830,7 +1851,7 @@
                     }
                   });
                   if (needsPatch) batch.commit();
-                  if (currentTab === "deudas") renderDeudas();
+                      Total Negociado
                   renderNetWorth();
                 }
               },
@@ -2217,12 +2238,13 @@
       // ── Deudas ────────────────────────────────────────────
       function renderDeudas() {
         const totalDeuda = deudas.reduce((s, d) => s + (d.saldo || 0), 0);
-        const totalPagado = deudas.reduce(
-          (s, d) => s + ((d.montoInicial || 0) - (d.saldo || 0)),
+        const totalNegociado = deudas.reduce(
+          (s, d) => s + (d.montoNegociado || d.montoInicial || d.saldo || 0),
           0,
         );
         document.getElementById("deudas-total").textContent = fmt(totalDeuda);
-        document.getElementById("deudas-pagado").textContent = fmt(totalPagado);
+        document.getElementById("deudas-pagado").textContent =
+          fmt(totalNegociado);
 
         const corto = deudas.filter((d) => d.tipo === "corto" && d.saldo > 0);
         const largo = deudas.filter((d) => d.tipo === "largo" && d.saldo > 0);
