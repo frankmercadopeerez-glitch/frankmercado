@@ -1134,12 +1134,15 @@
                     <option value="Nequi">Nequi</option>
                     <option value="Efectivo">Efectivo</option>
                     <option value="Bolsillo Arriendo">Bolsillo Arriendo</option>
-                    <option value="Bolsillo Colchón $">
-                      Bolsillo Colchón $
+                    <option value="Fondo de Emergencia">
+                      Fondo de Emergencia
                     </option>
-                    <option value="Bolsillo Viaje">Bolsillo Viaje Anual</option>
+                    <option value="Bolsillo Viajes">Bolsillo Viajes</option>
                     <option value="Bolsillo Cuota Carro">
-                      Bolsillo Cuota Carro (Nu Bank)
+                      Bolsillo Cuota Carro
+                    </option>
+                    <option value="Bolsillo Mantenimiento Carro">
+                      Bolsillo Mantenimiento Carro
                     </option>
                   </select>
                 </div>
@@ -1394,9 +1397,10 @@
       ];
       const BOLSILLOS = [
         "Bolsillo Arriendo",
-        "Bolsillo Colchón $",
-        "Bolsillo Viaje",
+        "Fondo de Emergencia",
+        "Bolsillo Viajes",
         "Bolsillo Cuota Carro",
+        "Bolsillo Mantenimiento Carro",
       ];
       const CUENTA_COLORS = {
         Bancolombia: "#f97316",
@@ -1405,10 +1409,33 @@
         Nequi: "#ec4899",
         Efectivo: "#22c55e",
         "Bolsillo Arriendo": "#f59e0b",
-        "Bolsillo Colchón $": "#06b6d4",
-        "Bolsillo Viaje": "#10b981",
+        "Fondo de Emergencia": "#06b6d4",
+        "Bolsillo Viajes": "#10b981",
         "Bolsillo Cuota Carro": "#14b8a6",
+        "Bolsillo Mantenimiento Carro": "#f43f5e",
       };
+
+      const BOLSILLO_META = {
+        "Fondo de Emergencia": { tope: 5000000 },
+        "Bolsillo Cuota Carro": {
+          metaMensual: 1300000,
+          hint: "Sugerido: 650k por quincena",
+        },
+        "Bolsillo Mantenimiento Carro": {
+          metaMensual: 300000,
+          hint: "Meta mensual acumulable",
+        },
+      };
+
+      function normalizarCuentaNombre(nombre) {
+        const map = {
+          "Bolsillo Colchón $": "Fondo de Emergencia",
+          "Bolsillo Viaje": "Bolsillo Viajes",
+          "Bolsillo Viaje Anual": "Bolsillo Viajes",
+          "Bolsillo Cuota Carro (Nu Bank)": "Bolsillo Cuota Carro",
+        };
+        return map[nombre] || nombre;
+      }
 
       // Saldos iniciales (capital real al momento de empezar a registrar — 13 may 2026)
       const SALDOS_INICIALES = {
@@ -1892,14 +1919,16 @@
           (c) => (saldos[c] = SALDOS_INICIALES[c] || 0),
         );
         transactions.forEach((t) => {
+          const cuenta = normalizarCuentaNombre(t.cuenta);
+          const destino = normalizarCuentaNombre(t.destino);
           if (t.tipo === "ingreso") {
-            saldos[t.cuenta] = (saldos[t.cuenta] || 0) + t.monto;
+            saldos[cuenta] = (saldos[cuenta] || 0) + t.monto;
           } else if (t.tipo === "gasto") {
-            saldos[t.cuenta] = (saldos[t.cuenta] || 0) - t.monto;
+            saldos[cuenta] = (saldos[cuenta] || 0) - t.monto;
           } else if (t.tipo === "transferencia") {
-            saldos[t.cuenta] = (saldos[t.cuenta] || 0) - t.monto;
-            if (t.destino)
-              saldos[t.destino] = (saldos[t.destino] || 0) + t.monto;
+            saldos[cuenta] = (saldos[cuenta] || 0) - t.monto;
+            if (destino)
+              saldos[destino] = (saldos[destino] || 0) + t.monto;
           }
         });
         return saldos;
@@ -1914,13 +1943,15 @@
           const s = saldos[c] || 0;
           const color = CUENTA_COLORS[c] || "#64748b";
           const isBolsillo = BOLSILLOS.includes(c);
+          const meta = BOLSILLO_META[c];
+          const pctTope = meta?.tope ? Math.min((s / meta.tope) * 100, 100) : 0;
           const div = document.createElement("div");
           div.className =
             "rounded-xl p-3 " +
             (isBolsillo
               ? "border border-dashed border-slate-200 bg-slate-50"
               : "border border-slate-100 bg-white shadow-sm");
-          div.innerHTML = `<div class="flex items-center gap-1.5 mb-1"><div class="w-2 h-2 rounded-full flex-shrink-0" style="background:${color}"></div><p class="text-xs text-slate-500 truncate">${c}</p>${isBolsillo ? '<span class="text-[9px] text-slate-300 ml-auto">bolsillo</span>' : ""}</div><p class="text-sm font-bold ${s >= 0 ? "text-slate-800" : "text-red-600"}">${fmt(s)}</p>`;
+          div.innerHTML = `<div class="flex items-center gap-1.5 mb-1"><div class="w-2 h-2 rounded-full flex-shrink-0" style="background:${color}"></div><p class="text-xs text-slate-500 truncate">${c}</p>${isBolsillo ? '<span class="text-[9px] text-slate-300 ml-auto">bolsillo</span>' : ""}</div><p class="text-sm font-bold ${s >= 0 ? "text-slate-800" : "text-red-600"}">${fmt(s)}</p>${meta?.tope ? `<p class="text-[10px] text-slate-400 mt-1">Tope: ${fmt(meta.tope)}</p><div class="h-1.5 rounded-full bg-slate-200 mt-1"><div class="h-1.5 rounded-full" style="width:${pctTope}%;background:${s > meta.tope ? "#ef4444" : color}"></div></div>` : ""}${meta?.metaMensual ? `<p class="text-[10px] text-slate-400 mt-1">Meta mensual: ${fmt(meta.metaMensual)}</p><p class="text-[10px] text-slate-400">${meta.hint || ""}</p>` : ""}`;
           grid.appendChild(div);
         });
       }
@@ -2093,7 +2124,9 @@
           displayed = displayed.filter((t) => t.tipo === filterTipo);
         if (filterCuenta)
           displayed = displayed.filter(
-            (t) => t.cuenta === filterCuenta || t.destino === filterCuenta,
+            (t) =>
+              normalizarCuentaNombre(t.cuenta) === filterCuenta ||
+              normalizarCuentaNombre(t.destino) === filterCuenta,
           );
         if (!todosMeses && filterSemana)
           displayed = displayed.filter(
@@ -2113,6 +2146,8 @@
             '<p class="text-center py-8 text-slate-400 text-sm">No hay movimientos con estos filtros.</p>';
         }
         sorted.forEach((tx) => {
+          const cuentaNombre = normalizarCuentaNombre(tx.cuenta);
+          const destinoNombre = normalizarCuentaNombre(tx.destino);
           const isIn = tx.tipo === "ingreso";
           const isTransf = tx.tipo === "transferencia";
           const color = isTransf
@@ -2126,11 +2161,12 @@
               ? "text-green-600"
               : "text-red-600";
           const sign = isTransf ? "⇄" : isIn ? "+" : "-";
-          const cuentaColor = CUENTA_COLORS[tx.cuenta] || "#94a3b8";
-          const destinoColor = CUENTA_COLORS[tx.destino] || "#94a3b8";
-          const cuentaBadges = isTransf && tx.destino
-            ? `<span class="cuenta-chip" style="background:${cuentaColor}20;color:${cuentaColor}">${tx.cuenta}</span><span class="text-xs text-slate-400 font-semibold">→</span><span class="cuenta-chip" style="background:${destinoColor}20;color:${destinoColor}">${tx.destino}</span>`
-            : `<span class="cuenta-chip" style="background:${cuentaColor}20;color:${cuentaColor}">${tx.cuenta}</span>`;
+          const cuentaColor = CUENTA_COLORS[cuentaNombre] || "#94a3b8";
+          const destinoColor = CUENTA_COLORS[destinoNombre] || "#94a3b8";
+          const cuentaBadges =
+            isTransf && tx.destino
+              ? `<span class="cuenta-chip" style="background:${cuentaColor}20;color:${cuentaColor}">${cuentaNombre}</span><span class="text-xs text-slate-400 font-semibold">→</span><span class="cuenta-chip" style="background:${destinoColor}20;color:${destinoColor}">${destinoNombre}</span>`
+              : `<span class="cuenta-chip" style="background:${cuentaColor}20;color:${cuentaColor}">${cuentaNombre}</span>`;
           const div = document.createElement("div");
           div.className = "rounded-xl border p-3 " + color;
           div.innerHTML = `<div class="flex justify-between items-start gap-2"><div class="flex-1 min-w-0"><div class="flex items-center gap-2 flex-wrap mb-0.5"><span class="text-xs text-slate-400">${fmtDate(tx.fecha)}${tx.hora ? " · " + tx.hora : ""}</span>${cuentaBadges}</div><p class="text-sm font-medium text-slate-800 truncate">${tx.descripcion || tx.categoria}</p><span class="text-xs px-1.5 py-0.5 rounded-full font-medium ${isIn ? "bg-green-100 text-green-800" : isTransf ? "bg-blue-100 text-blue-800" : "bg-red-100 text-red-800"} mt-1 inline-block">${tx.categoria}</span></div><div class="flex flex-col items-end gap-2 flex-shrink-0"><span class="text-base font-bold whitespace-nowrap ${amountColor}">${sign}${fmt(tx.monto)}</span><div class="flex gap-2"><button onclick="editTransaction('${tx.id}')" class="text-slate-300 hover:text-blue-500 transition"><i data-lucide="pencil" class="w-4 h-4"></i></button><button onclick="deleteTransaction('${tx.id}')" class="text-slate-300 hover:text-red-500 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div></div>`;
@@ -2144,6 +2180,8 @@
             '<tr><td colspan="6" class="text-center py-10 text-slate-400">No hay movimientos.</td></tr>';
         }
         sorted.forEach((tx) => {
+          const cuentaNombre = normalizarCuentaNombre(tx.cuenta);
+          const destinoNombre = normalizarCuentaNombre(tx.destino);
           const isIn = tx.tipo === "ingreso";
           const isTransf = tx.tipo === "transferencia";
           const amountColor = isTransf
@@ -2152,11 +2190,12 @@
               ? "text-green-600"
               : "text-red-600";
           const sign = isTransf ? "⇄" : isIn ? "+" : "-";
-          const cuentaColor = CUENTA_COLORS[tx.cuenta] || "#94a3b8";
-          const destinoColor = CUENTA_COLORS[tx.destino] || "#94a3b8";
-          const cuentaBadges = isTransf && tx.destino
-            ? `<span class="cuenta-chip" style="background:${cuentaColor}20;color:${cuentaColor}">${tx.cuenta}</span><span class="text-xs text-slate-400 font-semibold">→</span><span class="cuenta-chip" style="background:${destinoColor}20;color:${destinoColor}">${tx.destino}</span>`
-            : `<span class="cuenta-chip" style="background:${cuentaColor}20;color:${cuentaColor}">${tx.cuenta}</span>`;
+          const cuentaColor = CUENTA_COLORS[cuentaNombre] || "#94a3b8";
+          const destinoColor = CUENTA_COLORS[destinoNombre] || "#94a3b8";
+          const cuentaBadges =
+            isTransf && tx.destino
+              ? `<span class="cuenta-chip" style="background:${cuentaColor}20;color:${cuentaColor}">${cuentaNombre}</span><span class="text-xs text-slate-400 font-semibold">→</span><span class="cuenta-chip" style="background:${destinoColor}20;color:${destinoColor}">${destinoNombre}</span>`
+              : `<span class="cuenta-chip" style="background:${cuentaColor}20;color:${cuentaColor}">${cuentaNombre}</span>`;
           const tr = document.createElement("tr");
           tr.className = "hover:bg-slate-50 transition";
           tr.innerHTML = `<td class="px-3 py-3 whitespace-nowrap text-xs text-slate-500">${fmtDate(tx.fecha)}<br><span class="text-slate-400">${tx.hora || ""}</span></td><td class="px-3 py-3 text-sm text-slate-500 max-w-xs truncate">${tx.descripcion || "--"}</td><td class="px-3 py-3 whitespace-nowrap"><span class="px-2 py-0.5 text-xs font-semibold rounded-full ${isIn ? "bg-green-100 text-green-800" : isTransf ? "bg-blue-100 text-blue-800" : "bg-red-100 text-red-800"}">${tx.categoria}</span></td><td class="px-3 py-3 whitespace-nowrap"><div class="flex items-center gap-1.5 flex-wrap">${cuentaBadges}</div></td><td class="px-3 py-3 whitespace-nowrap text-sm text-right font-bold ${amountColor}">${sign}${fmt(tx.monto)}</td><td class="px-3 py-3 text-center"><div class="flex items-center justify-center gap-1"><button onclick="editTransaction('${tx.id}')" class="text-slate-300 hover:text-blue-500 p-1 transition"><i data-lucide="pencil" class="w-4 h-4"></i></button><button onclick="deleteTransaction('${tx.id}')" class="text-slate-300 hover:text-red-500 p-1 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></td>`;
@@ -2617,9 +2656,12 @@
         document.getElementById("tx-fecha").value = tx.fecha || todayStr;
         document.getElementById("tx-hora").value = tx.hora || "";
         setTipo(tx.tipo || "ingreso");
-        document.getElementById("tx-cuenta").value = tx.cuenta || "Efectivo";
+        document.getElementById("tx-cuenta").value =
+          normalizarCuentaNombre(tx.cuenta) || "Efectivo";
         if (tx.destino)
-          document.getElementById("tx-destino").value = tx.destino;
+          document.getElementById("tx-destino").value = normalizarCuentaNombre(
+            tx.destino,
+          );
         const sel = document.getElementById("tx-categoria");
         if (sel) sel.value = tx.categoria || "";
         document.getElementById("tx-descripcion").value = tx.descripcion || "";
