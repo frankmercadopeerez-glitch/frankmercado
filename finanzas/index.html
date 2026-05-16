@@ -1142,6 +1142,9 @@
                     <option value="Bolsillo Mantenimiento Carro">
                       Bolsillo Mantenimiento Carro
                     </option>
+                    <option value="Bolsillo Compra de Carro">
+                      Bolsillo Compra de Carro
+                    </option>
                   </select>
                 </div>
                 <div id="campo-categoria">
@@ -1399,6 +1402,7 @@
         "Bolsillo Viajes",
         "Bolsillo Cuota Carro",
         "Bolsillo Mantenimiento Carro",
+        "Bolsillo Compra de Carro",
       ];
       const CUENTA_COLORS = {
         Bancolombia: "#f97316",
@@ -1411,6 +1415,7 @@
         "Bolsillo Viajes": "#10b981",
         "Bolsillo Cuota Carro": "#14b8a6",
         "Bolsillo Mantenimiento Carro": "#f43f5e",
+        "Bolsillo Compra de Carro": "#a855f7",
       };
 
       const BOLSILLO_META = {
@@ -1826,7 +1831,8 @@
                     if (esCfg) return;
                     const montoInicial = d.montoInicial || 0;
                     const montoNegociado = d.montoNegociado;
-                    if (!montoInicial || montoNegociado === montoInicial) return;
+                    if (!montoInicial || montoNegociado === montoInicial)
+                      return;
 
                     const patch = { montoNegociado: montoInicial };
                     // Si el saldo actual coincide con el valor negociado anterior,
@@ -1834,7 +1840,10 @@
                     if (d.saldo === montoNegociado) {
                       patch.saldo = montoInicial;
                     }
-                    batch.update(db.collection("deudas_frank").doc(d.id), patch);
+                    batch.update(
+                      db.collection("deudas_frank").doc(d.id),
+                      patch,
+                    );
                     d.montoNegociado = montoInicial;
                     if (patch.saldo !== undefined) d.saldo = patch.saldo;
                     needsPatch = true;
