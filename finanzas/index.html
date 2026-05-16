@@ -466,6 +466,14 @@
               <span class="hidden sm:inline">Conectando...</span>
             </span>
             <button
+              onclick="exportarTodoCSV()"
+              class="text-xs text-slate-400 hover:text-white flex items-center gap-1 transition"
+              title="Exportar todo en CSV"
+            >
+              <i data-lucide="file-down" class="w-4 h-4"></i>
+              <span class="hidden sm:inline">Exportar Todo</span>
+            </button>
+            <button
               onclick="logout()"
               class="text-xs text-slate-400 hover:text-white flex items-center gap-1 transition"
             >
@@ -2837,6 +2845,129 @@
         document.getElementById("filter-semana").value = "";
         renderMovimientos();
       }
+
+      function csvEscape(value) {
+        const str = String(value ?? "");
+        if (/[,"\n]/.test(str)) return '"' + str.replace(/"/g, '""') + '"';
+        return str;
+      }
+
+      function rowsToCSV(rows) {
+        return rows.map((r) => r.map(csvEscape).join(",")).join("\n");
+      }
+
+      function descargarCSV(nombreArchivo, rows) {
+        const csv = rowsToCSV(rows);
+        const blob = new Blob(["\ufeff" + csv], {
+          type: "text/csv;charset=utf-8;",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = nombreArchivo;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      function exportarTodoCSV() {
+        const saldos = calcularSaldoCuentas();
+        const totalCuentas = [...CUENTAS, ...BOLSILLOS].reduce(
+          (s, c) => s + (saldos[c] || 0),
+          0,
+        );
+        const totalDeudas = deudas
+          .filter((d) => (d.saldo || 0) > 0)
+          .reduce((s, d) => s + (d.saldo || 0), 0);
+        const netWorth = totalCuentas - totalDeudas;
+
+        const mes = txDelMes(transactions);
+        const ingresosMes = mes
+          .filter((t) => t.tipo === "ingreso")
+          .reduce((s, t) => s + t.monto, 0);
+        const gastosMes = mes
+          .filter((t) => t.tipo === "gasto")
+          .reduce((s, t) => s + t.monto, 0);
+        const flujoMes = ingresosMes - gastosMes;
+
+        const rows = [];
+
+        rows.push(["SECCION", "RESUMEN GENERAL"]);
+        rows.push(["Fecha Exportacion", todayStr]);
+        rows.push(["Mes Seleccionado", MESES[mesSel.m] + " " + mesSel.y]);
+        rows.push(["Saldo En Cuentas", totalCuentas]);
+        rows.push(["Total Deudas Activas", totalDeudas]);
+        rows.push(["Net Worth", netWorth]);
+        rows.push(["Ingresos Mes", ingresosMes]);
+        rows.push(["Gastos Mes", gastosMes]);
+        rows.push(["Flujo Mes", flujoMes]);
+        rows.push([]);
+
+        rows.push(["SECCION", "SALDOS POR CUENTA"]);
+        rows.push(["Cuenta", "Saldo"]);
+        [...CUENTAS, ...BOLSILLOS].forEach((cuenta) => {
+          rows.push([cuenta, saldos[cuenta] || 0]);
+        });
+        rows.push([]);
+
+        rows.push(["SECCION", "DEUDAS"]);
+        rows.push([
+          "Nombre",
+          "Tipo",
+          "Monto Inicial",
+          "Monto Negociado",
+          "Saldo",
+          "Estado",
+        ]);
+        [...deudas]
+          .sort((a, b) => (b.saldo || 0) - (a.saldo || 0))
+          .forEach((d) => {
+            rows.push([
+              d.nombre || "",
+              d.tipo || "",
+              d.montoInicial || 0,
+              d.montoNegociado || d.montoInicial || 0,
+              d.saldo || 0,
+              (d.saldo || 0) > 0 ? "Activa" : "Pagada",
+            ]);
+          });
+        rows.push([]);
+
+        rows.push(["SECCION", "MOVIMIENTOS (TODOS)"]);
+        rows.push([
+          "Fecha",
+          "Hora",
+          "Tipo",
+          "Cuenta",
+          "Destino",
+          "Categoria",
+          "Descripcion",
+          "Monto",
+        ]);
+        [...transactions]
+          .sort((a, b) =>
+            ((b.fecha || "") + (b.hora || "")).localeCompare(
+              (a.fecha || "") + (a.hora || ""),
+            ),
+          )
+          .forEach((t) => {
+            rows.push([
+              t.fecha || "",
+              t.hora || "",
+              t.tipo || "",
+              t.cuenta || "",
+              t.destino || "",
+              t.categoria || "",
+              t.descripcion || "",
+              t.monto || 0,
+            ]);
+          });
+
+        descargarCSV("FinanzasFrank-Completo-" + todayStr + ".csv", rows);
+        showToast("CSV completo exportado ✓", "success");
+      }
+
       function exportarCSV() {
         const todosMeses =
           document.getElementById("toggle-todos-meses").checked;
@@ -2875,19 +3006,10 @@
           (t.descripcion || "").replace(/,/g, ";"),
           t.monto || 0,
         ]);
-        const csv = [headers, ...rows].map((r) => r.join(",")).join("\n");
-        const blob = new Blob(["\ufeff" + csv], {
-          type: "text/csv;charset=utf-8;",
-        });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download =
-          "FinanzasFrank-" + MESES[mesSel.m] + "-" + mesSel.y + ".csv";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        descargarCSV(
+          "FinanzasFrank-" + MESES[mesSel.m] + "-" + mesSel.y + ".csv",
+          [headers, ...rows],
+        );
         showToast("CSV exportado ✓");
       }
 
