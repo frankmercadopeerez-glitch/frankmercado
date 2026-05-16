@@ -494,11 +494,11 @@
             <span
               class="text-xs font-bold uppercase tracking-widest"
               style="color: #b8904d"
-              >Patrimonio Neto (Net Worth)</span
+              >Resumen Financiero</span
             >
             <span class="text-xs text-slate-500 ml-auto">Tiempo real</span>
           </div>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="grid grid-cols-2 gap-3">
             <div>
               <p
                 class="text-xs font-semibold uppercase tracking-wide mb-1"
@@ -510,42 +510,6 @@
                 class="font-bold text-green-400 leading-tight"
                 style="font-size: clamp(0.85rem, 3.5vw, 1.4rem)"
                 id="nw-cuentas"
-              >
-                $0
-              </p>
-            </div>
-            <div>
-              <p
-                class="text-xs font-semibold uppercase tracking-wide mb-1"
-                style="color: rgba(255, 255, 255, 0.4)"
-              >
-                Deudas Activas
-              </p>
-              <p
-                class="font-bold text-red-400 leading-tight"
-                style="font-size: clamp(0.85rem, 3.5vw, 1.4rem)"
-                id="nw-deudas"
-              >
-                $0
-              </p>
-              <p
-                class="text-xs mt-0.5"
-                style="color: rgba(255, 255, 255, 0.25)"
-              >
-                negociado
-              </p>
-            </div>
-            <div>
-              <p
-                class="text-xs font-semibold uppercase tracking-wide mb-1"
-                style="color: rgba(255, 255, 255, 0.4)"
-              >
-                Net Worth
-              </p>
-              <p
-                class="font-bold leading-tight"
-                id="nw-total"
-                style="font-size: clamp(0.85rem, 3.5vw, 1.4rem); color: #b8904d"
               >
                 $0
               </p>
@@ -906,6 +870,40 @@
 
           <!-- TAB ESTADÍSTICAS -->
           <div id="panel-estadisticas" class="p-4 sm:p-6 hidden">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+              <div
+                class="rounded-xl p-3"
+                style="
+                  background: linear-gradient(135deg, #7f1d1d, #991b1b);
+                  border: 1px solid rgba(239, 68, 68, 0.3);
+                "
+              >
+                <p
+                  class="text-xs text-red-200 mb-1 uppercase font-semibold tracking-wide"
+                >
+                  Deudas Activas
+                </p>
+                <p class="text-xl font-bold text-white" id="nw-deudas-stats">
+                  $0
+                </p>
+              </div>
+              <div
+                class="rounded-xl p-3"
+                style="
+                  background: linear-gradient(135deg, #0f2d4b, #1a365d);
+                  border: 1px solid rgba(59, 130, 246, 0.3);
+                "
+              >
+                <p
+                  class="text-xs text-blue-200 mb-1 uppercase font-semibold tracking-wide"
+                >
+                  Net Worth
+                </p>
+                <p class="text-xl font-bold text-white" id="nw-total-stats">
+                  $0
+                </p>
+              </div>
+            </div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
               <div class="glass-card p-4">
                 <p
@@ -1934,8 +1932,7 @@
             saldos[cuenta] = (saldos[cuenta] || 0) - t.monto;
           } else if (t.tipo === "transferencia") {
             saldos[cuenta] = (saldos[cuenta] || 0) - t.monto;
-            if (destino)
-              saldos[destino] = (saldos[destino] || 0) + t.monto;
+            if (destino) saldos[destino] = (saldos[destino] || 0) + t.monto;
           }
         });
         return saldos;
@@ -1982,15 +1979,21 @@
           mes
             .filter((t) => t.tipo === "gasto")
             .reduce((s, t) => s + t.monto, 0);
-        document.getElementById("nw-cuentas").textContent = fmt(totalCuentas);
-        document.getElementById("nw-deudas").textContent = fmt(totalDeudas);
-        document.getElementById("nw-total").textContent = fmt(netWorth);
-        document.getElementById("nw-total").style.color =
-          netWorth >= 0 ? "#b8904d" : "#f87171";
-        document.getElementById("nw-flujo").textContent =
-          (flujoMes >= 0 ? "+" : "") + fmt(flujoMes);
-        document.getElementById("nw-flujo").style.color =
-          flujoMes >= 0 ? "#93c5fd" : "#f87171";
+        const nwCuentasEl = document.getElementById("nw-cuentas");
+        const nwFlujoEl = document.getElementById("nw-flujo");
+        const nwDeudasStatsEl = document.getElementById("nw-deudas-stats");
+        const nwTotalStatsEl = document.getElementById("nw-total-stats");
+
+        if (nwCuentasEl) nwCuentasEl.textContent = fmt(totalCuentas);
+        if (nwDeudasStatsEl) nwDeudasStatsEl.textContent = fmt(totalDeudas);
+        if (nwTotalStatsEl) {
+          nwTotalStatsEl.textContent = fmt(netWorth);
+          nwTotalStatsEl.style.color = netWorth >= 0 ? "#86efac" : "#fda4af";
+        }
+        if (nwFlujoEl) {
+          nwFlujoEl.textContent = (flujoMes >= 0 ? "+" : "") + fmt(flujoMes);
+          nwFlujoEl.style.color = flujoMes >= 0 ? "#93c5fd" : "#f87171";
+        }
       }
 
       // ── Render All ────────────────────────────────────────
