@@ -689,19 +689,6 @@
                 ></i>
                 <span id="summary-title">Resumen del mes</span>
               </h2>
-              <button
-                id="btn-reset"
-                type="button"
-                onclick="resetAllTransactions()"
-                class="text-xs font-semibold px-3 py-1.5 rounded-lg"
-                style="
-                  background: rgba(220, 38, 38, 0.12);
-                  color: #f87171;
-                  border: 1px solid rgba(220, 38, 38, 0.3);
-                "
-              >
-                🗑 Borrar todo
-              </button>
             </div>
             <!-- Alertas de presupuesto -->
             <div id="budget-alerts" class="space-y-2 mb-4"></div>
@@ -856,6 +843,21 @@
                   class="bg-white divide-y divide-slate-50"
                 ></tbody>
               </table>
+            </div>
+            <div class="flex justify-end mt-4">
+              <button
+                id="btn-reset"
+                type="button"
+                onclick="resetAllTransactions()"
+                class="text-xs font-semibold px-3 py-1.5 rounded-lg"
+                style="
+                  background: rgba(220, 38, 38, 0.12);
+                  color: #f87171;
+                  border: 1px solid rgba(220, 38, 38, 0.3);
+                "
+              >
+                🗑 Borrar todo
+              </button>
             </div>
           </div>
 
@@ -1486,7 +1488,7 @@
         "Servicios / Luz": 80000,
         "WiFi y Plan Móvil": 119000,
         "Mercado y Comida": 500000,
-        Suscripciones: 120000,
+        Suscripciones: 150000,
         Gimnasio: 100000,
         Transporte: 300000,
         Gasolina: 300000,
