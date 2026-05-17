@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
     <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
     <link rel="shortcut icon" href="../favicon.svg" />
@@ -508,41 +508,20 @@
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <p
-                class="text-xs font-semibold uppercase tracking-wide mb-1"
-                style="color: rgba(255, 255, 255, 0.4)"
-              >
-                Saldo Disponible
-                <span
-                  class="text-[10px] text-slate-400 font-normal"
-                  title="Saldo total en cuentas (incluye bolsillos)"
-                >
-                  (En cuentas: <span id="nw-cuentas-total">$0</span>)
-                </span>
-              </p>
-              <p
-                class="font-bold text-green-400 leading-tight"
-                style="font-size: clamp(0.85rem, 3.5vw, 1.4rem)"
-                id="nw-cuentas"
-              >
-                $0
-              </p>
-            </div>
-            <div>
-              <p
-                class="text-xs font-semibold uppercase tracking-wide mb-1"
-                style="color: rgba(255, 255, 255, 0.4)"
-              >
-                Flujo Mes
-              </p>
-              <p
-                class="font-bold text-blue-300 leading-tight"
-                style="font-size: clamp(0.85rem, 3.5vw, 1.4rem)"
-                id="nw-flujo"
-              >
-                $0
-              </p>
-            </div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div class="flex flex-col items-start">
+                  <span class="text-xs font-semibold uppercase tracking-wide mb-1 text-green-300">Saldo Disponible</span>
+                  <span class="font-bold text-green-400 leading-tight text-xl" id="nw-cuentas">$0</span>
+                </div>
+                <div class="flex flex-col items-start">
+                  <span class="text-xs font-semibold uppercase tracking-wide mb-1 text-yellow-300">Total en Cuentas</span>
+                  <span class="font-bold text-yellow-400 leading-tight text-xl" id="nw-cuentas-total">$0</span>
+                </div>
+                <div class="flex flex-col items-start">
+                  <span class="text-xs font-semibold uppercase tracking-wide mb-1 text-blue-300">Flujo Mes</span>
+                  <span class="font-bold text-blue-300 leading-tight text-xl" id="nw-flujo">$0</span>
+                </div>
+              </div>
           </div>
         </div>
 
@@ -2007,21 +1986,11 @@
       // ── Net Worth ─────────────────────────────────────────
       function renderNetWorth() {
         const saldos = calcularSaldoCuentas();
-        // Total en cuentas (incluye bolsillos)
-        const totalCuentas = [...CUENTAS, ...BOLSILLOS].reduce(
-          (s, c) => s + (saldos[c] || 0),
-          0,
-        );
-        // Saldo disponible: solo cuentas, menos lo asignado a bolsillos
-        const totalSoloCuentas = CUENTAS.reduce(
-          (s, c) => s + (saldos[c] || 0),
-          0,
-        );
-        const totalEnBolsillos = BOLSILLOS.reduce(
-          (s, b) => s + (saldos[b] || 0),
-          0,
-        );
-        const saldoDisponible = totalSoloCuentas - totalEnBolsillos;
+        // Total en cuentas (solo cuentas, sin bolsillos)
+        const totalCuentas = CUENTAS.reduce((s, c) => s + (saldos[c] || 0), 0);
+        // Saldo disponible = total cuentas - suma de todos los bolsillos
+        const totalEnBolsillos = BOLSILLOS.reduce((s, b) => s + (saldos[b] || 0), 0);
+        const saldoDisponible = totalCuentas - totalEnBolsillos;
         const totalDeudas = deudas
           .filter((d) => d.saldo > 0)
           .reduce((s, d) => s + (d.montoNegociado || d.saldo), 0);
