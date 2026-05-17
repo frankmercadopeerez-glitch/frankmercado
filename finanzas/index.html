@@ -513,7 +513,10 @@
                 style="color: rgba(255, 255, 255, 0.4)"
               >
                 Saldo Disponible
-                <span class="text-[10px] text-slate-400 font-normal" title="Saldo total en cuentas (incluye bolsillos)">
+                <span
+                  class="text-[10px] text-slate-400 font-normal"
+                  title="Saldo total en cuentas (incluye bolsillos)"
+                >
                   (En cuentas: <span id="nw-cuentas-total">$0</span>)
                 </span>
               </p>
@@ -2010,8 +2013,14 @@
           0,
         );
         // Saldo disponible: solo cuentas, menos lo asignado a bolsillos
-        const totalSoloCuentas = CUENTAS.reduce((s, c) => s + (saldos[c] || 0), 0);
-        const totalEnBolsillos = BOLSILLOS.reduce((s, b) => s + (saldos[b] || 0), 0);
+        const totalSoloCuentas = CUENTAS.reduce(
+          (s, c) => s + (saldos[c] || 0),
+          0,
+        );
+        const totalEnBolsillos = BOLSILLOS.reduce(
+          (s, b) => s + (saldos[b] || 0),
+          0,
+        );
         const saldoDisponible = totalSoloCuentas - totalEnBolsillos;
         const totalDeudas = deudas
           .filter((d) => d.saldo > 0)
