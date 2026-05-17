@@ -512,7 +512,10 @@
                 class="text-xs font-semibold uppercase tracking-wide mb-1"
                 style="color: rgba(255, 255, 255, 0.4)"
               >
-                En Cuentas
+                Saldo Disponible
+                <span class="text-[10px] text-slate-400 font-normal" title="Saldo total en cuentas (incluye bolsillos)">
+                  (En cuentas: <span id="nw-cuentas-total">$0</span>)
+                </span>
               </p>
               <p
                 class="font-bold text-green-400 leading-tight"
@@ -2001,10 +2004,15 @@
       // ── Net Worth ─────────────────────────────────────────
       function renderNetWorth() {
         const saldos = calcularSaldoCuentas();
+        // Total en cuentas (incluye bolsillos)
         const totalCuentas = [...CUENTAS, ...BOLSILLOS].reduce(
           (s, c) => s + (saldos[c] || 0),
           0,
         );
+        // Saldo disponible: solo cuentas, menos lo asignado a bolsillos
+        const totalSoloCuentas = CUENTAS.reduce((s, c) => s + (saldos[c] || 0), 0);
+        const totalEnBolsillos = BOLSILLOS.reduce((s, b) => s + (saldos[b] || 0), 0);
+        const saldoDisponible = totalSoloCuentas - totalEnBolsillos;
         const totalDeudas = deudas
           .filter((d) => d.saldo > 0)
           .reduce((s, d) => s + (d.montoNegociado || d.saldo), 0);
@@ -2018,11 +2026,13 @@
             .filter((t) => t.tipo === "gasto")
             .reduce((s, t) => s + t.monto, 0);
         const nwCuentasEl = document.getElementById("nw-cuentas");
+        const nwCuentasTotalEl = document.getElementById("nw-cuentas-total");
         const nwFlujoEl = document.getElementById("nw-flujo");
         const nwDeudasStatsEl = document.getElementById("nw-deudas-stats");
         const nwTotalStatsEl = document.getElementById("nw-total-stats");
 
-        if (nwCuentasEl) nwCuentasEl.textContent = fmt(totalCuentas);
+        if (nwCuentasEl) nwCuentasEl.textContent = fmt(saldoDisponible);
+        if (nwCuentasTotalEl) nwCuentasTotalEl.textContent = fmt(totalCuentas);
         if (nwDeudasStatsEl) nwDeudasStatsEl.textContent = fmt(totalDeudas);
         if (nwTotalStatsEl) {
           nwTotalStatsEl.textContent = fmt(netWorth);
