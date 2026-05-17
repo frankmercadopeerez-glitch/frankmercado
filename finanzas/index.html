@@ -508,15 +508,15 @@
           </div>
           <div class="grid grid-cols-1 gap-3">
             <div class="glass-card flex flex-col sm:flex-row justify-between items-stretch gap-4 w-full mb-4 p-4" style="background:rgba(10,18,30,0.95)">
-              <div class="flex-1 flex flex-col items-start justify-center">
+              <div class="flex-1 flex flex-col items-center text-center sm:items-start sm:text-left justify-center">
                 <span class="text-xs font-semibold uppercase tracking-wide mb-1 text-green-300">Saldo Disponible</span>
                 <span class="font-bold text-green-400 leading-tight text-2xl" id="nw-cuentas">$0</span>
               </div>
-              <div class="flex-1 flex flex-col items-start justify-center">
+              <div class="flex-1 flex flex-col items-center text-center sm:items-start sm:text-left justify-center">
                 <span class="text-xs font-semibold uppercase tracking-wide mb-1 text-yellow-300">Total en Cuentas</span>
                 <span class="font-bold text-yellow-400 leading-tight text-2xl" id="nw-cuentas-total">$0</span>
               </div>
-              <div class="flex-1 flex flex-col items-start justify-center">
+              <div class="flex-1 flex flex-col items-center text-center sm:items-start sm:text-left justify-center">
                 <span class="text-xs font-semibold uppercase tracking-wide mb-1 text-blue-300">Flujo Mes</span>
                 <span class="font-bold text-blue-300 leading-tight text-2xl" id="nw-flujo">$0</span>
               </div>
@@ -549,7 +549,7 @@
           </div>
           <div
             id="cuentas-grid"
-            class="grid grid-cols-2 sm:grid-cols-4 gap-2"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2"
           ></div>
         </div>
 
@@ -1975,11 +1975,18 @@
           const pctTope = meta?.tope ? Math.min((s / meta.tope) * 100, 100) : 0;
           const div = document.createElement("div");
           div.className =
-            "rounded-xl p-3 " +
+            "rounded-xl p-3 min-h-[88px] " +
             (isBolsillo
-              ? "border border-dashed border-slate-200 bg-slate-50"
-              : "border border-slate-100 bg-white shadow-sm");
-          div.innerHTML = `<div class="flex items-center gap-1.5 mb-1"><div class="w-2 h-2 rounded-full flex-shrink-0" style="background:${color}"></div><p class="text-xs text-slate-500 truncate">${c}</p>${isBolsillo ? '<span class="text-[9px] text-slate-300 ml-auto">bolsillo</span>' : ""}</div><p class="text-sm font-bold ${s >= 0 ? "text-slate-800" : "text-red-600"}">${fmt(s)}</p>${meta?.tope ? `<p class="text-[10px] text-slate-400 mt-1">Tope: ${fmt(meta.tope)}</p><div class="h-1.5 rounded-full bg-slate-200 mt-1"><div class="h-1.5 rounded-full" style="width:${pctTope}%;background:${s > meta.tope ? "#ef4444" : color}"></div></div>` : ""}${meta?.metaMensual ? `<p class="text-[10px] text-slate-400 mt-1">Meta mensual: ${fmt(meta.metaMensual)}</p><p class="text-[10px] text-slate-400">${meta.hint || ""}</p>` : ""}`;
+              ? "border border-dashed border-cyan-700/60 bg-slate-900/80"
+              : "border border-slate-200 bg-white shadow-sm");
+          const titleClass = isBolsillo
+            ? "text-xs text-slate-200 leading-tight whitespace-normal break-words"
+            : "text-xs text-slate-500 truncate";
+          const montoClass = s >= 0 ? "text-slate-800" : "text-red-600";
+          const bolsilloTag = isBolsillo
+            ? '<span class="text-[9px] text-cyan-200 ml-auto bg-cyan-900/40 border border-cyan-700/50 px-1.5 py-0.5 rounded-full">bolsillo</span>'
+            : "";
+          div.innerHTML = `<div class="flex items-start gap-1.5 mb-1"><div class="w-2 h-2 rounded-full flex-shrink-0 mt-1" style="background:${color}"></div><p class="${titleClass}" title="${c}">${c}</p>${bolsilloTag}</div><p class="text-sm font-bold ${montoClass}">${fmt(s)}</p>${meta?.tope ? `<p class="text-[10px] text-slate-400 mt-1">Tope: ${fmt(meta.tope)}</p><div class="h-1.5 rounded-full bg-slate-700 mt-1"><div class="h-1.5 rounded-full" style="width:${pctTope}%;background:${s > meta.tope ? "#ef4444" : color}"></div></div>` : ""}${meta?.metaMensual ? `<p class="text-[10px] text-slate-400 mt-1">Meta mensual: ${fmt(meta.metaMensual)}</p><p class="text-[10px] text-slate-400">${meta.hint || ""}</p>` : ""}`;
           grid.appendChild(div);
         });
       }
