@@ -507,22 +507,20 @@
             <span class="text-xs text-slate-500 ml-auto">Tiempo real</span>
           </div>
           <div class="grid grid-cols-2 gap-3">
-            <div>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                <div class="flex flex-col items-start">
-                  <span class="text-xs font-semibold uppercase tracking-wide mb-1 text-green-300">Saldo Disponible</span>
-                  <span class="font-bold text-green-400 leading-tight text-xl" id="nw-cuentas">$0</span>
-                </div>
-                <div class="flex flex-col items-start">
-                  <span class="text-xs font-semibold uppercase tracking-wide mb-1 text-yellow-300">Total en Cuentas</span>
-                  <span class="font-bold text-yellow-400 leading-tight text-xl" id="nw-cuentas-total">$0</span>
-                </div>
-                <div class="flex flex-col items-start">
-                  <span class="text-xs font-semibold uppercase tracking-wide mb-1 text-blue-300">Flujo Mes</span>
-                  <span class="font-bold text-blue-300 leading-tight text-xl" id="nw-flujo">$0</span>
-                </div>
+            <div class="glass-card flex flex-col sm:flex-row justify-between items-stretch gap-4 w-full mb-4 p-4" style="background:rgba(10,18,30,0.95)">
+              <div class="flex-1 flex flex-col items-start justify-center">
+                <span class="text-xs font-semibold uppercase tracking-wide mb-1 text-green-300">Saldo Disponible</span>
+                <span class="font-bold text-green-400 leading-tight text-2xl" id="nw-cuentas">$0</span>
               </div>
-          </div>
+              <div class="flex-1 flex flex-col items-start justify-center">
+                <span class="text-xs font-semibold uppercase tracking-wide mb-1 text-yellow-300">Total en Cuentas</span>
+                <span class="font-bold text-yellow-400 leading-tight text-2xl" id="nw-cuentas-total">$0</span>
+              </div>
+              <div class="flex-1 flex flex-col items-start justify-center">
+                <span class="text-xs font-semibold uppercase tracking-wide mb-1 text-blue-300">Flujo Mes</span>
+                <span class="font-bold text-blue-300 leading-tight text-2xl" id="nw-flujo">$0</span>
+              </div>
+            </div>
         </div>
 
         <!-- CUENTAS WIDGET -->
