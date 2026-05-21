@@ -1105,12 +1105,23 @@
                   <select
                     id="tx-cuenta"
                     class="block w-full rounded-xl border border-slate-200 bg-white p-3 text-sm focus:outline-none"
+                    onchange="syncDestinoOptions()"
                   >
-                    <option value="Bancolombia">Bancolombia</option>
-                    <option value="Nu Bank">Nu Bank</option>
-                    <option value="Falabella">Banco Falabella</option>
-                    <option value="Nequi">Nequi</option>
-                    <option value="Efectivo">Efectivo</option>
+                    <optgroup label="Cuentas">
+                      <option value="Bancolombia">Bancolombia</option>
+                      <option value="Nu Bank">Nu Bank</option>
+                      <option value="Falabella">Banco Falabella</option>
+                      <option value="Nequi">Nequi</option>
+                      <option value="Efectivo">Efectivo</option>
+                    </optgroup>
+                    <optgroup label="Bolsillos">
+                      <option value="Bolsillo Arriendo">Bolsillo Arriendo</option>
+                      <option value="Fondo de Emergencia">Fondo de Emergencia</option>
+                      <option value="Bolsillo Viajes">Bolsillo Viajes</option>
+                      <option value="Bolsillo Cuota Carro">Bolsillo Cuota Carro</option>
+                      <option value="Bolsillo Mantenimiento Carro">Bolsillo Mantenimiento Carro</option>
+                      <option value="Bolsillo Compra de Carro">Bolsillo Compra de Carro</option>
+                    </optgroup>
                   </select>
                 </div>
                 <!-- Campo destino (solo para transferencia) -->
@@ -1914,8 +1925,57 @@
             sel.appendChild(o);
           });
         }
+        syncDestinoOptions();
         syncPrestamoDeudaOption();
         lucide.createIcons();
+      }
+
+      function syncDestinoOptions() {
+        const tipo = document.getElementById("tx-tipo").value;
+        const origen = document.getElementById("tx-cuenta").value;
+        const selDest = document.getElementById("tx-destino");
+        if (!selDest) return;
+        const origenEsBolsillo = BOLSILLOS.includes(origen);
+        // Si el origen es un bolsillo, el destino solo muestra cuentas reales
+        // Si el origen es una cuenta, el destino muestra todo
+        const prevVal = selDest.value;
+        selDest.innerHTML = "";
+        if (origenEsBolsillo) {
+          const grp = document.createElement("optgroup");
+          grp.label = "Cuentas";
+          CUENTAS.forEach((c) => {
+            const o = document.createElement("option");
+            o.value = c;
+            o.textContent = c;
+            grp.appendChild(o);
+          });
+          selDest.appendChild(grp);
+        } else {
+          const grpC = document.createElement("optgroup");
+          grpC.label = "Cuentas";
+          CUENTAS.forEach((c) => {
+            const o = document.createElement("option");
+            o.value = c;
+            o.textContent = c;
+            grpC.appendChild(o);
+          });
+          selDest.appendChild(grpC);
+          const grpB = document.createElement("optgroup");
+          grpB.label = "Bolsillos";
+          BOLSILLOS.forEach((b) => {
+            if (b !== origen) {
+              const o = document.createElement("option");
+              o.value = b;
+              o.textContent = b;
+              grpB.appendChild(o);
+            }
+          });
+          selDest.appendChild(grpB);
+        }
+        // Restaurar valor previo si sigue disponible
+        if ([...selDest.options].some((o) => o.value === prevVal)) {
+          selDest.value = prevVal;
+        }
       }
 
       function syncPrestamoDeudaOption() {
