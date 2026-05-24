@@ -1504,6 +1504,13 @@
         return map[nombre] || nombre;
       }
 
+      function normalizarCategoriaNombre(nombre) {
+        const map = {
+          "Pasajes y Viajes": "Viajes",
+        };
+        return map[nombre] || nombre;
+      }
+
       // Saldos iniciales (capital real al momento de empezar a registrar — 13 may 2026)
       const SALDOS_INICIALES = {
         Bancolombia: 0,
@@ -1535,7 +1542,7 @@
           "Gastos del Carro",
           "Salidas / Entretenimiento",
           "Compras / Ropa",
-          "Pasajes y Viajes",
+          "Viajes",
           "Hogar / Casa",
           "Gastos en Empresa",
           "Publicidad / Meta Ads",
@@ -1555,7 +1562,6 @@
 
       // Presupuestos de referencia (mensuales en COP)
       const PRESUPUESTOS = {
-        "Arriendo Casa": 500000,
         "WiFi y Plan Móvil": 119000,
         "Mercado y Comida": 500000,
         Suscripciones: 150000,
@@ -1563,12 +1569,13 @@
         Transporte: 300000,
         Gasolina: 300000,
         "Salidas / Entretenimiento": 300000,
-        "Pasajes y Viajes": 200000,
+        Viajes: 200000,
         "Compras / Ropa": 200000,
         "Publicidad / Meta Ads": 400000,
         "Pago Tarjetas": 500000,
         "Cuota Crédito CFG": 1000000,
       };
+      const CATEGORIAS_RESUMEN_VISIBLES = new Set(["Transporte", "Viajes"]);
 
       // Semilla de deudas iniciales (se crean en Firestore si no existen)
       // montoNegociado = valor acordado tras negociación
@@ -2157,7 +2164,9 @@
         mes
           .filter((t) => t.tipo === "gasto")
           .forEach((t) => {
-            catMap[t.categoria] = (catMap[t.categoria] || 0) + t.monto;
+            const categoria = normalizarCategoriaNombre(t.categoria);
+            if (!CATEGORIAS_RESUMEN_VISIBLES.has(categoria)) return;
+            catMap[categoria] = (catMap[categoria] || 0) + t.monto;
           });
         const entries = Object.entries(catMap).sort((a, b) => b[1] - a[1]);
 
@@ -2606,7 +2615,8 @@
         mes
           .filter((t) => t.tipo === "gasto")
           .forEach((t) => {
-            gastoCats[t.categoria] = (gastoCats[t.categoria] || 0) + t.monto;
+            const categoria = normalizarCategoriaNombre(t.categoria);
+            gastoCats[categoria] = (gastoCats[categoria] || 0) + t.monto;
           });
         const catEntries = Object.entries(gastoCats).sort(
           (a, b) => b[1] - a[1],
