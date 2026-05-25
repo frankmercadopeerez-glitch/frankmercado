@@ -897,12 +897,77 @@
                 </p>
               </div>
             </div>
+            <div class="glass-card p-4 mb-4">
+              <div class="flex flex-wrap gap-2 items-center mb-4">
+                <select
+                  id="stats-filter-periodo"
+                  class="text-xs rounded-xl border border-slate-200 bg-white p-2 focus:outline-none font-medium text-slate-600"
+                >
+                  <option value="mes">Mes seleccionado</option>
+                  <option value="all">Todos los meses</option>
+                </select>
+                <select
+                  id="stats-filter-tipo"
+                  class="text-xs rounded-xl border border-slate-200 bg-white p-2 focus:outline-none font-medium text-slate-600"
+                >
+                  <option value="">Todos los tipos</option>
+                  <option value="ingreso">Solo ingresos</option>
+                  <option value="gasto">Solo gastos</option>
+                  <option value="transferencia">Solo transferencias</option>
+                </select>
+                <select
+                  id="stats-filter-cuenta"
+                  class="text-xs rounded-xl border border-slate-200 bg-white p-2 focus:outline-none font-medium text-slate-600"
+                >
+                  <option value="">Todas las cuentas</option>
+                </select>
+                <select
+                  id="stats-filter-categoria"
+                  class="text-xs rounded-xl border border-slate-200 bg-white p-2 focus:outline-none font-medium text-slate-600"
+                >
+                  <option value="">Todas las categorías</option>
+                </select>
+                <button
+                  onclick="limpiarFiltrosStats()"
+                  class="text-xs text-slate-400 hover:text-slate-600 flex items-center gap-1 px-2 py-2 transition"
+                >
+                  <i data-lucide="x" class="w-3 h-3"></i> Limpiar
+                </button>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="rounded-xl border border-green-200 bg-green-50 p-3">
+                  <p class="text-[11px] uppercase tracking-wide font-semibold text-green-700">
+                    Ingresos filtrados
+                  </p>
+                  <p class="text-lg font-bold text-green-700" id="stats-total-ingresos">
+                    $0
+                  </p>
+                </div>
+                <div class="rounded-xl border border-red-200 bg-red-50 p-3">
+                  <p class="text-[11px] uppercase tracking-wide font-semibold text-red-700">
+                    Gastos filtrados
+                  </p>
+                  <p class="text-lg font-bold text-red-700" id="stats-total-gastos">
+                    $0
+                  </p>
+                </div>
+                <div class="rounded-xl border border-blue-200 bg-blue-50 p-3">
+                  <p class="text-[11px] uppercase tracking-wide font-semibold text-blue-700">
+                    Flujo neto filtrado
+                  </p>
+                  <p class="text-lg font-bold text-blue-700" id="stats-total-flujo">
+                    $0
+                  </p>
+                </div>
+              </div>
+            </div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
               <div class="glass-card p-4">
                 <p
                   class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3"
                 >
-                  Ingresos vs Gastos · Últimos 6 meses
+                  Ingresos vs Gastos ·
+                  <span id="chart-mensual-label">últimos 6 meses</span>
                 </p>
                 <div style="height: 220px">
                   <canvas id="chart-mensual"></canvas>
@@ -917,6 +982,17 @@
                 </p>
                 <div id="chart-cat-wrap" style="height: 220px">
                   <canvas id="chart-categorias"></canvas>
+                </div>
+              </div>
+              <div class="glass-card p-4">
+                <p
+                  class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3"
+                >
+                  Ingresos por categoría ·
+                  <span id="chart-cat-ing-mes-label">este mes</span>
+                </p>
+                <div id="chart-cat-ing-wrap" style="height: 220px">
+                  <canvas id="chart-categorias-ingresos"></canvas>
                 </div>
               </div>
               <div class="glass-card p-4">
@@ -944,9 +1020,17 @@
               <p
                 class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4"
               >
-                Top Gastos del Mes
+                Top Gastos del Periodo Filtrado
               </p>
               <div id="top-gastos" class="space-y-3"></div>
+            </div>
+            <div class="glass-card p-4 mt-4">
+              <p
+                class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4"
+              >
+                Top Ingresos del Periodo Filtrado
+              </p>
+              <div id="top-ingresos" class="space-y-3"></div>
             </div>
           </div>
 
@@ -2563,11 +2647,108 @@
       }
 
       function renderCharts() {
-        const mes = txDelMes(transactions);
+        const periodoEl = document.getElementById("stats-filter-periodo");
+        const tipoEl = document.getElementById("stats-filter-tipo");
+        const cuentaEl = document.getElementById("stats-filter-cuenta");
+        const categoriaEl = document.getElementById("stats-filter-categoria");
+        if (!periodoEl || !tipoEl || !cuentaEl || !categoriaEl) return;
 
-        // Chart 1 — Ingresos vs Gastos últimos 6 meses
+        const periodo = periodoEl.value || "mes";
+        const filtroTipo = tipoEl.value || "";
+        const filtroCuenta = cuentaEl.value || "";
+        let filtroCategoria = categoriaEl.value || "";
+
+        const basePeriodo =
+          periodo === "all" ? transactions : txDelMes(transactions);
+
+        // Poblar cuentas
+        const curCuenta = cuentaEl.value;
+        cuentaEl.innerHTML = '<option value="">Todas las cuentas</option>';
+        [...CUENTAS, ...BOLSILLOS].forEach((c) => {
+          const o = document.createElement("option");
+          o.value = c;
+          o.textContent = c;
+          if (c === curCuenta) o.selected = true;
+          cuentaEl.appendChild(o);
+        });
+
+        // Poblar categorias segun periodo
+        const curCategoria = categoriaEl.value;
+        const categoriasUnicas = Array.from(
+          new Set(
+            basePeriodo
+              .map((t) => normalizarCategoriaNombre(t.categoria || ""))
+              .filter(Boolean),
+          ),
+        ).sort((a, b) => a.localeCompare(b, "es"));
+        categoriaEl.innerHTML = '<option value="">Todas las categorías</option>';
+        categoriasUnicas.forEach((cat) => {
+          const o = document.createElement("option");
+          o.value = cat;
+          o.textContent = cat;
+          if (cat === curCategoria) o.selected = true;
+          categoriaEl.appendChild(o);
+        });
+        if (curCategoria && !categoriasUnicas.includes(curCategoria)) {
+          categoriaEl.value = "";
+          filtroCategoria = "";
+        }
+
+        const aplicarFiltros = (list) => {
+          let out = [...list];
+          if (filtroTipo) out = out.filter((t) => t.tipo === filtroTipo);
+          if (filtroCuenta) {
+            out = out.filter(
+              (t) =>
+                normalizarCuentaNombre(t.cuenta) === filtroCuenta ||
+                normalizarCuentaNombre(t.destino) === filtroCuenta,
+            );
+          }
+          if (filtroCategoria) {
+            out = out.filter(
+              (t) =>
+                normalizarCategoriaNombre(t.categoria || "") ===
+                filtroCategoria,
+            );
+          }
+          return out;
+        };
+
+        const filtradas = aplicarFiltros(basePeriodo);
+        const ingresosFiltrados = filtradas
+          .filter((t) => t.tipo === "ingreso")
+          .reduce((s, t) => s + t.monto, 0);
+        const gastosFiltrados = filtradas
+          .filter((t) => t.tipo === "gasto")
+          .reduce((s, t) => s + t.monto, 0);
+        const flujoFiltrado = ingresosFiltrados - gastosFiltrados;
+
+        const totalInEl = document.getElementById("stats-total-ingresos");
+        const totalOutEl = document.getElementById("stats-total-gastos");
+        const totalFlowEl = document.getElementById("stats-total-flujo");
+        if (totalInEl) totalInEl.textContent = fmt(ingresosFiltrados);
+        if (totalOutEl) totalOutEl.textContent = fmt(gastosFiltrados);
+        if (totalFlowEl) {
+          totalFlowEl.textContent =
+            (flujoFiltrado >= 0 ? "+" : "") + fmt(flujoFiltrado);
+          totalFlowEl.style.color = flujoFiltrado >= 0 ? "#1d4ed8" : "#dc2626";
+        }
+
+        const periodoLabel =
+          periodo === "all" ? "todos los meses" : MESES[mesSel.m].toLowerCase();
+        const lblGastos = document.getElementById("chart-cat-mes-label");
+        const lblIngresos = document.getElementById("chart-cat-ing-mes-label");
+        if (lblGastos) lblGastos.textContent = periodoLabel;
+        if (lblIngresos) lblIngresos.textContent = periodoLabel;
+
+        // Chart 1 — Ingresos vs Gastos segun filtros
         destroyChart("mensual");
-        const range = getMonthRange(6);
+        const labelMensual = document.getElementById("chart-mensual-label");
+        const range = periodo === "all" ? getMonthRange(6) : getMonthRange(1);
+        if (labelMensual) {
+          labelMensual.textContent =
+            periodo === "all" ? "ultimos 6 meses" : "mes seleccionado";
+        }
         const ingsArr = [],
           gastArr = [],
           lblArr = [];
@@ -2576,13 +2757,14 @@
           const txM = transactions.filter((t) =>
             (t.fecha || "").startsWith(prefix),
           );
+          const txMF = aplicarFiltros(txM);
           ingsArr.push(
-            txM
+            txMF
               .filter((t) => t.tipo === "ingreso")
               .reduce((s, t) => s + t.monto, 0),
           );
           gastArr.push(
-            txM
+            txMF
               .filter((t) => t.tipo === "gasto")
               .reduce((s, t) => s + t.monto, 0),
           );
@@ -2644,7 +2826,7 @@
         const wrap2 = document.getElementById("chart-cat-wrap");
         wrap2.innerHTML = '<canvas id="chart-categorias"></canvas>';
         const gastoCats = {};
-        mes
+        filtradas
           .filter((t) => t.tipo === "gasto")
           .forEach((t) => {
             const categoria = normalizarCategoriaNombre(t.categoria);
@@ -2701,14 +2883,67 @@
           });
         } else {
           wrap2.innerHTML =
-            '<p class="text-center text-slate-400 text-sm flex items-center justify-center h-full">Sin gastos este mes</p>';
+            '<p class="text-center text-slate-400 text-sm flex items-center justify-center h-full">Sin gastos en el periodo filtrado</p>';
+        }
+
+        // Chart 2B — Ingresos por categoría (donut)
+        destroyChart("categoriasIngresos");
+        const wrapIng = document.getElementById("chart-cat-ing-wrap");
+        wrapIng.innerHTML = '<canvas id="chart-categorias-ingresos"></canvas>';
+        const ingresoCats = {};
+        filtradas
+          .filter((t) => t.tipo === "ingreso")
+          .forEach((t) => {
+            const categoria = normalizarCategoriaNombre(t.categoria);
+            ingresoCats[categoria] = (ingresoCats[categoria] || 0) + t.monto;
+          });
+        const ingresoEntries = Object.entries(ingresoCats).sort(
+          (a, b) => b[1] - a[1],
+        );
+        if (ingresoEntries.length > 0) {
+          const ctxIng = document
+            .getElementById("chart-categorias-ingresos")
+            .getContext("2d");
+          charts["categoriasIngresos"] = new Chart(ctxIng, {
+            type: "doughnut",
+            data: {
+              labels: ingresoEntries.map(([k]) => k),
+              datasets: [
+                {
+                  data: ingresoEntries.map(([, v]) => v),
+                  backgroundColor: CAT_COLORS,
+                  borderWidth: 2,
+                  borderColor: "#161b27",
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              cutout: "60%",
+              plugins: {
+                legend: {
+                  position: "right",
+                  labels: {
+                    font: { family: "Poppins", size: 10 },
+                    boxWidth: 10,
+                    padding: 8,
+                  },
+                },
+                tooltip: { callbacks: { label: (ctx) => " " + fmt(ctx.raw) } },
+              },
+            },
+          });
+        } else {
+          wrapIng.innerHTML =
+            '<p class="text-center text-slate-400 text-sm flex items-center justify-center h-full">Sin ingresos en el periodo filtrado</p>';
         }
 
         // Chart 3 — Flujo semanal
         destroyChart("semanal");
         const ingSem = [0, 0, 0, 0],
           gastSem = [0, 0, 0, 0];
-        mes.forEach((t) => {
+        filtradas.forEach((t) => {
           const i = parseInt(getSemana(t.fecha), 10) - 1;
           if (t.tipo === "ingreso") ingSem[i] += t.monto;
           else if (t.tipo === "gasto") gastSem[i] += t.monto;
@@ -2846,17 +3081,36 @@
         tg.innerHTML = "";
         if (gastoCatsSorted.length === 0) {
           tg.innerHTML =
-            '<p class="text-slate-400 text-sm text-center py-4">Sin gastos este mes</p>';
-          return;
+            '<p class="text-slate-400 text-sm text-center py-4">Sin gastos en el periodo filtrado</p>';
+        } else {
+          gastoCatsSorted.slice(0, 8).forEach(([cat, total]) => {
+            const pct = (total / maxGasto) * 100;
+            const presup = PRESUPUESTOS[cat];
+            const over = presup && total > presup;
+            const div = document.createElement("div");
+            div.innerHTML = `<div class="flex items-center justify-between mb-1.5"><span class="text-xs font-semibold text-slate-700">${cat}</span><div class="flex items-center gap-3"><span class="text-xs ${over ? "text-red-600 font-bold" : "text-slate-400"}">${presup ? fmt(presup) + " presup." : ""}</span><span class="text-xs font-bold text-slate-700">${fmt(total)}</span></div></div><div class="h-2 rounded-full bg-slate-100"><div class="h-2 rounded-full transition-all duration-500" style="width:${pct}%;background:${over ? "#ef4444" : "#1a365d"}"></div></div>`;
+            tg.appendChild(div);
+          });
         }
-        gastoCatsSorted.slice(0, 8).forEach(([cat, total]) => {
-          const pct = (total / maxGasto) * 100;
-          const presup = PRESUPUESTOS[cat];
-          const over = presup && total > presup;
-          const div = document.createElement("div");
-          div.innerHTML = `<div class="flex items-center justify-between mb-1.5"><span class="text-xs font-semibold text-slate-700">${cat}</span><div class="flex items-center gap-3"><span class="text-xs ${over ? "text-red-600 font-bold" : "text-slate-400"}">${presup ? fmt(presup) + " presup." : ""}</span><span class="text-xs font-bold text-slate-700">${fmt(total)}</span></div></div><div class="h-2 rounded-full bg-slate-100"><div class="h-2 rounded-full transition-all duration-500" style="width:${pct}%;background:${over ? "#ef4444" : "#1a365d"}"></div></div>`;
-          tg.appendChild(div);
-        });
+
+        const ingresoCatsSorted = Object.entries(ingresoCats).sort(
+          (a, b) => b[1] - a[1],
+        );
+        const maxIngreso =
+          ingresoCatsSorted.length > 0 ? ingresoCatsSorted[0][1] : 1;
+        const ti = document.getElementById("top-ingresos");
+        ti.innerHTML = "";
+        if (ingresoCatsSorted.length === 0) {
+          ti.innerHTML =
+            '<p class="text-slate-400 text-sm text-center py-4">Sin ingresos en el periodo filtrado</p>';
+        } else {
+          ingresoCatsSorted.slice(0, 8).forEach(([cat, total]) => {
+            const pct = (total / maxIngreso) * 100;
+            const div = document.createElement("div");
+            div.innerHTML = `<div class="flex items-center justify-between mb-1.5"><span class="text-xs font-semibold text-slate-700">${cat}</span><span class="text-xs font-bold text-green-700">${fmt(total)}</span></div><div class="h-2 rounded-full bg-slate-100"><div class="h-2 rounded-full transition-all duration-500" style="width:${pct}%;background:#22c55e"></div></div>`;
+            ti.appendChild(div);
+          });
+        }
       }
 
       // ── CRUD transacciones ────────────────────────────────
@@ -3007,6 +3261,14 @@
         document.getElementById("filter-cuenta").value = "";
         document.getElementById("filter-categoria").value = "";
         renderMovimientos();
+      }
+
+      function limpiarFiltrosStats() {
+        document.getElementById("stats-filter-periodo").value = "mes";
+        document.getElementById("stats-filter-tipo").value = "";
+        document.getElementById("stats-filter-cuenta").value = "";
+        document.getElementById("stats-filter-categoria").value = "";
+        renderCharts();
       }
 
       function csvEscape(value) {
@@ -3186,6 +3448,18 @@
       document
         .getElementById("filter-categoria")
         .addEventListener("change", renderMovimientos);
+      document
+        .getElementById("stats-filter-periodo")
+        .addEventListener("change", renderCharts);
+      document
+        .getElementById("stats-filter-tipo")
+        .addEventListener("change", renderCharts);
+      document
+        .getElementById("stats-filter-cuenta")
+        .addEventListener("change", renderCharts);
+      document
+        .getElementById("stats-filter-categoria")
+        .addEventListener("change", renderCharts);
       document
         .getElementById("tx-categoria")
         .addEventListener("change", syncPrestamoDeudaOption);
