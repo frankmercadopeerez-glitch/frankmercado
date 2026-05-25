@@ -1099,7 +1099,7 @@
                       <option value="Efectivo">Efectivo</option>
                     </optgroup>
                     <optgroup label="Bolsillos">
-                      <option value="Bolsillo Arriendo">Bolsillo Arriendo</option>
+                      <option value="Arriendo, Servicios y Suscripciones">Arriendo, Servicios y Suscripciones</option>
                       <option value="Fondo de Emergencia">Fondo de Emergencia</option>
                       <option value="Bolsillo Viajes">Bolsillo Viajes</option>
                       <option value="Bolsillo Cuota Carro">Bolsillo Cuota Carro</option>
@@ -1123,7 +1123,7 @@
                     <option value="Falabella">Banco Falabella</option>
                     <option value="Nequi">Nequi</option>
                     <option value="Efectivo">Efectivo</option>
-                    <option value="Bolsillo Arriendo">Bolsillo Arriendo</option>
+                    <option value="Arriendo, Servicios y Suscripciones">Arriendo, Servicios y Suscripciones</option>
                     <option value="Fondo de Emergencia">
                       Fondo de Emergencia
                     </option>
@@ -1461,7 +1461,7 @@
         "Efectivo",
       ];
       const BOLSILLOS = [
-        "Bolsillo Arriendo",
+        "Arriendo, Servicios y Suscripciones",
         "Fondo de Emergencia",
         "Bolsillo Viajes",
         "Bolsillo Cuota Carro",
@@ -1474,7 +1474,7 @@
         Falabella: "#3b82f6",
         Nequi: "#ec4899",
         Efectivo: "#22c55e",
-        "Bolsillo Arriendo": "#f59e0b",
+        "Arriendo, Servicios y Suscripciones": "#f59e0b",
         "Fondo de Emergencia": "#06b6d4",
         "Bolsillo Viajes": "#10b981",
         "Bolsillo Cuota Carro": "#14b8a6",
@@ -1483,19 +1483,20 @@
       };
 
       const BOLSILLO_META = {
+        "Arriendo, Servicios y Suscripciones": { tope: 1350000 },
         "Fondo de Emergencia": { tope: 5000000 },
         "Bolsillo Cuota Carro": {
           metaMensual: 1300000,
-          hint: "Sugerido: 650k por quincena",
         },
         "Bolsillo Mantenimiento Carro": {
-          metaMensual: 300000,
-          hint: "Meta mensual acumulable",
+          tope: 300000,
         },
       };
 
       function normalizarCuentaNombre(nombre) {
         const map = {
+          "Bolsillo Arriendo": "Arriendo, Servicios y Suscripciones",
+          Arriendo: "Arriendo, Servicios y Suscripciones",
           "Bolsillo Colchón $": "Fondo de Emergencia",
           "Bolsillo Viaje": "Bolsillo Viajes",
           "Bolsillo Viaje Anual": "Bolsillo Viajes",
@@ -2067,6 +2068,7 @@
           const isBolsillo = BOLSILLOS.includes(c);
           const meta = BOLSILLO_META[c];
           const pctTope = meta?.tope ? Math.min((s / meta.tope) * 100, 100) : 0;
+          const superaTope = Boolean(meta?.tope) && s > meta.tope;
           const div = document.createElement("div");
           div.className =
             "rounded-xl p-3 min-h-[88px] " +
@@ -2076,11 +2078,15 @@
           const titleClass = isBolsillo
             ? "text-xs text-slate-200 leading-tight whitespace-normal break-words"
             : "text-xs text-slate-500 truncate";
-          const montoClass = s >= 0 ? "text-slate-800" : "text-red-600";
+          const montoClass = superaTope
+            ? "text-green-400"
+            : s >= 0
+              ? "text-slate-800"
+              : "text-red-600";
           const bolsilloTag = isBolsillo
             ? '<span class="text-[9px] text-cyan-200 ml-auto bg-cyan-900/40 border border-cyan-700/50 px-1.5 py-0.5 rounded-full">bolsillo</span>'
             : "";
-          div.innerHTML = `<div class="flex items-start gap-1.5 mb-1"><div class="w-2 h-2 rounded-full flex-shrink-0 mt-1" style="background:${color}"></div><p class="${titleClass}" title="${c}">${c}</p>${bolsilloTag}</div><p class="text-sm font-bold ${montoClass}">${fmt(s)}</p>${meta?.tope ? `<p class="text-[10px] text-slate-400 mt-1">Tope: ${fmt(meta.tope)}</p><div class="h-1.5 rounded-full bg-slate-700 mt-1"><div class="h-1.5 rounded-full" style="width:${pctTope}%;background:${s > meta.tope ? "#ef4444" : color}"></div></div>` : ""}${meta?.metaMensual ? `<p class="text-[10px] text-slate-400 mt-1">Meta mensual: ${fmt(meta.metaMensual)}</p><p class="text-[10px] text-slate-400">${meta.hint || ""}</p>` : ""}`;
+          div.innerHTML = `<div class="flex items-start gap-1.5 mb-1"><div class="w-2 h-2 rounded-full flex-shrink-0 mt-1" style="background:${color}"></div><p class="${titleClass}" title="${c}">${c}</p>${bolsilloTag}</div><p class="text-sm font-bold ${montoClass}">${fmt(s)}</p>${meta?.tope ? `<p class="text-[10px] text-slate-400 mt-1">Tope: ${fmt(meta.tope)}</p><div class="h-1.5 rounded-full bg-slate-700 mt-1"><div class="h-1.5 rounded-full" style="width:${pctTope}%;background:${superaTope ? "#22c55e" : color}"></div></div>` : ""}${meta?.metaMensual ? `<p class="text-[10px] text-slate-400 mt-1">Meta mensual: ${fmt(meta.metaMensual)}</p>` : ""}`;
           grid.appendChild(div);
         });
       }
