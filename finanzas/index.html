@@ -791,14 +791,10 @@
                 <option value="">Todas las cuentas</option>
               </select>
               <select
-                id="filter-semana"
+                id="filter-categoria"
                 class="text-xs rounded-xl border border-slate-200 bg-white p-2 focus:outline-none font-medium text-slate-600"
               >
-                <option value="">Todas las semanas</option>
-                <option value="1">Semana 1 (días 1-7)</option>
-                <option value="2">Semana 2 (días 8-14)</option>
-                <option value="3">Semana 3 (días 15-21)</option>
-                <option value="4">Semana 4 (días 22-31)</option>
+                <option value="">Todas las categorías</option>
               </select>
               <button
                 onclick="limpiarFiltros()"
@@ -2253,7 +2249,7 @@
 
         const filterTipo = document.getElementById("filter-tipo").value;
         const filterCuenta = document.getElementById("filter-cuenta").value;
-        const filterSemana = document.getElementById("filter-semana").value;
+        let filterCategoria = document.getElementById("filter-categoria").value;
 
         // Poblar select cuentas
         const cuentaEl = document.getElementById("filter-cuenta");
@@ -2267,6 +2263,34 @@
           cuentaEl.appendChild(o);
         });
 
+        // Poblar select categorias
+        const categoriaEl = document.getElementById("filter-categoria");
+        const curCategoria = categoriaEl.value;
+        const categoriasUnicas = Array.from(
+          new Set(
+            pool
+              .map((t) => normalizarCategoriaNombre(t.categoria || ""))
+              .filter(Boolean),
+          ),
+        ).sort((a, b) => a.localeCompare(b, "es"));
+        categoriaEl.innerHTML = '<option value="">Todas las categorías</option>';
+        categoriasUnicas.forEach((cat) => {
+          const o = document.createElement("option");
+          o.value = cat;
+          o.textContent = cat;
+          if (cat === curCategoria) o.selected = true;
+          categoriaEl.appendChild(o);
+        });
+
+        // Si el filtro actual ya no existe para el pool actual, lo limpiamos
+        if (
+          curCategoria &&
+          !categoriasUnicas.includes(curCategoria)
+        ) {
+          categoriaEl.value = "";
+          filterCategoria = "";
+        }
+
         let displayed = pool;
         if (filterTipo)
           displayed = displayed.filter((t) => t.tipo === filterTipo);
@@ -2276,9 +2300,9 @@
               normalizarCuentaNombre(t.cuenta) === filterCuenta ||
               normalizarCuentaNombre(t.destino) === filterCuenta,
           );
-        if (!todosMeses && filterSemana)
+        if (filterCategoria)
           displayed = displayed.filter(
-            (t) => getSemana(t.fecha) === filterSemana,
+            (t) => normalizarCategoriaNombre(t.categoria || "") === filterCategoria,
           );
 
         const sorted = [...displayed].sort((a, b) =>
@@ -2296,6 +2320,7 @@
         sorted.forEach((tx) => {
           const cuentaNombre = normalizarCuentaNombre(tx.cuenta);
           const destinoNombre = normalizarCuentaNombre(tx.destino);
+          const categoriaNombre = normalizarCategoriaNombre(tx.categoria || "");
           const isIn = tx.tipo === "ingreso";
           const isTransf = tx.tipo === "transferencia";
           const color = isTransf
@@ -2317,7 +2342,7 @@
               : `<span class="cuenta-chip" style="background:${cuentaColor}20;color:${cuentaColor}">${cuentaNombre}</span>`;
           const div = document.createElement("div");
           div.className = "rounded-xl border p-3 w-full max-w-full overflow-hidden " + color;
-          div.innerHTML = `<div class="space-y-2"><div class="flex items-start justify-between gap-3"><span class="text-xs text-slate-400 truncate">${fmtDate(tx.fecha)}${tx.hora ? " · " + tx.hora : ""}</span><span class="text-base font-bold ${amountColor} whitespace-nowrap flex-shrink-0">${sign}${fmt(tx.monto)}</span></div><div class="flex items-center gap-2 flex-wrap min-w-0">${cuentaBadges}</div><p class="text-sm font-medium text-slate-800 truncate">${tx.descripcion || tx.categoria}</p><div class="flex items-center justify-between gap-2"><span class="text-xs px-1.5 py-0.5 rounded-full font-medium ${isIn ? "bg-green-100 text-green-800" : isTransf ? "bg-blue-100 text-blue-800" : "bg-red-100 text-red-800"} inline-block truncate max-w-[72%]">${tx.categoria}</span><div class="flex gap-2 flex-shrink-0"><button onclick="editTransaction('${tx.id}')" class="text-slate-300 hover:text-blue-500 transition"><i data-lucide="pencil" class="w-4 h-4"></i></button><button onclick="deleteTransaction('${tx.id}')" class="text-slate-300 hover:text-red-500 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div></div>`;
+          div.innerHTML = `<div class="space-y-2"><div class="flex items-start justify-between gap-3"><span class="text-xs text-slate-400 truncate">${fmtDate(tx.fecha)}${tx.hora ? " · " + tx.hora : ""}</span><span class="text-base font-bold ${amountColor} whitespace-nowrap flex-shrink-0">${sign}${fmt(tx.monto)}</span></div><div class="flex items-center gap-2 flex-wrap min-w-0">${cuentaBadges}</div><p class="text-sm font-medium text-slate-800 truncate">${tx.descripcion || categoriaNombre}</p><div class="flex items-center justify-between gap-2"><span class="text-xs px-1.5 py-0.5 rounded-full font-medium ${isIn ? "bg-green-100 text-green-800" : isTransf ? "bg-blue-100 text-blue-800" : "bg-red-100 text-red-800"} inline-block truncate max-w-[72%]">${categoriaNombre}</span><div class="flex gap-2 flex-shrink-0"><button onclick="editTransaction('${tx.id}')" class="text-slate-300 hover:text-blue-500 transition"><i data-lucide="pencil" class="w-4 h-4"></i></button><button onclick="deleteTransaction('${tx.id}')" class="text-slate-300 hover:text-red-500 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div></div>`;
           tc.appendChild(div);
         });
 
@@ -2330,6 +2355,7 @@
         sorted.forEach((tx) => {
           const cuentaNombre = normalizarCuentaNombre(tx.cuenta);
           const destinoNombre = normalizarCuentaNombre(tx.destino);
+          const categoriaNombre = normalizarCategoriaNombre(tx.categoria || "");
           const isIn = tx.tipo === "ingreso";
           const isTransf = tx.tipo === "transferencia";
           const amountColor = isTransf
@@ -2346,7 +2372,7 @@
               : `<span class="cuenta-chip" style="background:${cuentaColor}20;color:${cuentaColor}">${cuentaNombre}</span>`;
           const tr = document.createElement("tr");
           tr.className = "hover:bg-slate-50 transition";
-          tr.innerHTML = `<td class="px-3 py-3 whitespace-nowrap text-xs text-slate-500">${fmtDate(tx.fecha)}<br><span class="text-slate-400">${tx.hora || ""}</span></td><td class="px-3 py-3 text-sm text-slate-500 max-w-xs truncate">${tx.descripcion || "--"}</td><td class="px-3 py-3 whitespace-nowrap"><span class="px-2 py-0.5 text-xs font-semibold rounded-full ${isIn ? "bg-green-100 text-green-800" : isTransf ? "bg-blue-100 text-blue-800" : "bg-red-100 text-red-800"}">${tx.categoria}</span></td><td class="px-3 py-3 whitespace-nowrap"><div class="flex items-center gap-1.5 flex-wrap">${cuentaBadges}</div></td><td class="px-3 py-3 whitespace-nowrap text-sm text-right font-bold ${amountColor}">${sign}${fmt(tx.monto)}</td><td class="px-3 py-3 text-center"><div class="flex items-center justify-center gap-1"><button onclick="editTransaction('${tx.id}')" class="text-slate-300 hover:text-blue-500 p-1 transition"><i data-lucide="pencil" class="w-4 h-4"></i></button><button onclick="deleteTransaction('${tx.id}')" class="text-slate-300 hover:text-red-500 p-1 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></td>`;
+          tr.innerHTML = `<td class="px-3 py-3 whitespace-nowrap text-xs text-slate-500">${fmtDate(tx.fecha)}<br><span class="text-slate-400">${tx.hora || ""}</span></td><td class="px-3 py-3 text-sm text-slate-500 max-w-xs truncate">${tx.descripcion || "--"}</td><td class="px-3 py-3 whitespace-nowrap"><span class="px-2 py-0.5 text-xs font-semibold rounded-full ${isIn ? "bg-green-100 text-green-800" : isTransf ? "bg-blue-100 text-blue-800" : "bg-red-100 text-red-800"}">${categoriaNombre}</span></td><td class="px-3 py-3 whitespace-nowrap"><div class="flex items-center gap-1.5 flex-wrap">${cuentaBadges}</div></td><td class="px-3 py-3 whitespace-nowrap text-sm text-right font-bold ${amountColor}">${sign}${fmt(tx.monto)}</td><td class="px-3 py-3 text-center"><div class="flex items-center justify-center gap-1"><button onclick="editTransaction('${tx.id}')" class="text-slate-300 hover:text-blue-500 p-1 transition"><i data-lucide="pencil" class="w-4 h-4"></i></button><button onclick="deleteTransaction('${tx.id}')" class="text-slate-300 hover:text-red-500 p-1 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></td>`;
           tb.appendChild(tr);
         });
         lucide.createIcons();
@@ -2979,7 +3005,7 @@
       function limpiarFiltros() {
         document.getElementById("filter-tipo").value = "";
         document.getElementById("filter-cuenta").value = "";
-        document.getElementById("filter-semana").value = "";
+        document.getElementById("filter-categoria").value = "";
         renderMovimientos();
       }
 
@@ -3158,7 +3184,7 @@
         .getElementById("filter-cuenta")
         .addEventListener("change", renderMovimientos);
       document
-        .getElementById("filter-semana")
+        .getElementById("filter-categoria")
         .addEventListener("change", renderMovimientos);
       document
         .getElementById("tx-categoria")
