@@ -760,7 +760,7 @@
                     type="checkbox"
                     id="toggle-todos-meses"
                     class="sr-only"
-                    onchange="renderMovimientos()"
+                    onchange="collapseMovimientosAndRender()"
                   />
                   <div
                     id="toggle-track"
@@ -859,6 +859,17 @@
                   class="bg-white divide-y divide-slate-50"
                 ></tbody>
               </table>
+            </div>
+            <div class="flex items-center justify-between mt-3 gap-2">
+              <p id="movimientos-preview-info" class="text-xs text-slate-400"></p>
+              <button
+                id="btn-toggle-movimientos"
+                type="button"
+                onclick="toggleMovimientosListado()"
+                class="hidden text-xs font-semibold text-slate-500 hover:text-slate-700 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition"
+              >
+                Mostrar todo
+              </button>
             </div>
             <div class="flex justify-end mt-4">
               <button
@@ -1819,6 +1830,8 @@
 
       // ── Tabs ──────────────────────────────────────────────
       let currentTab = "resumen";
+      const MOVIMIENTOS_PREVIEW_LIMIT = 12;
+      let movimientosExpandido = false;
       function showTab(tab) {
         currentTab = tab;
         ["resumen", "movimientos", "estadisticas", "deudas", "nuevo"].forEach(
@@ -2488,14 +2501,43 @@
             (a.fecha || "") + (a.hora || ""),
           ),
         );
+        const excedeLimite = sorted.length > MOVIMIENTOS_PREVIEW_LIMIT;
+        const visibles =
+          movimientosExpandido || !excedeLimite
+            ? sorted
+            : sorted.slice(0, MOVIMIENTOS_PREVIEW_LIMIT);
+
+        const previewInfoEl = document.getElementById("movimientos-preview-info");
+        const btnToggleEl = document.getElementById("btn-toggle-movimientos");
+        if (previewInfoEl) {
+          if (sorted.length === 0) {
+            previewInfoEl.textContent = "";
+          } else if (excedeLimite && !movimientosExpandido) {
+            previewInfoEl.textContent =
+              "Mostrando " +
+              MOVIMIENTOS_PREVIEW_LIMIT +
+              " de " +
+              sorted.length +
+              " movimientos";
+          } else {
+            previewInfoEl.textContent =
+              "Mostrando " + sorted.length + " movimientos";
+          }
+        }
+        if (btnToggleEl) {
+          btnToggleEl.classList.toggle("hidden", !excedeLimite);
+          btnToggleEl.textContent = movimientosExpandido
+            ? "Mostrar solo 12"
+            : "Mostrar todo";
+        }
 
         const tc = document.getElementById("tx-cards");
         tc.innerHTML = "";
-        if (sorted.length === 0) {
+        if (visibles.length === 0) {
           tc.innerHTML =
             '<p class="text-center py-8 text-slate-400 text-sm">No hay movimientos con estos filtros.</p>';
         }
-        sorted.forEach((tx) => {
+        visibles.forEach((tx) => {
           const cuentaNombre = normalizarCuentaNombre(tx.cuenta);
           const destinoNombre = normalizarCuentaNombre(tx.destino);
           const categoriaNombre = normalizarCategoriaNombre(tx.categoria || "");
@@ -2526,11 +2568,11 @@
 
         const tb = document.getElementById("tx-table-body");
         tb.innerHTML = "";
-        if (sorted.length === 0) {
+        if (visibles.length === 0) {
           tb.innerHTML =
             '<tr><td colspan="6" class="text-center py-10 text-slate-400">No hay movimientos.</td></tr>';
         }
-        sorted.forEach((tx) => {
+        visibles.forEach((tx) => {
           const cuentaNombre = normalizarCuentaNombre(tx.cuenta);
           const destinoNombre = normalizarCuentaNombre(tx.destino);
           const categoriaNombre = normalizarCategoriaNombre(tx.categoria || "");
@@ -3354,6 +3396,16 @@
         document.getElementById("filter-tipo").value = "";
         document.getElementById("filter-cuenta").value = "";
         document.getElementById("filter-categoria").value = "";
+        collapseMovimientosAndRender();
+      }
+
+      function collapseMovimientosAndRender() {
+        movimientosExpandido = false;
+        renderMovimientos();
+      }
+
+      function toggleMovimientosListado() {
+        movimientosExpandido = !movimientosExpandido;
         renderMovimientos();
       }
 
@@ -3535,13 +3587,13 @@
       // Event listeners filtros
       document
         .getElementById("filter-tipo")
-        .addEventListener("change", renderMovimientos);
+        .addEventListener("change", collapseMovimientosAndRender);
       document
         .getElementById("filter-cuenta")
-        .addEventListener("change", renderMovimientos);
+        .addEventListener("change", collapseMovimientosAndRender);
       document
         .getElementById("filter-categoria")
-        .addEventListener("change", renderMovimientos);
+        .addEventListener("change", collapseMovimientosAndRender);
       document
         .getElementById("stats-filter-periodo")
         .addEventListener("change", renderCharts);
