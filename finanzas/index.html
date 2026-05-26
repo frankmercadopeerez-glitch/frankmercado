@@ -680,7 +680,7 @@
             </button>
           </div>
 
-          <!-- TAB RESUMEN -->
+            <!-- TAB RESUMEN -->
           <div id="panel-resumen" class="p-4 sm:p-6">
             <div class="flex items-center justify-between mb-4">
               <h2
@@ -694,6 +694,12 @@
                 <span id="summary-title">Resumen del mes</span>
               </h2>
             </div>
+            <!-- Insights rápidos -->
+            <div
+              id="summary-insights"
+              class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4"
+            ></div>
+
             <!-- Alertas de presupuesto -->
             <div id="budget-alerts" class="space-y-2 mb-4"></div>
             <!-- Cards móvil -->
@@ -724,6 +730,16 @@
                       class="px-4 py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wide"
                     >
                       % Usado
+                    </th>
+                    <th
+                      class="px-4 py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wide"
+                    >
+                      Disponible
+                    </th>
+                    <th
+                      class="px-4 py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wide"
+                    >
+                      Estado
                     </th>
                   </tr>
                 </thead>
@@ -1656,7 +1672,8 @@
         "Pago Tarjetas": 500000,
         "Cuota Crédito CFG": 1000000,
       };
-      const CATEGORIAS_RESUMEN_VISIBLES = new Set(["Transporte", "Viajes"]);
+      // Si está vacío, se muestran todas las categorías de gasto.
+      const CATEGORIAS_RESUMEN_VISIBLES = new Set();
 
       // Semilla de deudas iniciales (se crean en Firestore si no existen)
       // montoNegociado = valor acordado tras negociación
@@ -2251,17 +2268,77 @@
           .filter((t) => t.tipo === "gasto")
           .forEach((t) => {
             const categoria = normalizarCategoriaNombre(t.categoria);
-            if (!CATEGORIAS_RESUMEN_VISIBLES.has(categoria)) return;
+            if (
+              CATEGORIAS_RESUMEN_VISIBLES.size > 0 &&
+              !CATEGORIAS_RESUMEN_VISIBLES.has(categoria)
+            )
+              return;
             catMap[categoria] = (catMap[categoria] || 0) + t.monto;
           });
         const entries = Object.entries(catMap).sort((a, b) => b[1] - a[1]);
+
+        const gastoTotal = entries.reduce((s, [, gastado]) => s + gastado, 0);
+        const presupuestoCategoriasActivas = entries.reduce((s, [cat]) => {
+          const presup = PRESUPUESTOS[cat];
+          return s + (presup || 0);
+        }, 0);
+        const categoriasConPresupuesto = entries.filter(
+          ([cat]) => !!PRESUPUESTOS[cat],
+        ).length;
+        const categoriasEnAlerta = entries.filter(([cat, gastado]) => {
+          const presup = PRESUPUESTOS[cat];
+          return presup && gastado >= presup * 0.8;
+        }).length;
+        const saldoPresupuestal = presupuestoCategoriasActivas - gastoTotal;
+
+        const insightsEl = document.getElementById("summary-insights");
+        const insightCards = [
+          {
+            label: "Gasto total del mes",
+            value: fmt(gastoTotal),
+            tone: "text-slate-100",
+          },
+          {
+            label: "Presupuesto monitoreado",
+            value:
+              categoriasConPresupuesto > 0
+                ? fmt(presupuestoCategoriasActivas)
+                : "Sin presupuesto",
+            tone: "text-blue-300",
+          },
+          {
+            label: "Margen vs presupuesto",
+            value:
+              categoriasConPresupuesto > 0
+                ? (saldoPresupuestal >= 0 ? "+" : "") + fmt(saldoPresupuestal)
+                : "--",
+            tone:
+              categoriasConPresupuesto === 0
+                ? "text-slate-400"
+                : saldoPresupuestal >= 0
+                  ? "text-green-300"
+                  : "text-red-300",
+          },
+          {
+            label: "Categorías en alerta",
+            value: `${categoriasEnAlerta}`,
+            tone:
+              categoriasEnAlerta === 0 ? "text-green-300" : "text-yellow-300",
+          },
+        ];
+        insightsEl.innerHTML = insightCards
+          .map(
+            (item) =>
+              `<div class="rounded-xl border border-slate-700/70 bg-slate-900/50 p-3"><p class="text-[11px] uppercase tracking-wide text-slate-400 font-semibold">${item.label}</p><p class="text-base sm:text-lg font-bold mt-1 ${item.tone}">${item.value}</p></div>`,
+          )
+          .join("");
 
         // Alertas presupuesto
         const alertsEl = document.getElementById("budget-alerts");
         alertsEl.innerHTML = "";
         entries.forEach(([cat, gastado]) => {
           const presup = PRESUPUESTOS[cat];
-          if (presup && gastado > presup * 0.9) {
+          if (presup && gastado >= presup * 0.8) {
             const pct = Math.round((gastado / presup) * 100);
             const over = gastado > presup;
             const div = document.createElement("div");
@@ -2270,10 +2347,15 @@
               (over
                 ? "bg-red-50 text-red-700 border border-red-200"
                 : "bg-yellow-50 text-yellow-700 border border-yellow-200");
-            div.innerHTML = `<i data-lucide="${over ? "alert-circle" : "alert-triangle"}" class="w-3.5 h-3.5 flex-shrink-0"></i><span><strong>${cat}</strong>: ${fmt(gastado)} de ${fmt(presup)} (${pct}%)</span>`;
+            div.innerHTML = `<i data-lucide="${over ? "alert-circle" : "alert-triangle"}" class="w-3.5 h-3.5 flex-shrink-0"></i><span><strong>${cat}</strong>: ${fmt(gastado)} de ${fmt(presup)} (${pct}%) ${over ? "- Excedido" : "- Cerca del límite"}</span>`;
             alertsEl.appendChild(div);
           }
         });
+
+        if (!alertsEl.innerHTML) {
+          alertsEl.innerHTML =
+            '<div class="rounded-xl border border-green-200 bg-green-50 text-green-700 text-xs p-2.5 flex items-center gap-2"><i data-lucide="shield-check" class="w-3.5 h-3.5"></i><span>Sin alertas fuertes. Tus categorías están bajo control este mes.</span></div>';
+        }
 
         // Cards móvil
         const sc = document.getElementById("summary-cards");
@@ -2284,11 +2366,21 @@
             ? Math.min(Math.round((gastado / presup) * 100), 100)
             : null;
           const over = presup && gastado > presup;
+          const nearLimit = presup && !over && gastado >= presup * 0.8;
           const div = document.createElement("div");
           div.className =
             "rounded-xl border-l-4 p-3 bg-slate-50 " +
-            (over ? "border-red-400" : "border-slate-300");
-          div.innerHTML = `<div class="flex justify-between items-center mb-1.5"><span class="font-semibold text-slate-800 text-sm">${cat}</span><span class="text-sm font-bold ${over ? "text-red-600" : "text-slate-700"}">${fmt(gastado)}</span></div>${presup ? `<div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%;background:${over ? "#ef4444" : "#22c55e"}"></div></div><p class="text-xs text-slate-400 mt-1">${pct}% del presupuesto</p>` : ""}`;
+            (over
+              ? "border-red-400"
+              : nearLimit
+                ? "border-yellow-400"
+                : "border-slate-300");
+          const estadoLabel = over
+            ? "Excedido"
+            : nearLimit
+              ? "Cerca del límite"
+              : "Controlado";
+          div.innerHTML = `<div class="flex justify-between items-center mb-1.5"><span class="font-semibold text-slate-800 text-sm">${cat}</span><span class="text-sm font-bold ${over ? "text-red-600" : "text-slate-700"}">${fmt(gastado)}</span></div>${presup ? `<div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%;background:${over ? "#ef4444" : nearLimit ? "#eab308" : "#22c55e"}"></div></div><p class="text-xs text-slate-400 mt-1">${pct}% del presupuesto · ${estadoLabel}</p>` : '<p class="text-xs text-slate-400 mt-1">Sin presupuesto definido</p>'}`;
           sc.appendChild(div);
         });
 
@@ -2297,16 +2389,18 @@
         sb.innerHTML = "";
         if (entries.length === 0) {
           sb.innerHTML =
-            '<tr><td colspan="4" class="text-center py-10 text-slate-400 text-sm">Sin gastos este mes.</td></tr>';
+            '<tr><td colspan="6" class="text-center py-10 text-slate-400 text-sm">Sin gastos este mes.</td></tr>';
           return;
         }
         entries.forEach(([cat, gastado]) => {
           const presup = PRESUPUESTOS[cat];
           const pct = presup ? Math.round((gastado / presup) * 100) : null;
           const over = presup && gastado > presup;
+          const nearLimit = presup && !over && gastado >= presup * 0.8;
+          const disponible = presup ? presup - gastado : null;
           const tr = document.createElement("tr");
           tr.className = "hover:bg-slate-50 transition";
-          tr.innerHTML = `<td class="px-4 py-3 text-sm font-medium text-slate-700">${cat}</td><td class="px-4 py-3 text-sm text-right font-semibold ${over ? "text-red-600" : "text-slate-800"}">${fmt(gastado)}</td><td class="px-4 py-3 text-sm text-right text-slate-400">${presup ? fmt(presup) : "--"}</td><td class="px-4 py-3 text-right"><span class="px-2 py-0.5 rounded-full text-xs font-bold ${over ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"}">${pct !== null ? pct + "%" : "--"}</span></td>`;
+          tr.innerHTML = `<td class="px-4 py-3 text-sm font-medium text-slate-700">${cat}</td><td class="px-4 py-3 text-sm text-right font-semibold ${over ? "text-red-600" : "text-slate-800"}">${fmt(gastado)}</td><td class="px-4 py-3 text-sm text-right text-slate-400">${presup ? fmt(presup) : "--"}</td><td class="px-4 py-3 text-right"><span class="px-2 py-0.5 rounded-full text-xs font-bold ${over ? "bg-red-100 text-red-800" : nearLimit ? "bg-yellow-100 text-yellow-800" : "bg-green-100 text-green-800"}">${pct !== null ? pct + "%" : "--"}</span></td><td class="px-4 py-3 text-sm text-right ${disponible !== null ? disponible >= 0 ? "text-green-600" : "text-red-600" : "text-slate-400"}">${disponible !== null ? fmt(disponible) : "--"}</td><td class="px-4 py-3 text-right"><span class="px-2 py-0.5 rounded-full text-xs font-semibold ${over ? "bg-red-100 text-red-800" : nearLimit ? "bg-yellow-100 text-yellow-800" : "bg-green-100 text-green-800"}">${presup ? over ? "Excedido" : nearLimit ? "Alerta" : "Controlado" : "Sin presupuesto"}</span></td>`;
           sb.appendChild(tr);
         });
         lucide.createIcons();
