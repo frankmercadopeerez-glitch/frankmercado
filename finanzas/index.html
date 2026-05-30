@@ -678,6 +678,12 @@
                 >Nuevo</span
               >
             </button>
+            <button onclick="showTab('pagos')" id="tab-pagos" class="tab-btn">
+              <span class="flex items-center gap-1.5"
+                ><i data-lucide="calendar-check" class="w-3.5 h-3.5"></i
+                >Pagos</span
+              >
+            </button>
           </div>
 
             <!-- TAB RESUMEN -->
@@ -1320,6 +1326,11 @@
             </div>
           </div>
         </div>
+        <!-- TAB PAGOS RECURRENTES -->
+        <div id="panel-pagos" class="hidden p-4 sm:p-6">
+          <div id="pagos-content"></div>
+        </div>
+
         <!-- /tabs card -->
       </div>
     </div>
@@ -1561,6 +1572,84 @@
       </div>
     </div>
 
+    <!-- MODAL NUEVO PAGO RECURRENTE -->
+    <div
+      id="modal-nuevo-pago"
+      class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+    >
+      <div
+        class="rounded-2xl p-6 w-full max-w-sm shadow-2xl"
+        style="background: #161b27; border: 1px solid #252d3f"
+      >
+        <h3 class="font-bold text-white mb-4 flex items-center gap-2">
+          <i data-lucide="calendar-plus" class="w-4 h-4" style="color: #b8904d"></i>
+          Nuevo Pago Recurrente
+        </h3>
+        <div class="space-y-3">
+          <input
+            type="text"
+            id="pago-nombre"
+            placeholder="Ej. Netflix, Arriendo, Luz..."
+            class="block w-full rounded-xl p-3 text-sm focus:outline-none text-white placeholder-slate-500"
+            style="background: #0f1117; border: 1px solid #252d3f"
+          />
+          <div class="flex gap-2">
+            <input
+              type="text"
+              id="pago-monto"
+              placeholder="Monto"
+              inputmode="numeric"
+              oninput="formatMontoInput(this)"
+              class="flex-1 rounded-xl p-3 text-sm focus:outline-none font-semibold text-white placeholder-slate-500"
+              style="background: #0f1117; border: 1px solid #252d3f"
+            />
+            <select
+              id="pago-moneda"
+              class="rounded-xl p-3 text-sm focus:outline-none text-white"
+              style="background: #0f1117; border: 1px solid #252d3f; min-width: 80px"
+            >
+              <option value="COP">COP</option>
+              <option value="USD">USD</option>
+            </select>
+          </div>
+          <div>
+            <label
+              class="block text-xs font-semibold mb-1.5 uppercase tracking-wide"
+              style="color: #94a3b8"
+              >Día(s) de pago — separados por coma</label
+            >
+            <input
+              type="text"
+              id="pago-dias"
+              placeholder="Ej. 25  ó  15, 30"
+              class="block w-full rounded-xl p-3 text-sm focus:outline-none text-white placeholder-slate-500"
+              style="background: #0f1117; border: 1px solid #252d3f"
+            />
+          </div>
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input type="checkbox" id="pago-aproximado" />
+            <span class="text-xs" style="color: #94a3b8">Monto aproximado</span>
+          </label>
+        </div>
+        <div class="flex gap-2 mt-4">
+          <button
+            onclick="cerrarModalNuevoPago()"
+            class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
+            style="border: 2px solid #252d3f; color: #94a3b8; background: transparent"
+          >
+            Cancelar
+          </button>
+          <button
+            onclick="guardarNuevoPago()"
+            class="flex-1 py-2.5 rounded-xl text-white text-sm font-semibold"
+            style="background: linear-gradient(135deg, #1a365d, #0d2540)"
+          >
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div id="toast"></div>
 
     <script>
@@ -1691,6 +1780,18 @@
       // Si está vacío, se muestran todas las categorías de gasto.
       const CATEGORIAS_RESUMEN_VISIBLES = new Set();
 
+      const PAGOS_SEMILLA = [
+        { nombre: "WiFi y Plan Móvil", monto: 120000, esAproximado: false, diasPago: [7], moneda: "COP", activo: true },
+        { nombre: "iCloud", monto: 50000, esAproximado: false, diasPago: [15], moneda: "COP", activo: true },
+        { nombre: "Cuota Carro Jair", monto: 600000, esAproximado: false, diasPago: [15, 30], moneda: "COP", activo: true },
+        { nombre: "Arriendo", monto: 750000, esAproximado: false, diasPago: [20], moneda: "COP", activo: true },
+        { nombre: "Agua", monto: 130000, esAproximado: true, diasPago: [20], moneda: "COP", activo: true },
+        { nombre: "Netflix", monto: 50000, esAproximado: false, diasPago: [25], moneda: "COP", activo: true },
+        { nombre: "Luz", monto: 120000, esAproximado: true, diasPago: [25], moneda: "COP", activo: true },
+        { nombre: "Gas", monto: 40000, esAproximado: true, diasPago: [25], moneda: "COP", activo: true },
+        { nombre: "Claude AI", monto: 20, esAproximado: false, diasPago: [28], moneda: "USD", activo: true },
+      ];
+
       // Semilla de deudas iniciales (se crean en Firestore si no existen)
       // montoNegociado = valor acordado tras negociación
       const DEUDAS_SEMILLA = [
@@ -1779,6 +1880,8 @@
         auth = null;
       let transactions = [];
       let deudas = [];
+      let pagosRecurrentes = [];
+      let pagosChecks = [];
       const _td = new Date();
       const todayStr =
         _td.getFullYear() +
@@ -1839,7 +1942,7 @@
       let movimientosExpandido = false;
       function showTab(tab) {
         currentTab = tab;
-        ["resumen", "movimientos", "estadisticas", "deudas", "nuevo"].forEach(
+        ["resumen", "movimientos", "estadisticas", "deudas", "nuevo", "pagos"].forEach(
           (t) => {
             document
               .getElementById("panel-" + t)
@@ -1857,6 +1960,7 @@
         if (tab === "estadisticas") renderCharts();
         if (tab === "movimientos") renderMovimientos();
         if (tab === "deudas") renderDeudas();
+        if (tab === "pagos") renderPagos();
         lucide.createIcons();
       }
 
@@ -2020,6 +2124,51 @@
                 renderNetWorth();
               },
               (err) => console.error("Firestore deudas:", err),
+            );
+
+            // Cargar / inicializar pagos recurrentes
+            let _seedingPagos = false;
+            db.collection("pagos_recurrentes_frank").onSnapshot(
+              (snap) => {
+                if (_seedingPagos) return;
+                if (snap.empty && !localStorage.getItem("pagos_seeded_v1")) {
+                  _seedingPagos = true;
+                  const batch = db.batch();
+                  PAGOS_SEMILLA.forEach((seed) => {
+                    const ref = db.collection("pagos_recurrentes_frank").doc();
+                    batch.set(ref, { ...seed, creadoEn: new Date().toISOString() });
+                  });
+                  batch.commit().then(() => {
+                    localStorage.setItem("pagos_seeded_v1", "1");
+                    _seedingPagos = false;
+                  }).catch(() => { _seedingPagos = false; });
+                  return;
+                }
+                if (snap.empty) {
+                  // Re-sembrar si alguien borró todo manualmente
+                  _seedingPagos = true;
+                  const rebatch = db.batch();
+                  PAGOS_SEMILLA.forEach((seed) => {
+                    const ref = db.collection("pagos_recurrentes_frank").doc();
+                    rebatch.set(ref, { ...seed, creadoEn: new Date().toISOString() });
+                  });
+                  rebatch.commit()
+                    .then(() => { _seedingPagos = false; })
+                    .catch(() => { _seedingPagos = false; });
+                  return;
+                }
+                pagosRecurrentes = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+                if (currentTab === "pagos") renderPagos();
+              },
+              (err) => console.error("Firestore pagos:", err),
+            );
+
+            db.collection("pagos_checks_frank").onSnapshot(
+              (snap) => {
+                pagosChecks = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+                if (currentTab === "pagos") renderPagos();
+              },
+              (err) => console.error("Firestore pagos_checks:", err),
             );
           } else {
             document.getElementById("lock-screen").classList.remove("hidden");
@@ -2257,6 +2406,7 @@
         if (currentTab === "movimientos") renderMovimientos();
         if (currentTab === "estadisticas") renderCharts();
         if (currentTab === "deudas") renderDeudas();
+        if (currentTab === "pagos") renderPagos();
       }
 
       function renderKPIs(mes) {
@@ -3614,6 +3764,270 @@
       document
         .getElementById("tx-categoria")
         .addEventListener("change", syncPrestamoDeudaOption);
+
+      // ── Pagos Recurrentes ─────────────────────────────────
+      const USD_TRM = 4200;
+
+      function renderPagos() {
+        const mesStr = mesSel.y + "-" + String(mesSel.m + 1).padStart(2, "0");
+        const today = nowD.getDate();
+        const isCurrentMonth =
+          mesSel.y === nowD.getFullYear() && mesSel.m === nowD.getMonth();
+
+        const items = [];
+        pagosRecurrentes
+          .filter((p) => p.activo !== false)
+          .forEach((pago) => {
+            (pago.diasPago || []).forEach((dia) => {
+              const check = pagosChecks.find(
+                (c) => c.pagoId === pago.id && c.diaPago === dia && c.mes === mesStr,
+              );
+              const montoCOP =
+                pago.moneda === "USD" ? pago.monto * USD_TRM : pago.monto;
+              items.push({ pago, dia, pagado: !!check, checkId: check ? check.id : null, montoCOP });
+            });
+          });
+
+        items.sort((a, b) => a.dia - b.dia);
+
+        const totalItems = items.length;
+        const paidItems = items.filter((i) => i.pagado).length;
+        const totalCOP = items.reduce((s, i) => s + i.montoCOP, 0);
+        const paidCOP = items.filter((i) => i.pagado).reduce((s, i) => s + i.montoCOP, 0);
+        const pendingCOP = totalCOP - paidCOP;
+        const pct = totalCOP > 0 ? Math.round((paidCOP / totalCOP) * 100) : 0;
+        const hasUSD = items.some((i) => i.pago.moneda === "USD");
+
+        const barColor =
+          pct === 100 ? "#22c55e" : pct >= 70 ? "#b8904d" : "#3b82f6";
+
+        let html = `
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-sm font-semibold flex items-center gap-2" style="color:#e2e8f0">
+              <i data-lucide="calendar-check" class="w-4 h-4" style="color:#b8904d"></i>
+              Pagos · ${MESES[mesSel.m]} ${mesSel.y}
+            </h2>
+            <button
+              onclick="abrirModalNuevoPago()"
+              class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg"
+              style="background:#1a365d;color:#93c5fd"
+            >
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>Agregar
+            </button>
+          </div>
+
+          <div class="rounded-2xl p-4 mb-4" style="background:#161b27;border:1px solid #252d3f">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold" style="color:#94a3b8">${paidItems} de ${totalItems} pagados</span>
+              <span class="text-xs font-bold" style="color:${pct===100?'#22c55e':'#b8904d'}">${pct}%</span>
+            </div>
+            <div class="w-full h-2 rounded-full overflow-hidden" style="background:#0f1117">
+              <div class="h-2 rounded-full transition-all duration-500" style="width:${pct}%;background:${barColor}"></div>
+            </div>
+            <div class="grid grid-cols-3 gap-2 mt-3 text-center">
+              <div>
+                <div class="text-xs" style="color:#64748b">Total mes</div>
+                <div class="text-sm font-bold" style="color:#e2e8f0">${fmt(totalCOP)}${hasUSD ? "*" : ""}</div>
+              </div>
+              <div>
+                <div class="text-xs" style="color:#64748b">Pagado</div>
+                <div class="text-sm font-bold" style="color:#22c55e">${fmt(paidCOP)}</div>
+              </div>
+              <div>
+                <div class="text-xs" style="color:#64748b">Pendiente</div>
+                <div class="text-sm font-bold" style="color:${pendingCOP > 0 ? "#f87171" : "#22c55e"}">${fmt(pendingCOP)}</div>
+              </div>
+            </div>
+            ${hasUSD ? `<p class="text-xs mt-2 text-center" style="color:#475569">* USD a TRM referencial ~$${USD_TRM.toLocaleString("es-CO")}</p>` : ""}
+          </div>
+
+          <div class="space-y-2">
+        `;
+
+        if (items.length === 0) {
+          html += `
+            <div class="text-center py-10" style="color:#475569">
+              <i data-lucide="calendar-off" class="w-8 h-8 mx-auto mb-2 opacity-40"></i>
+              <p class="text-sm">Sin pagos recurrentes configurados</p>
+            </div>
+          `;
+        }
+
+        items.forEach(({ pago, dia, pagado, checkId, montoCOP }) => {
+          const isOverdue = isCurrentMonth && dia < today && !pagado;
+          const isToday = isCurrentMonth && dia === today && !pagado;
+
+          let statusColor = "#64748b";
+          let dayBg = "#161b27";
+          let dayBorder = "#252d3f";
+          let rowBorder = "#252d3f";
+
+          if (pagado) {
+            statusColor = "#22c55e";
+            dayBg = "#14532d22";
+            dayBorder = "#22c55e44";
+            rowBorder = "#22c55e22";
+          } else if (isOverdue) {
+            statusColor = "#f87171";
+            dayBg = "#7f1d1d22";
+            dayBorder = "#ef444444";
+            rowBorder = "#ef444422";
+          } else if (isToday) {
+            statusColor = "#fbbf24";
+            dayBg = "#78350f22";
+            dayBorder = "#f59e0b44";
+            rowBorder = "#f59e0b22";
+          }
+
+          const amountLabel =
+            (pago.esAproximado ? "~" : "") +
+            (pago.moneda === "USD"
+              ? `$${pago.monto} USD`
+              : fmt(pago.monto));
+
+          html += `
+            <div class="flex items-center gap-3 rounded-xl p-3" style="background:#161b27;border:1px solid ${rowBorder}">
+              <div
+                class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center"
+                style="background:${dayBg};border:1px solid ${dayBorder}"
+              >
+                <span class="text-lg font-black leading-none" style="color:${statusColor}">${dia}</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span
+                    class="text-sm font-semibold truncate"
+                    style="color:${pagado ? "#475569" : "#e2e8f0"};${pagado ? "text-decoration:line-through" : ""}"
+                  >${pago.nombre}</span>
+                  ${pago.moneda === "USD" ? '<span class="text-xs px-1.5 py-0.5 rounded-full font-bold" style="background:#1e3a5f;color:#60a5fa">USD</span>' : ""}
+                  ${pago.esAproximado ? '<span class="text-xs px-1.5 py-0.5 rounded-full" style="background:#292211;color:#d97706">aprox</span>' : ""}
+                </div>
+                <div class="text-xs font-bold mt-0.5" style="color:${pagado ? "#475569" : statusColor === "#64748b" ? "#b8904d" : statusColor}">
+                  ${amountLabel}
+                  ${isOverdue ? '<span style="color:#f87171"> · vencido</span>' : ""}
+                  ${isToday ? '<span style="color:#fbbf24"> · hoy</span>' : ""}
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5 flex-shrink-0">
+                ${
+                  pagado
+                    ? `<button
+                        onclick="togglePagoCheck('${pago.id}',${dia},'${mesStr}','${checkId}')"
+                        class="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-semibold"
+                        style="background:#14532d33;color:#22c55e;border:1px solid #22c55e44"
+                      ><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>Pagado</button>`
+                    : `<button
+                        onclick="togglePagoCheck('${pago.id}',${dia},'${mesStr}',null)"
+                        class="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-semibold"
+                        style="background:#0f1117;color:#94a3b8;border:1px solid #252d3f"
+                      ><i data-lucide="circle" class="w-3.5 h-3.5"></i>Pagar</button>`
+                }
+                <button
+                  onclick="eliminarPagoRecurrente('${pago.id}')"
+                  class="p-1.5 rounded-lg"
+                  style="color:#334155"
+                  title="Eliminar"
+                ><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+              </div>
+            </div>
+          `;
+        });
+
+        html += `</div>`;
+        document.getElementById("pagos-content").innerHTML = html;
+        lucide.createIcons();
+      }
+
+      async function togglePagoCheck(pagoId, diaPago, mes, checkId) {
+        try {
+          if (checkId) {
+            await db.collection("pagos_checks_frank").doc(checkId).delete();
+            showToast("Pago desmarcado");
+          } else {
+            await db.collection("pagos_checks_frank").add({
+              pagoId,
+              diaPago,
+              mes,
+              pagado: true,
+              creadoEn: new Date().toISOString(),
+            });
+            showToast("Pago marcado ✓");
+          }
+        } catch (e) {
+          console.error("togglePagoCheck:", e);
+          showToast("Error al actualizar", "delete");
+        }
+      }
+
+      function abrirModalNuevoPago() {
+        document.getElementById("pago-nombre").value = "";
+        document.getElementById("pago-monto").value = "";
+        document.getElementById("pago-moneda").value = "COP";
+        document.getElementById("pago-dias").value = "";
+        document.getElementById("pago-aproximado").checked = false;
+        document.getElementById("modal-nuevo-pago").classList.remove("hidden");
+        lucide.createIcons();
+      }
+
+      function cerrarModalNuevoPago() {
+        document.getElementById("modal-nuevo-pago").classList.add("hidden");
+      }
+
+      async function guardarNuevoPago() {
+        const nombre = document.getElementById("pago-nombre").value.trim();
+        const monto = getMontoValue("pago-monto");
+        const moneda = document.getElementById("pago-moneda").value;
+        const diasRaw = document.getElementById("pago-dias").value;
+        const esAproximado = document.getElementById("pago-aproximado").checked;
+
+        if (!nombre || !diasRaw) {
+          showToast("Completa todos los campos", "delete");
+          return;
+        }
+        if (monto <= 0) {
+          showToast("Monto inválido", "delete");
+          return;
+        }
+        const diasPago = diasRaw
+          .split(",")
+          .map((d) => parseInt(d.trim(), 10))
+          .filter((d) => d >= 1 && d <= 31);
+        if (diasPago.length === 0) {
+          showToast("Ingresa al menos un día válido (1-31)", "delete");
+          return;
+        }
+        try {
+          await db.collection("pagos_recurrentes_frank").add({
+            nombre,
+            monto,
+            moneda,
+            diasPago,
+            esAproximado,
+            activo: true,
+            creadoEn: new Date().toISOString(),
+          });
+          cerrarModalNuevoPago();
+          showToast("Pago recurrente agregado ✓");
+        } catch (e) {
+          console.error("guardarNuevoPago:", e);
+          showToast("Error al guardar", "delete");
+        }
+      }
+
+      async function eliminarPagoRecurrente(id) {
+        if (!confirm("¿Eliminar este pago recurrente?")) return;
+        try {
+          await db.collection("pagos_recurrentes_frank").doc(id).delete();
+          showToast("Pago eliminado", "delete");
+        } catch (e) {
+          console.error("eliminarPagoRecurrente:", e);
+        }
+      }
+
+      // Cerrar modal nuevo pago al click fuera
+      document.getElementById("modal-nuevo-pago").addEventListener("click", (e) => {
+        if (e.target === e.currentTarget) cerrarModalNuevoPago();
+      });
 
       // Cerrar modales al click fuera
       document.getElementById("modal-editar-deuda").addEventListener("click", (e) => {
