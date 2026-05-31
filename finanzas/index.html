@@ -1766,11 +1766,11 @@
       const PRESUPUESTOS = {
         "WiFi y Plan Móvil": 119000,
         "Mercado y Comida": 500000,
-        Suscripciones: 150000,
+        Suscripciones: 200000,
         Gimnasio: 100000,
         Transporte: 300000,
         Gasolina: 300000,
-        "Salidas / Entretenimiento": 300000,
+        "Salidas / Entretenimiento": 400000,
         Viajes: 300000,
         "Compras / Ropa": 200000,
         "Publicidad / Meta Ads": 400000,
@@ -1790,6 +1790,7 @@
         { nombre: "Luz", monto: 120000, esAproximado: true, diasPago: [25], moneda: "COP", activo: true },
         { nombre: "Gas", monto: 40000, esAproximado: true, diasPago: [25], moneda: "COP", activo: true },
         { nombre: "Claude AI", monto: 20, esAproximado: false, diasPago: [28], moneda: "USD", activo: true },
+        { nombre: "Claude (suscripción)", monto: 80000, esAproximado: false, diasPago: [30], moneda: "COP", activo: true },
       ];
 
       // Semilla de deudas iniciales (se crean en Firestore si no existen)
@@ -2131,6 +2132,24 @@
             db.collection("pagos_recurrentes_frank").onSnapshot(
               (snap) => {
                 if (_seedingPagos) return;
+                // Reset v2: borrar todo y re-sembrar con semilla actualizada
+                if (!localStorage.getItem("pagos_reset_v2")) {
+                  _seedingPagos = true;
+                  const batch = db.batch();
+                  snap.docs.forEach((d) =>
+                    batch.delete(db.collection("pagos_recurrentes_frank").doc(d.id)),
+                  );
+                  PAGOS_SEMILLA.forEach((seed) => {
+                    const ref = db.collection("pagos_recurrentes_frank").doc();
+                    batch.set(ref, { ...seed, creadoEn: new Date().toISOString() });
+                  });
+                  batch.commit().then(() => {
+                    localStorage.setItem("pagos_reset_v2", "1");
+                    localStorage.setItem("pagos_seeded_v1", "1");
+                    _seedingPagos = false;
+                  }).catch(() => { _seedingPagos = false; });
+                  return;
+                }
                 if (snap.empty && !localStorage.getItem("pagos_seeded_v1")) {
                   _seedingPagos = true;
                   const batch = db.batch();
