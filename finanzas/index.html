@@ -706,6 +706,9 @@
               class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4"
             ></div>
 
+            <!-- Banner transporte hoy -->
+            <div id="transporte-banner" class="mb-4"></div>
+
             <!-- Alertas de presupuesto -->
             <div id="budget-alerts" class="space-y-2 mb-4"></div>
             <!-- Cards móvil -->
@@ -2466,7 +2469,45 @@
               return;
             catMap[categoria] = (catMap[categoria] || 0) + t.monto;
           });
+
+        // Transporte siempre visible aunque sea $0
+        if (!catMap["Transporte"]) catMap["Transporte"] = 0;
+
         const entries = Object.entries(catMap).sort((a, b) => b[1] - a[1]);
+
+        // ── Banner transporte hoy ──────────────────────────────
+        const transporteHoy = transactions
+          .filter(
+            (t) =>
+              t.tipo === "gasto" &&
+              normalizarCategoriaNombre(t.categoria) === "Transporte" &&
+              t.fecha === todayStr,
+          )
+          .reduce((s, t) => s + t.monto, 0);
+        const transporteMes = catMap["Transporte"] || 0;
+        const transportePresup = PRESUPUESTOS["Transporte"] || 0;
+        const transportePct = transportePresup
+          ? Math.min(Math.round((transporteMes / transportePresup) * 100), 100)
+          : null;
+        const bannerEl = document.getElementById("transporte-banner");
+        if (bannerEl) {
+          bannerEl.innerHTML = `
+            <div class="rounded-xl p-3 flex items-center gap-3" style="background:#0f172a;border:1px solid #1e293b">
+              <div class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center" style="background:#1e3a5f">
+                <i data-lucide="car" class="w-4 h-4" style="color:#60a5fa"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-[11px] uppercase tracking-wide font-semibold" style="color:#475569">Transporte hoy</p>
+                <p class="text-base font-black leading-tight" style="color:${transporteHoy > 0 ? "#f87171" : "#475569"}">${transporteHoy > 0 ? fmt(transporteHoy) : "Sin registros"}</p>
+              </div>
+              <div class="text-right flex-shrink-0">
+                <p class="text-[11px] uppercase tracking-wide font-semibold" style="color:#475569">Mes</p>
+                <p class="text-sm font-bold" style="color:#e2e8f0">${fmt(transporteMes)}</p>
+                ${transportePct !== null ? `<p class="text-[10px]" style="color:${transportePct >= 80 ? "#fbbf24" : "#475569"}">${transportePct}% del presupuesto</p>` : ""}
+              </div>
+            </div>
+          `;
+        }
 
         const gastoTotal = entries.reduce((s, [, gastado]) => s + gastado, 0);
         const presupuestoCategoriasActivas = entries.reduce((s, [cat]) => {
