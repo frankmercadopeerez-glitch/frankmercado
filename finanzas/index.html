@@ -109,11 +109,11 @@
       }
       .tab-btn {
         position: relative;
-        color: #7c8fa6;
+        color: #94a3b8;
         font-weight: 500;
         font-size: 0.82rem;
         padding: 0.65rem 1rem;
-        transition: color 0.15s;
+        transition: color 0.15s, background 0.15s;
         white-space: nowrap;
         border-radius: 0;
       }
@@ -130,11 +130,11 @@
       }
       .tab-btn:hover {
         color: #e2e8f0;
-        background: rgba(255, 255, 255, 0.04);
+        background: rgba(184, 144, 77, 0.08);
       }
       .tab-btn.active {
-        color: #e2e8f0;
-        font-weight: 600;
+        color: #b8904d;
+        font-weight: 700;
       }
       .tab-btn.active::after {
         background: #b8904d;
@@ -511,18 +511,26 @@
             <span class="text-xs text-slate-500 ml-auto">Tiempo real</span>
           </div>
           <div class="grid grid-cols-1 gap-3">
-            <div class="glass-card flex flex-col sm:flex-row justify-between items-stretch gap-4 w-full mb-4 p-4" style="background:rgba(10,18,30,0.95)">
-              <div class="flex-1 flex flex-col items-center text-center sm:items-start sm:text-left justify-center">
-                <span class="text-xs font-semibold uppercase tracking-wide mb-1 text-green-300">Saldo Disponible</span>
-                <span class="font-bold text-green-400 leading-tight text-2xl" id="nw-cuentas">$0</span>
+            <div class="glass-card grid grid-cols-2 sm:grid-cols-4 gap-0 w-full mb-4" style="background:rgba(10,18,30,0.95)">
+              <div class="flex flex-col items-center text-center justify-center p-4 border-r border-white/5">
+                <span class="text-[10px] font-semibold uppercase tracking-wide mb-1 text-green-300">Saldo Disponible</span>
+                <span class="font-bold text-green-400 leading-tight text-xl" id="nw-cuentas">$0</span>
+                <span class="text-[9px] text-slate-500 mt-0.5">en cuentas reales</span>
               </div>
-              <div class="flex-1 flex flex-col items-center text-center sm:items-start sm:text-left justify-center">
-                <span class="text-xs font-semibold uppercase tracking-wide mb-1 text-yellow-300">Total en Cuentas</span>
-                <span class="font-bold text-yellow-400 leading-tight text-2xl" id="nw-cuentas-total">$0</span>
+              <div class="flex flex-col items-center text-center justify-center p-4 border-r border-white/5 sm:border-r">
+                <span class="text-[10px] font-semibold uppercase tracking-wide mb-1 text-cyan-300">En Bolsillos</span>
+                <span class="font-bold text-cyan-400 leading-tight text-xl" id="nw-bolsillos">$0</span>
+                <span class="text-[9px] text-slate-500 mt-0.5">ahorros separados</span>
               </div>
-              <div class="flex-1 flex flex-col items-center text-center sm:items-start sm:text-left justify-center">
-                <span class="text-xs font-semibold uppercase tracking-wide mb-1 text-blue-300">Flujo Mes</span>
-                <span class="font-bold text-blue-300 leading-tight text-2xl" id="nw-flujo">$0</span>
+              <div class="flex flex-col items-center text-center justify-center p-4 border-r border-white/5 border-t sm:border-t-0">
+                <span class="text-[10px] font-semibold uppercase tracking-wide mb-1 text-yellow-300">Total en Cuentas</span>
+                <span class="font-bold text-yellow-400 leading-tight text-xl" id="nw-cuentas-total">$0</span>
+                <span class="text-[9px] text-slate-500 mt-0.5">cuentas + bolsillos</span>
+              </div>
+              <div class="flex flex-col items-center text-center justify-center p-4 border-t sm:border-t-0">
+                <span class="text-[10px] font-semibold uppercase tracking-wide mb-1 text-blue-300">Flujo Mes</span>
+                <span class="font-bold text-blue-300 leading-tight text-xl" id="nw-flujo">$0</span>
+                <span class="text-[9px] text-slate-500 mt-0.5">ingresos − gastos</span>
               </div>
             </div>
         </div>
@@ -628,13 +636,15 @@
         <!-- TABS CARD -->
         <div class="glass-card mb-5">
           <div
-            class="flex border-b border-slate-100"
+            class="flex border-b"
             style="
               overflow-x: auto;
               overflow-y: hidden;
               touch-action: pan-x;
               overscroll-behavior-x: contain;
               -webkit-overflow-scrolling: touch;
+              background: linear-gradient(135deg, #050b14 0%, #0d1a2e 100%);
+              border-bottom-color: rgba(184,144,77,0.3);
             "
           >
             <button
@@ -1088,13 +1098,24 @@
                 ></i>
                 Deudas Activas
               </h2>
-              <button
-                onclick="abrirModalNuevaDeuda()"
-                class="flex items-center gap-1.5 text-xs font-semibold text-white px-3 py-2 rounded-xl"
-                style="background: #1a365d"
-              >
-                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Nueva Deuda
-              </button>
+              <div class="flex items-center gap-2">
+                <button
+                  onclick="toggleDeudasSaldo()"
+                  id="btn-toggle-deudas-saldo"
+                  class="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl"
+                  style="background: rgba(184,144,77,0.12); color: #b8904d; border: 1px solid rgba(184,144,77,0.3);"
+                >
+                  <i data-lucide="eye-off" id="icon-toggle-deudas" class="w-3.5 h-3.5"></i>
+                  <span id="label-toggle-deudas">Mostrar saldo</span>
+                </button>
+                <button
+                  onclick="abrirModalNuevaDeuda()"
+                  class="flex items-center gap-1.5 text-xs font-semibold text-white px-3 py-2 rounded-xl"
+                  style="background: #1a365d"
+                >
+                  <i data-lucide="plus" class="w-3.5 h-3.5"></i> Nueva Deuda
+                </button>
+              </div>
             </div>
             <!-- Resumen deudas -->
             <div class="mb-5">
@@ -1110,7 +1131,7 @@
                 >
                   Total Deudas
                 </p>
-                <p class="text-xl font-bold text-white" id="deudas-total">$0</p>
+                <p class="text-xl font-bold text-white" id="deudas-total">••••••</p>
               </div>
             </div>
             <!-- Deudas corto plazo -->
@@ -1161,11 +1182,14 @@
                     class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide"
                     >Hora</label
                   >
+                  <div class="w-full overflow-hidden">
                   <input
                     type="time"
                     id="tx-hora"
                     class="block w-full rounded-xl border border-slate-200 p-3 text-sm text-slate-800 focus:outline-none bg-white"
+                    style="max-width:100%;box-sizing:border-box;"
                   />
+                  </div>
                 </div>
                 <div>
                   <label
@@ -1284,18 +1308,6 @@
                 <div>
                   <label
                     class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide"
-                    >Descripción</label
-                  >
-                  <input
-                    type="text"
-                    id="tx-descripcion"
-                    placeholder="Ej. Quincena lancha, Mercado semanal…"
-                    class="block w-full rounded-xl border border-slate-200 p-3 text-sm focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label
-                    class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide"
                     >Monto (COP)</label
                   >
                   <input
@@ -1307,6 +1319,18 @@
                     autocomplete="off"
                     oninput="formatMontoInput(this)"
                     class="block w-full rounded-xl border border-slate-200 p-3 text-sm focus:outline-none font-semibold text-slate-800"
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide"
+                    >Descripción</label
+                  >
+                  <input
+                    type="text"
+                    id="tx-descripcion"
+                    placeholder="Ej. Quincena lancha, Mercado semanal…"
+                    class="block w-full rounded-xl border border-slate-200 p-3 text-sm focus:outline-none"
                   />
                 </div>
                 <button
@@ -2384,13 +2408,12 @@
       // ── Net Worth ─────────────────────────────────────────
       function renderNetWorth() {
         const saldos = calcularSaldoCuentas();
-        // Disponible: dinero en cuentas reales (incluye Bancolombia, Nu Bank, Falabella, Nequi, Efectivo)
+        // Disponible: dinero en cuentas reales (Bancolombia, Nu Bank, Falabella, Nequi, Efectivo)
         const saldoDisponible = CUENTAS.reduce((s, c) => s + (saldos[c] || 0), 0);
+        // Total en bolsillos
+        const totalBolsillos = BOLSILLOS.reduce((s, b) => s + (saldos[b] || 0), 0);
         // Total en cuentas: cuentas reales + bolsillos
-        const totalCuentas = [...CUENTAS, ...BOLSILLOS].reduce(
-          (s, c) => s + (saldos[c] || 0),
-          0,
-        );
+        const totalCuentas = saldoDisponible + totalBolsillos;
         const totalDeudas = deudas
           .filter((d) => d.saldo > 0)
           .reduce((s, d) => s + (d.montoNegociado || d.saldo), 0);
@@ -2404,12 +2427,14 @@
             .filter((t) => t.tipo === "gasto")
             .reduce((s, t) => s + t.monto, 0);
         const nwCuentasEl = document.getElementById("nw-cuentas");
+        const nwBolsillosEl = document.getElementById("nw-bolsillos");
         const nwCuentasTotalEl = document.getElementById("nw-cuentas-total");
         const nwFlujoEl = document.getElementById("nw-flujo");
         const nwDeudasStatsEl = document.getElementById("nw-deudas-stats");
         const nwTotalStatsEl = document.getElementById("nw-total-stats");
 
         if (nwCuentasEl) nwCuentasEl.textContent = fmt(saldoDisponible);
+        if (nwBolsillosEl) nwBolsillosEl.textContent = fmt(totalBolsillos);
         if (nwCuentasTotalEl) nwCuentasTotalEl.textContent = fmt(totalCuentas);
         if (nwDeudasStatsEl) nwDeudasStatsEl.textContent = fmt(totalDeudas);
         if (nwTotalStatsEl) {
@@ -2818,17 +2843,28 @@
       }
 
       // ── Deudas ────────────────────────────────────────────
+      let deudasSaldoVisible = false;
+
+      function toggleDeudasSaldo() {
+        deudasSaldoVisible = !deudasSaldoVisible;
+        const icon = document.getElementById("icon-toggle-deudas");
+        const label = document.getElementById("label-toggle-deudas");
+        if (icon) icon.setAttribute("data-lucide", deudasSaldoVisible ? "eye" : "eye-off");
+        if (label) label.textContent = deudasSaldoVisible ? "Ocultar saldo" : "Mostrar saldo";
+        renderDeudas();
+        lucide.createIcons();
+      }
+
+      function fmtDeuda(valor) {
+        return deudasSaldoVisible ? fmt(valor) : "••••••";
+      }
+
       function renderDeudas() {
         const totalDeuda = deudas.reduce((s, d) => s + (d.saldo || 0), 0);
-        const totalNegociado = deudas.reduce(
-          (s, d) => s + (d.montoNegociado || d.montoInicial || d.saldo || 0),
-          0,
-        );
-        document.getElementById("deudas-total").textContent = fmt(totalDeuda);
+        document.getElementById("deudas-total").textContent = fmtDeuda(totalDeuda);
 
         const corto = deudas.filter((d) => d.tipo === "corto" && d.saldo > 0);
         const largo = deudas.filter((d) => d.tipo === "largo" && d.saldo > 0);
-        const archivadas = deudas.filter((d) => d.saldo <= 0);
 
         renderDeudaList("deudas-corto", corto);
         renderDeudaList("deudas-largo", largo);
@@ -2857,11 +2893,11 @@
               ? `<span style="background:rgba(34,197,94,0.12);color:#22c55e;border-radius:4px;padding:1px 6px;font-size:0.65rem;font-weight:700;margin-left:6px">-${Math.round((1 - d.montoNegociado / d.montoInicial) * 100)}%</span>`
               : "";
             const origenLine = tieneNegociado
-              ? `<p class="text-xs mt-0.5" style="color:#6e7681">Original: <span style="text-decoration:line-through;color:#6e7681">${fmt(d.montoInicial)}</span>${ahorroTag}</p><p class="text-xs" style="color:#b8904d;font-weight:600">&#128077; Negociado: ${fmt(negociado)}</p>`
-              : `<p class="text-xs mt-0.5" style="color:#6e7681">Original: ${fmt(d.montoInicial)}</p>`;
+              ? `<p class="text-xs mt-0.5" style="color:#6e7681">Original: <span style="text-decoration:line-through;color:#6e7681">${fmtDeuda(d.montoInicial)}</span>${ahorroTag}</p><p class="text-xs" style="color:#b8904d;font-weight:600">&#128077; Negociado: ${fmtDeuda(negociado)}</p>`
+              : `<p class="text-xs mt-0.5" style="color:#6e7681">Original: ${fmtDeuda(d.montoInicial)}</p>`;
             const div = document.createElement("div");
             div.className = "deuda-card";
-            div.innerHTML = `<div class="flex justify-between items-start mb-2"><div class="flex-1 min-w-0 pr-2"><p class="font-semibold text-sm" style="color:#e2e8f0">${d.nombre}</p>${origenLine}<p class="text-xs mt-1">Saldo restante: <span style="font-weight:700;color:#ef4444">${fmt(d.saldo)}</span></p></div><div class="flex flex-col gap-1.5"><button onclick="abrirModalAbonar('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl text-white" style="background:#16a34a">Abonar</button><button onclick="abrirModalEditarDeuda('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl text-white" style="background:#b8904d">Editar</button><button onclick="archivarDeuda('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl border text-center" style="border-color:#252d3f;color:#6e7681">✓ Pagada</button></div></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%;background:${pct >= 100 ? "#22c55e" : "#b8904d"}"></div></div><p class="text-xs mt-1" style="color:#6e7681">${pct}% pagado de ${fmt(negociado)}</p>`;
+            div.innerHTML = `<div class="flex justify-between items-start mb-2"><div class="flex-1 min-w-0 pr-2"><p class="font-semibold text-sm" style="color:#e2e8f0">${d.nombre}</p>${origenLine}<p class="text-xs mt-1">Saldo restante: <span style="font-weight:700;color:#ef4444">${fmtDeuda(d.saldo)}</span></p></div><div class="flex flex-col gap-1.5"><button onclick="abrirModalAbonar('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl text-white" style="background:#16a34a">Abonar</button><button onclick="abrirModalEditarDeuda('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl text-white" style="background:#b8904d">Editar</button><button onclick="archivarDeuda('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl border text-center" style="border-color:#252d3f;color:#6e7681">✓ Pagada</button></div></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%;background:${pct >= 100 ? "#22c55e" : "#b8904d"}"></div></div><p class="text-xs mt-1" style="color:#6e7681">${pct}% pagado de ${fmtDeuda(negociado)}</p>`;
             el.appendChild(div);
           });
       }
