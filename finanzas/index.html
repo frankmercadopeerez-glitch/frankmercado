@@ -1241,7 +1241,6 @@
                       <option value="Nu Bank">Nu Bank</option>
                       <option value="Nequi">Nequi</option>
                       <option value="Efectivo">Efectivo</option>
-                      <option value="Bancolombia">Bancolombia</option>
                     </optgroup>
                     <optgroup label="Bolsillos">
                       <option value="Arriendo, Servicios y Suscripciones">Arriendo, Servicios y Suscripciones</option>
@@ -1267,7 +1266,6 @@
                     <option value="Nu Bank">Nu Bank</option>
                     <option value="Nequi">Nequi</option>
                     <option value="Efectivo">Efectivo</option>
-                    <option value="Bancolombia">Bancolombia</option>
                     <option value="Arriendo, Servicios y Suscripciones">Arriendo, Servicios y Suscripciones</option>
                     <option value="Fondo de Emergencia">
                       Fondo de Emergencia
@@ -1572,7 +1570,6 @@
               <option value="Nu Bank">Nu Bank</option>
               <option value="Nequi">Nequi</option>
               <option value="Efectivo">Efectivo</option>
-              <option value="Bancolombia">Bancolombia</option>
             </select>
           </div>
         </div>
@@ -1686,7 +1683,6 @@
         "Nu Bank",
         "Nequi",
         "Efectivo",
-        "Bancolombia",
       ];
       const BOLSILLOS = [
         "Arriendo, Servicios y Suscripciones",
@@ -1697,7 +1693,6 @@
         "Bolsillo Compra de Carro",
       ];
       const CUENTA_COLORS = {
-        Bancolombia: "#f97316",
         "Nu Bank": "#8b5cf6",
         Falabella: "#3b82f6",
         Nequi: "#ec4899",
@@ -1744,7 +1739,6 @@
 
       // Saldos iniciales (capital real al momento de empezar a registrar — 13 may 2026)
       const SALDOS_INICIALES = {
-        Bancolombia: 0,
         "Nu Bank": 0,
         Falabella: 0,
         Nequi: 0,
@@ -2375,8 +2369,8 @@
         const saldos = calcularSaldoCuentas();
         const grid = document.getElementById("cuentas-grid");
         grid.innerHTML = "";
-        const all = [...CUENTAS, ...BOLSILLOS];
-        all.forEach((c) => {
+
+        function makeCard(c) {
           const s = saldos[c] || 0;
           const color = CUENTA_COLORS[c] || "#64748b";
           const isBolsillo = BOLSILLOS.includes(c);
@@ -2385,7 +2379,7 @@
           const superaTope = Boolean(meta?.tope) && s > meta.tope;
           const div = document.createElement("div");
           div.className =
-            "rounded-xl p-3 min-h-[88px] " +
+            "rounded-xl p-3 min-h-[80px] " +
             (isBolsillo
               ? "border border-dashed border-cyan-700/60 bg-slate-900/80"
               : "border border-slate-200 bg-white shadow-sm");
@@ -2397,18 +2391,27 @@
             : s >= 0
               ? "text-slate-800"
               : "text-red-600";
-          const bolsilloTag = isBolsillo
-            ? '<span class="text-[9px] text-cyan-200 ml-auto bg-cyan-900/40 border border-cyan-700/50 px-1.5 py-0.5 rounded-full">bolsillo</span>'
-            : "";
-          div.innerHTML = `<div class="flex items-start gap-1.5 mb-1"><div class="w-2 h-2 rounded-full flex-shrink-0 mt-1" style="background:${color}"></div><p class="${titleClass}" title="${c}">${c}</p>${bolsilloTag}</div><p class="text-sm font-bold ${montoClass}">${fmt(s)}</p>${meta?.tope ? `<p class="text-[10px] text-slate-400 mt-1">Tope: ${fmt(meta.tope)}</p><div class="h-1.5 rounded-full bg-slate-700 mt-1"><div class="h-1.5 rounded-full" style="width:${pctTope}%;background:${superaTope ? "#22c55e" : color}"></div></div>` : ""}${meta?.metaMensual ? `<p class="text-[10px] text-slate-400 mt-1">Meta mensual: ${fmt(meta.metaMensual)}</p>` : ""}`;
-          grid.appendChild(div);
-        });
+          div.innerHTML = `<div class="flex items-start gap-1.5 mb-1"><div class="w-2 h-2 rounded-full flex-shrink-0 mt-1" style="background:${color}"></div><p class="${titleClass}" title="${c}">${c}</p></div><p class="text-sm font-bold ${montoClass}">${fmt(s)}</p>${meta?.tope ? `<p class="text-[10px] text-slate-400 mt-1">Tope: ${fmt(meta.tope)}</p><div class="h-1.5 rounded-full bg-slate-700 mt-1"><div class="h-1.5 rounded-full" style="width:${pctTope}%;background:${superaTope ? "#22c55e" : color}"></div></div>` : ""}${meta?.metaMensual ? `<p class="text-[10px] text-slate-400 mt-1">Meta: ${fmt(meta.metaMensual)}</p>` : ""}`;
+          return div;
+        }
+
+        // Cuentas reales
+        CUENTAS.forEach((c) => grid.appendChild(makeCard(c)));
+
+        // Divisor con etiqueta
+        const divider = document.createElement("div");
+        divider.className = "col-span-2 sm:col-span-3 lg:col-span-4 flex items-center gap-3 py-1";
+        divider.innerHTML = `<div class="flex-1 h-px" style="background:rgba(6,182,212,0.2)"></div><span class="text-[10px] font-bold uppercase tracking-widest" style="color:#06b6d4">Bolsillos</span><div class="flex-1 h-px" style="background:rgba(6,182,212,0.2)"></div>`;
+        grid.appendChild(divider);
+
+        // Bolsillos
+        BOLSILLOS.forEach((b) => grid.appendChild(makeCard(b)));
       }
 
       // ── Net Worth ─────────────────────────────────────────
       function renderNetWorth() {
         const saldos = calcularSaldoCuentas();
-        // Disponible: dinero en cuentas reales (Bancolombia, Nu Bank, Falabella, Nequi, Efectivo)
+        // Disponible: dinero en cuentas reales (Falabella, Nu Bank, Nequi, Efectivo)
         const saldoDisponible = CUENTAS.reduce((s, c) => s + (saldos[c] || 0), 0);
         // Total en bolsillos
         const totalBolsillos = BOLSILLOS.reduce((s, b) => s + (saldos[b] || 0), 0);
