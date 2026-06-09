@@ -1245,11 +1245,11 @@
                     <optgroup label="Bolsillos">
                       <option value="Arriendo, Servicios y Suscripciones">Arriendo, Servicios y Suscripciones</option>
                       <option value="Fondo de Emergencia">Fondo de Emergencia</option>
-                      <option value="Bolsillo Viajes">Bolsillo Viajes</option>
                       <option value="Bolsillo Cuota Carro">Bolsillo Cuota Carro</option>
                       <option value="Bolsillo Mantenimiento Carro">Bolsillo Mantenimiento Carro</option>
-                      <option value="Bolsillo Compra de Carro">Bolsillo Compra de Carro</option>
                       <option value="Compras Personales">Compras Personales</option>
+                      <option value="Bolsillo Viajes">Bolsillo Viajes</option>
+                      <option value="Bolsillo Compra de Carro">Bolsillo Compra de Carro</option>
                     </optgroup>
                   </select>
                 </div>
@@ -1268,20 +1268,12 @@
                     <option value="Nequi">Nequi</option>
                     <option value="Efectivo">Efectivo</option>
                     <option value="Arriendo, Servicios y Suscripciones">Arriendo, Servicios y Suscripciones</option>
-                    <option value="Fondo de Emergencia">
-                      Fondo de Emergencia
-                    </option>
-                    <option value="Bolsillo Viajes">Bolsillo Viajes</option>
-                    <option value="Bolsillo Cuota Carro">
-                      Bolsillo Cuota Carro
-                    </option>
-                    <option value="Bolsillo Mantenimiento Carro">
-                      Bolsillo Mantenimiento Carro
-                    </option>
-                    <option value="Bolsillo Compra de Carro">
-                      Bolsillo Compra de Carro
-                    </option>
+                    <option value="Fondo de Emergencia">Fondo de Emergencia</option>
+                    <option value="Bolsillo Cuota Carro">Bolsillo Cuota Carro</option>
+                    <option value="Bolsillo Mantenimiento Carro">Bolsillo Mantenimiento Carro</option>
                     <option value="Compras Personales">Compras Personales</option>
+                    <option value="Bolsillo Viajes">Bolsillo Viajes</option>
+                    <option value="Bolsillo Compra de Carro">Bolsillo Compra de Carro</option>
                   </select>
                 </div>
                 <div id="campo-categoria">
@@ -1689,11 +1681,11 @@
       const BOLSILLOS = [
         "Arriendo, Servicios y Suscripciones",
         "Fondo de Emergencia",
-        "Bolsillo Viajes",
         "Bolsillo Cuota Carro",
         "Bolsillo Mantenimiento Carro",
-        "Bolsillo Compra de Carro",
         "Compras Personales",
+        "Bolsillo Viajes",
+        "Bolsillo Compra de Carro",
       ];
       const CUENTA_COLORS = {
         "Nu Bank": "#8b5cf6",
@@ -1718,6 +1710,7 @@
         "Bolsillo Mantenimiento Carro": {
           tope: 300000,
         },
+        "Compras Personales": { tope: 400000 },
       };
 
       function normalizarCuentaNombre(nombre) {
