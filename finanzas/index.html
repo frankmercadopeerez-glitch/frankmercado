@@ -2673,12 +2673,13 @@
             : "";
           const div = document.createElement("div");
           div.className =
-            "rounded-xl border-l-4 p-3 bg-slate-50 " +
+            "rounded-xl border-l-4 p-3 bg-slate-50 cursor-pointer active:opacity-70 transition-opacity " +
             (over
               ? "border-red-400"
               : nearLimit
                 ? "border-yellow-400"
                 : "border-slate-300");
+          div.onclick = () => irAMovimientosCat(cat);
           const estadoLabel = over
             ? "Excedido"
             : nearLimit
@@ -2706,11 +2707,20 @@
             ? `<span class="ml-1 text-[9px] bg-amber-900/40 text-amber-300 border border-amber-700/40 px-1.5 py-0.5 rounded-full">${quincenalLabels[cat]}</span>`
             : "";
           const tr = document.createElement("tr");
-          tr.className = "hover:bg-slate-50 transition";
+          tr.className = "hover:bg-slate-50 transition cursor-pointer";
+          tr.onclick = () => irAMovimientosCat(cat);
           tr.innerHTML = `<td class="px-4 py-3 text-sm font-medium text-slate-700">${cat}${qLabel}</td><td class="px-4 py-3 text-sm text-right font-semibold ${over ? "text-red-600" : "text-slate-800"}">${fmt(gastado)}</td><td class="px-4 py-3 text-sm text-right text-slate-400">${presup ? fmt(presup) : "--"}</td><td class="px-4 py-3 text-right"><span class="px-2 py-0.5 rounded-full text-xs font-bold ${over ? "bg-red-100 text-red-800" : nearLimit ? "bg-yellow-100 text-yellow-800" : "bg-green-100 text-green-800"}">${pct !== null ? pct + "%" : "--"}</span></td><td class="px-4 py-3 text-sm text-right ${disponible !== null ? disponible >= 0 ? "text-green-600" : "text-red-600" : "text-slate-400"}">${disponible !== null ? fmt(disponible) : "--"}</td><td class="px-4 py-3 text-right"><span class="px-2 py-0.5 rounded-full text-xs font-semibold ${over ? "bg-red-100 text-red-800" : nearLimit ? "bg-yellow-100 text-yellow-800" : "bg-green-100 text-green-800"}">${presup ? over ? "Excedido" : nearLimit ? "Alerta" : "Controlado" : "Sin presupuesto"}</span></td>`;
           sb.appendChild(tr);
         });
         lucide.createIcons();
+      }
+
+      function irAMovimientosCat(cat) {
+        const togEl = document.getElementById("toggle-todos-meses");
+        if (togEl) togEl.checked = false;
+        showTab("movimientos");
+        const sel = document.getElementById("filter-categoria");
+        if (sel) { sel.value = cat; renderMovimientos(); }
       }
 
       function renderMovimientos() {
