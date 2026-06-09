@@ -713,7 +713,7 @@
             <!-- Insights rápidos -->
             <div
               id="summary-insights"
-              class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4"
+              class="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-4"
             ></div>
 
             <!-- Banner transporte hoy -->
@@ -2629,7 +2629,7 @@
         insightsEl.innerHTML = insightCards
           .map(
             (item) =>
-              `<div class="rounded-xl border border-slate-700/70 bg-slate-900/50 p-3"><p class="text-[11px] uppercase tracking-wide text-slate-400 font-semibold">${item.label}</p><p class="text-base sm:text-lg font-bold mt-1 ${item.tone}">${item.value}</p></div>`,
+              `<div class="rounded-xl border border-slate-700/70 bg-slate-900/50 p-2.5"><p class="text-[10px] uppercase tracking-wide text-slate-400 font-semibold leading-tight">${item.label}</p><p class="text-sm font-bold mt-0.5 ${item.tone}">${item.value}</p></div>`,
           )
           .join("");
 
@@ -2668,8 +2668,8 @@
             : null;
           const over = presup && gastado > presup;
           const nearLimit = presup && !over && gastado >= presup * 0.8;
-          const qLabel = quincenalLabels[cat]
-            ? `<span class="ml-1 text-[9px] bg-amber-900/40 text-amber-300 border border-amber-700/40 px-1.5 py-0.5 rounded-full">${quincenalLabels[cat]}</span>`
+          const qBadge = quincenalLabels[cat]
+            ? `<span class="inline-block mt-0.5 text-[9px] bg-amber-900/40 text-amber-300 border border-amber-700/40 px-1.5 py-0.5 rounded-full whitespace-nowrap">${quincenalLabels[cat]}</span>`
             : "";
           const div = document.createElement("div");
           div.className =
@@ -2684,7 +2684,7 @@
             : nearLimit
               ? "Cerca del límite"
               : "Controlado";
-          div.innerHTML = `<div class="flex justify-between items-center mb-1.5"><span class="font-semibold text-slate-800 text-sm">${cat}${qLabel}</span><span class="text-sm font-bold ${over ? "text-red-600" : "text-slate-700"}">${fmt(gastado)}</span></div>${presup ? `<div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%;background:${over ? "#ef4444" : nearLimit ? "#eab308" : "#22c55e"}"></div></div><p class="text-xs text-slate-400 mt-1">${pct}% del presupuesto · ${estadoLabel}</p>` : '<p class="text-xs text-slate-400 mt-1">Sin presupuesto definido</p>'}`;
+          div.innerHTML = `<div class="flex justify-between items-start mb-1.5"><div class="flex-1 mr-2"><p class="font-semibold text-slate-800 text-sm leading-tight">${cat}</p>${qBadge}</div><span class="text-sm font-bold flex-shrink-0 ${over ? "text-red-600" : "text-slate-700"}">${fmt(gastado)}</span></div>${presup ? `<div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%;background:${over ? "#ef4444" : nearLimit ? "#eab308" : "#22c55e"}"></div></div><p class="text-xs text-slate-400 mt-1">${pct}% del presupuesto · ${estadoLabel}</p>` : '<p class="text-xs text-slate-400 mt-1">Sin presupuesto definido</p>'}`;
           sc.appendChild(div);
         });
 
