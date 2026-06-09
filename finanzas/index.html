@@ -1810,6 +1810,8 @@
       const PAGOS_SEMILLA = [
         { nombre: "WiFi y Plan Móvil", monto: 120000, esAproximado: false, diasPago: [7], moneda: "COP", activo: true },
         { nombre: "iCloud", monto: 50000, esAproximado: false, diasPago: [15], moneda: "COP", activo: true },
+        { nombre: "Seguro del Carro", monto: 205000, esAproximado: false, diasPago: [15], moneda: "COP", activo: true },
+        { nombre: "Cuota del Carro", monto: 500000, esAproximado: false, diasPago: [15], moneda: "COP", activo: true },
         { nombre: "Cuota Carro Jair", monto: 600000, esAproximado: false, diasPago: [15, 30], moneda: "COP", activo: true },
         { nombre: "Arriendo", monto: 750000, esAproximado: false, diasPago: [20], moneda: "COP", activo: true },
         { nombre: "Agua", monto: 130000, esAproximado: true, diasPago: [20], moneda: "COP", activo: true },
@@ -2160,7 +2162,7 @@
               (snap) => {
                 if (_seedingPagos) return;
                 // Reset v2: borrar todo y re-sembrar con semilla actualizada
-                if (!localStorage.getItem("pagos_reset_v2")) {
+                if (!localStorage.getItem("pagos_reset_v3")) {
                   _seedingPagos = true;
                   const batch = db.batch();
                   snap.docs.forEach((d) =>
@@ -2171,7 +2173,7 @@
                     batch.set(ref, { ...seed, creadoEn: new Date().toISOString() });
                   });
                   batch.commit().then(() => {
-                    localStorage.setItem("pagos_reset_v2", "1");
+                    localStorage.setItem("pagos_reset_v3", "1");
                     localStorage.setItem("pagos_seeded_v1", "1");
                     _seedingPagos = false;
                   }).catch(() => { _seedingPagos = false; });
