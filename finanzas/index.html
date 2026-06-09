@@ -717,7 +717,10 @@
             ></div>
 
             <!-- Banner transporte hoy -->
-            <div id="transporte-banner" class="mb-4"></div>
+            <div id="transporte-banner" class="mb-3"></div>
+
+            <!-- Banner producido carro -->
+            <div id="producido-carro-banner" class="mb-4"></div>
 
             <!-- Alertas de presupuesto -->
             <div id="budget-alerts" class="space-y-2 mb-4"></div>
@@ -2575,6 +2578,34 @@
               </div>
             </div>
           `;
+        }
+
+        // ── Banner producido carro ─────────────────────────────
+        const producidoMes = mes
+          .filter((t) => t.tipo === "ingreso" && t.categoria === "Producido Carro")
+          .reduce((s, t) => s + t.monto, 0);
+        const producidoBanner = document.getElementById("producido-carro-banner");
+        if (producidoBanner) {
+          producidoBanner.innerHTML = producidoMes > 0
+            ? `<div class="rounded-xl p-3 flex items-center gap-3 cursor-pointer active:opacity-70" style="background:#0a1f0f;border:1px solid rgba(34,197,94,0.25)" onclick="irAMovimientosCat('Producido Carro')">
+                <div class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center" style="background:rgba(34,197,94,0.15)">
+                  <i data-lucide="car" class="w-4 h-4" style="color:#4ade80"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-[11px] uppercase tracking-wide font-semibold" style="color:#4ade80">Producido Carro · mes</p>
+                  <p class="text-lg font-black leading-tight" style="color:#86efac">${fmt(producidoMes)}</p>
+                </div>
+                <i data-lucide="chevron-right" class="w-4 h-4 flex-shrink-0" style="color:#4ade80"></i>
+              </div>`
+            : `<div class="rounded-xl p-3 flex items-center gap-3" style="background:#0a1f0f;border:1px solid rgba(34,197,94,0.1)">
+                <div class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center" style="background:rgba(34,197,94,0.08)">
+                  <i data-lucide="car" class="w-4 h-4" style="color:#475569"></i>
+                </div>
+                <div class="flex-1">
+                  <p class="text-[11px] uppercase tracking-wide font-semibold" style="color:#475569">Producido Carro · mes</p>
+                  <p class="text-sm font-semibold" style="color:#475569">Sin registros este mes</p>
+                </div>
+              </div>`;
         }
 
         const gastoTotal = entries.reduce((s, [, gastado]) => s + gastado, 0);
