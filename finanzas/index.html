@@ -1795,13 +1795,18 @@
         "Cuidado Personal": 120000,
         Transporte: 300000,
         Gasolina: 300000,
-        "Salidas / Entretenimiento": 400000,
         Viajes: 300000,
         "Compras / Ropa": 200000,
         "Publicidad / Meta Ads": 400000,
         "Pago Tarjetas": 500000,
         "Cuota Crédito CFG": 1000000,
       };
+      // Categorías con presupuesto quincenal (se resetea el 1 y el 15 de cada mes).
+      // Si en la 1ª quincena se excede el presupuesto, el exceso se descuenta de la 2ª quincena.
+      const PRESUPUESTOS_QUINCENAL = {
+        "Salidas / Entretenimiento": 400000, // 400k/quincena → 800k/mes
+      };
+
       // Si está vacío, se muestran todas las categorías de gasto.
       const CATEGORIAS_RESUMEN_VISIBLES = new Set();
 
@@ -2501,6 +2506,46 @@
         // Transporte siempre visible aunque sea $0
         if (!catMap["Transporte"]) catMap["Transporte"] = 0;
 
+        // ── Presupuestos efectivos (con ajuste quincenal) ──────
+        const effectiveBudgets = { ...PRESUPUESTOS };
+        const quincenalLabels = {};
+        const isMesActual = mesSel.y === nowD.getFullYear() && mesSel.m === nowD.getMonth();
+        const mesPrefix = mesSel.y + "-" + String(mesSel.m + 1).padStart(2, "0");
+
+        Object.keys(PRESUPUESTOS_QUINCENAL).forEach((cat) => {
+          const presupQ = PRESUPUESTOS_QUINCENAL[cat];
+          if (isMesActual) {
+            const hoy = nowD.getDate();
+            const allTx = transactions.filter(
+              (t) => t.tipo === "gasto" &&
+                normalizarCategoriaNombre(t.categoria) === cat &&
+                (t.fecha || "").startsWith(mesPrefix)
+            );
+            const spent1 = allTx
+              .filter((t) => parseInt((t.fecha || "0-0-0").split("-")[2]) < 15)
+              .reduce((s, t) => s + t.monto, 0);
+            const spent2 = allTx
+              .filter((t) => parseInt((t.fecha || "0-0-0").split("-")[2]) >= 15)
+              .reduce((s, t) => s + t.monto, 0);
+            if (hoy < 15) {
+              catMap[cat] = spent1;
+              effectiveBudgets[cat] = presupQ;
+              quincenalLabels[cat] = "1ª quincena";
+            } else {
+              const exceso1 = Math.max(0, spent1 - presupQ);
+              catMap[cat] = spent2;
+              effectiveBudgets[cat] = Math.max(0, presupQ - exceso1);
+              quincenalLabels[cat] = exceso1 > 0
+                ? `2ª quincena · ajustado -${fmt(exceso1)}`
+                : "2ª quincena";
+            }
+          } else {
+            // Mes pasado: presupuesto mensual completo
+            effectiveBudgets[cat] = presupQ * 2;
+            quincenalLabels[cat] = "mensual";
+          }
+        });
+
         const entries = Object.entries(catMap).sort((a, b) => b[1] - a[1]);
 
         // ── Banner transporte hoy ──────────────────────────────
@@ -2539,14 +2584,14 @@
 
         const gastoTotal = entries.reduce((s, [, gastado]) => s + gastado, 0);
         const presupuestoCategoriasActivas = entries.reduce((s, [cat]) => {
-          const presup = PRESUPUESTOS[cat];
+          const presup = effectiveBudgets[cat];
           return s + (presup || 0);
         }, 0);
         const categoriasConPresupuesto = entries.filter(
-          ([cat]) => !!PRESUPUESTOS[cat],
+          ([cat]) => !!effectiveBudgets[cat],
         ).length;
         const categoriasEnAlerta = entries.filter(([cat, gastado]) => {
-          const presup = PRESUPUESTOS[cat];
+          const presup = effectiveBudgets[cat];
           return presup && gastado >= presup * 0.8;
         }).length;
         const saldoPresupuestal = presupuestoCategoriasActivas - gastoTotal;
@@ -2597,17 +2642,18 @@
         const alertsEl = document.getElementById("budget-alerts");
         alertsEl.innerHTML = "";
         entries.forEach(([cat, gastado]) => {
-          const presup = PRESUPUESTOS[cat];
+          const presup = effectiveBudgets[cat];
           if (presup && gastado >= presup * 0.8) {
             const pct = Math.round((gastado / presup) * 100);
             const over = gastado > presup;
+            const qLabel = quincenalLabels[cat] ? ` · ${quincenalLabels[cat]}` : "";
             const div = document.createElement("div");
             div.className =
               "flex items-center gap-2 text-xs rounded-xl p-2.5 " +
               (over
                 ? "bg-red-50 text-red-700 border border-red-200"
                 : "bg-yellow-50 text-yellow-700 border border-yellow-200");
-            div.innerHTML = `<i data-lucide="${over ? "alert-circle" : "alert-triangle"}" class="w-3.5 h-3.5 flex-shrink-0"></i><span><strong>${cat}</strong>: ${fmt(gastado)} de ${fmt(presup)} (${pct}%) ${over ? "- Excedido" : "- Cerca del límite"}</span>`;
+            div.innerHTML = `<i data-lucide="${over ? "alert-circle" : "alert-triangle"}" class="w-3.5 h-3.5 flex-shrink-0"></i><span><strong>${cat}</strong>${qLabel}: ${fmt(gastado)} de ${fmt(presup)} (${pct}%) ${over ? "- Excedido" : "- Cerca del límite"}</span>`;
             alertsEl.appendChild(div);
           }
         });
@@ -2621,12 +2667,15 @@
         const sc = document.getElementById("summary-cards");
         sc.innerHTML = "";
         entries.forEach(([cat, gastado]) => {
-          const presup = PRESUPUESTOS[cat];
+          const presup = effectiveBudgets[cat];
           const pct = presup
             ? Math.min(Math.round((gastado / presup) * 100), 100)
             : null;
           const over = presup && gastado > presup;
           const nearLimit = presup && !over && gastado >= presup * 0.8;
+          const qLabel = quincenalLabels[cat]
+            ? `<span class="ml-1 text-[9px] bg-amber-900/40 text-amber-300 border border-amber-700/40 px-1.5 py-0.5 rounded-full">${quincenalLabels[cat]}</span>`
+            : "";
           const div = document.createElement("div");
           div.className =
             "rounded-xl border-l-4 p-3 bg-slate-50 " +
@@ -2640,7 +2689,7 @@
             : nearLimit
               ? "Cerca del límite"
               : "Controlado";
-          div.innerHTML = `<div class="flex justify-between items-center mb-1.5"><span class="font-semibold text-slate-800 text-sm">${cat}</span><span class="text-sm font-bold ${over ? "text-red-600" : "text-slate-700"}">${fmt(gastado)}</span></div>${presup ? `<div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%;background:${over ? "#ef4444" : nearLimit ? "#eab308" : "#22c55e"}"></div></div><p class="text-xs text-slate-400 mt-1">${pct}% del presupuesto · ${estadoLabel}</p>` : '<p class="text-xs text-slate-400 mt-1">Sin presupuesto definido</p>'}`;
+          div.innerHTML = `<div class="flex justify-between items-center mb-1.5"><span class="font-semibold text-slate-800 text-sm">${cat}${qLabel}</span><span class="text-sm font-bold ${over ? "text-red-600" : "text-slate-700"}">${fmt(gastado)}</span></div>${presup ? `<div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%;background:${over ? "#ef4444" : nearLimit ? "#eab308" : "#22c55e"}"></div></div><p class="text-xs text-slate-400 mt-1">${pct}% del presupuesto · ${estadoLabel}</p>` : '<p class="text-xs text-slate-400 mt-1">Sin presupuesto definido</p>'}`;
           sc.appendChild(div);
         });
 
@@ -2653,14 +2702,17 @@
           return;
         }
         entries.forEach(([cat, gastado]) => {
-          const presup = PRESUPUESTOS[cat];
+          const presup = effectiveBudgets[cat];
           const pct = presup ? Math.round((gastado / presup) * 100) : null;
           const over = presup && gastado > presup;
           const nearLimit = presup && !over && gastado >= presup * 0.8;
           const disponible = presup ? presup - gastado : null;
+          const qLabel = quincenalLabels[cat]
+            ? `<span class="ml-1 text-[9px] bg-amber-900/40 text-amber-300 border border-amber-700/40 px-1.5 py-0.5 rounded-full">${quincenalLabels[cat]}</span>`
+            : "";
           const tr = document.createElement("tr");
           tr.className = "hover:bg-slate-50 transition";
-          tr.innerHTML = `<td class="px-4 py-3 text-sm font-medium text-slate-700">${cat}</td><td class="px-4 py-3 text-sm text-right font-semibold ${over ? "text-red-600" : "text-slate-800"}">${fmt(gastado)}</td><td class="px-4 py-3 text-sm text-right text-slate-400">${presup ? fmt(presup) : "--"}</td><td class="px-4 py-3 text-right"><span class="px-2 py-0.5 rounded-full text-xs font-bold ${over ? "bg-red-100 text-red-800" : nearLimit ? "bg-yellow-100 text-yellow-800" : "bg-green-100 text-green-800"}">${pct !== null ? pct + "%" : "--"}</span></td><td class="px-4 py-3 text-sm text-right ${disponible !== null ? disponible >= 0 ? "text-green-600" : "text-red-600" : "text-slate-400"}">${disponible !== null ? fmt(disponible) : "--"}</td><td class="px-4 py-3 text-right"><span class="px-2 py-0.5 rounded-full text-xs font-semibold ${over ? "bg-red-100 text-red-800" : nearLimit ? "bg-yellow-100 text-yellow-800" : "bg-green-100 text-green-800"}">${presup ? over ? "Excedido" : nearLimit ? "Alerta" : "Controlado" : "Sin presupuesto"}</span></td>`;
+          tr.innerHTML = `<td class="px-4 py-3 text-sm font-medium text-slate-700">${cat}${qLabel}</td><td class="px-4 py-3 text-sm text-right font-semibold ${over ? "text-red-600" : "text-slate-800"}">${fmt(gastado)}</td><td class="px-4 py-3 text-sm text-right text-slate-400">${presup ? fmt(presup) : "--"}</td><td class="px-4 py-3 text-right"><span class="px-2 py-0.5 rounded-full text-xs font-bold ${over ? "bg-red-100 text-red-800" : nearLimit ? "bg-yellow-100 text-yellow-800" : "bg-green-100 text-green-800"}">${pct !== null ? pct + "%" : "--"}</span></td><td class="px-4 py-3 text-sm text-right ${disponible !== null ? disponible >= 0 ? "text-green-600" : "text-red-600" : "text-slate-400"}">${disponible !== null ? fmt(disponible) : "--"}</td><td class="px-4 py-3 text-right"><span class="px-2 py-0.5 rounded-full text-xs font-semibold ${over ? "bg-red-100 text-red-800" : nearLimit ? "bg-yellow-100 text-yellow-800" : "bg-green-100 text-green-800"}">${presup ? over ? "Excedido" : nearLimit ? "Alerta" : "Controlado" : "Sin presupuesto"}</span></td>`;
           sb.appendChild(tr);
         });
         lucide.createIcons();
