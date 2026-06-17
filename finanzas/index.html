@@ -316,7 +316,15 @@
         background-position: right 0.75rem center;
         padding-right: 2.5rem !important;
       }
-      input[type="date"] { -webkit-appearance: none; appearance: none; color: var(--text); }
+      input[type="date"],
+      input[type="time"] {
+        -webkit-appearance: none;
+        appearance: none;
+        color: var(--text);
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+      }
       input:focus, select:focus {
         outline: none;
         border-color: var(--accent) !important;
@@ -1207,14 +1215,11 @@
                     class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide"
                     >Hora</label
                   >
-                  <div class="w-full overflow-hidden">
                   <input
                     type="time"
                     id="tx-hora"
                     class="block w-full rounded-xl border border-slate-200 p-3 text-sm text-slate-800 focus:outline-none bg-white"
-                    style="max-width:100%;box-sizing:border-box;"
                   />
-                  </div>
                 </div>
                 <div>
                   <label
