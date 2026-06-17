@@ -1095,6 +1095,17 @@
             </div>
           </div>
 
+          <!-- HISTORIAL PATRIMONIO -->
+          <div class="glass-card p-4 mt-4">
+            <p class="text-xs font-semibold uppercase tracking-widest mb-3" style="color: var(--text2)">
+              Evolución del Patrimonio · Historial mensual
+            </p>
+            <div id="chart-patrimonio-wrap" style="position:relative;height:200px">
+              <canvas id="chart-patrimonio"></canvas>
+            </div>
+            <p id="patrimonio-hist-empty" class="text-xs text-center py-6 hidden" style="color: var(--text3)">Aún sin datos históricos. Se registra automáticamente cada mes.</p>
+          </div>
+
           <!-- TAB DEUDAS -->
           <div id="panel-deudas" class="p-4 sm:p-6 hidden">
             <div class="flex items-center justify-between mb-4">
@@ -1351,6 +1362,24 @@
           <div id="notas-container" class="notas-grid"></div>
         </div>
 
+        <!-- TAB PRESUPUESTOS -->
+        <div id="panel-presupuestos" class="hidden p-4 sm:p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-sm font-semibold flex items-center gap-2" style="color: var(--text)">
+              <i data-lucide="sliders-horizontal" class="w-4 h-4" style="color: var(--accent)"></i>
+              Mis Presupuestos
+            </h2>
+            <button onclick="guardarPresupuestos()" id="btn-guardar-pres" class="text-xs font-bold px-3 py-1.5 rounded-xl transition" style="background: rgba(245,188,69,0.15); color: var(--accent); border: 1px solid rgba(245,188,69,0.3)">
+              <i data-lucide="save" class="w-3.5 h-3.5 inline-block mr-1"></i>Guardar
+            </button>
+          </div>
+          <p class="text-xs mb-4" style="color: var(--text3)">Toca el monto para editarlo. Los cambios se sincronizan en todos tus dispositivos.</p>
+          <div id="pres-list" class="glass-card overflow-hidden mb-4"></div>
+          <button onclick="agregarFilaPres()" class="w-full py-3 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition active:opacity-70" style="background: var(--glass); border: 1px dashed rgba(255,255,255,0.15); color: var(--text2)">
+            <i data-lucide="plus" class="w-4 h-4"></i> Agregar categoría
+          </button>
+        </div>
+
         </div><!-- /panels-container -->
       </div><!-- /max-w-7xl -->
     </div>
@@ -1413,6 +1442,16 @@
         <div class="flex-1 text-left">
           <p class="font-semibold text-sm" style="color: var(--text)">Estadísticas</p>
           <p class="text-xs mt-0.5" style="color: var(--text2)">Gráficas y análisis financiero</p>
+        </div>
+        <i data-lucide="chevron-right" style="color: var(--text3); width:18px; height:18px; flex-shrink:0"></i>
+      </button>
+      <button class="drawer-item" onclick="showTab('presupuestos'); closeMasDrawer()">
+        <div class="drawer-icon" style="background: rgba(245,188,69,0.12)">
+          <i data-lucide="sliders-horizontal" style="color: var(--accent); width:20px; height:20px"></i>
+        </div>
+        <div class="flex-1 text-left">
+          <p class="font-semibold text-sm" style="color: var(--text)">Presupuestos</p>
+          <p class="text-xs mt-0.5" style="color: var(--text2)">Edita tus límites por categoría</p>
         </div>
         <i data-lucide="chevron-right" style="color: var(--text3); width:18px; height:18px; flex-shrink:0"></i>
       </button>
@@ -1922,7 +1961,8 @@
       };
 
       // Presupuestos de referencia (mensuales en COP)
-      const PRESUPUESTOS = {
+      // Presupuestos cargados desde Firestore (config_frank/presupuestos). Defaults usados solo si no hay datos en Firestore.
+      let presupuestos = {
         "Mercado y Comida": 500000,
         "Gym y Deportes": 300000,
         "Cuidado Personal": 120000,
@@ -1932,11 +1972,12 @@
         "Compras / Ropa": 200000,
         "Publicidad / Meta Ads": 400000,
       };
-      // Categorías con presupuesto quincenal (se resetea el 1 y el 15 de cada mes).
-      // Si en la 1ª quincena se excede el presupuesto, el exceso se descuenta de la 2ª quincena.
-      const PRESUPUESTOS_QUINCENAL = {
-        "Salidas / Entretenimiento": 400000, // 400k/quincena → 800k/mes
+      let presupuestosQuincenal = {
+        "Salidas / Entretenimiento": 400000,
       };
+      let patrimonioHistorial = [];
+      let _unsubPresupuestos = null;
+      let _unsubPatrimonioHist = null;
 
       // Si está vacío, se muestran todas las categorías de gasto.
       const CATEGORIAS_RESUMEN_VISIBLES = new Set();
@@ -2109,7 +2150,7 @@
       function showTab(tab) {
         closeMasDrawer();
         currentTab = tab;
-        ["resumen","movimientos","estadisticas","deudas","nuevo","pagos","notas"].forEach(t => {
+        ["resumen","movimientos","estadisticas","deudas","nuevo","pagos","notas","presupuestos"].forEach(t => {
           const p = document.getElementById("panel-" + t);
           if (p) p.classList.toggle("hidden", t !== tab);
         });
@@ -2119,7 +2160,8 @@
           if (btn) btn.classList.toggle("active", t === tab);
         });
         const navMas = document.getElementById("nav-mas");
-        if (navMas) navMas.classList.toggle("active", ["deudas","pagos","estadisticas"].includes(tab));
+        if (navMas) navMas.classList.toggle("active", ["deudas","pagos","estadisticas","presupuestos"].includes(tab));
+        if (tab === "presupuestos") renderPresupuestos();
         const navFab = document.getElementById("nav-nuevo");
         if (navFab) navFab.style.opacity = tab === "nuevo" ? "0.7" : "1";
         window.scrollTo({ top: 0, behavior: "instant" });
@@ -2262,6 +2304,35 @@
             if (_unsubPagos) _unsubPagos();
             if (_unsubChecks) _unsubChecks();
             if (_unsubNotas) _unsubNotas();
+            if (_unsubPresupuestos) _unsubPresupuestos();
+            if (_unsubPatrimonioHist) _unsubPatrimonioHist();
+
+            // Cargar presupuestos desde Firestore
+            _unsubPresupuestos = db.collection("config_frank").doc("presupuestos")
+              .onSnapshot(snap => {
+                if (snap.exists) {
+                  const d = snap.data();
+                  if (d.normal) presupuestos = d.normal;
+                  if (d.quincenal) presupuestosQuincenal = d.quincenal;
+                } else {
+                  // Primera vez: guardar los defaults en Firestore
+                  db.collection("config_frank").doc("presupuestos").set({
+                    normal: presupuestos,
+                    quincenal: presupuestosQuincenal,
+                  });
+                }
+                if (currentTab === "presupuestos") renderPresupuestos();
+                renderNetWorth();
+                renderResumen(txDelMes(transactions));
+              });
+
+            // Cargar historial de patrimonio
+            _unsubPatrimonioHist = db.collection("patrimonio_historial_frank")
+              .orderBy("fecha", "asc")
+              .onSnapshot(snap => {
+                patrimonioHistorial = snap.docs.map(d => d.data());
+                if (currentTab === "estadisticas") renderCharts();
+              });
 
             // Cargar transacciones
             _unsubTx = db.collection("transacciones_frank")
@@ -2641,6 +2712,20 @@
           nwFlujoEl.textContent = (flujoMes >= 0 ? "+" : "") + fmt(flujoMes);
           nwFlujoEl.style.color = flujoMes >= 0 ? "#93c5fd" : "#f87171";
         }
+
+        // Guardar snapshot mensual del patrimonio
+        if (db) {
+          const mesKey = nowD.getFullYear() + "-" + String(nowD.getMonth() + 1).padStart(2, "0");
+          db.collection("patrimonio_historial_frank").doc(mesKey).set({
+            fecha: mesKey,
+            disponible: saldoDisponible,
+            bolsillos: totalBolsillos,
+            total: totalCuentas,
+            deudas: totalDeudas,
+            netWorth,
+            savedAt: new Date().toISOString(),
+          }, { merge: true });
+        }
       }
 
       // ── Render All ────────────────────────────────────────
@@ -2695,13 +2780,13 @@
         if (!catMap["Transporte"]) catMap["Transporte"] = 0;
 
         // ── Presupuestos efectivos (con ajuste quincenal) ──────
-        const effectiveBudgets = { ...PRESUPUESTOS };
+        const effectiveBudgets = { ...presupuestos };
         const quincenalLabels = {};
         const isMesActual = mesSel.y === nowD.getFullYear() && mesSel.m === nowD.getMonth();
         const mesPrefix = mesSel.y + "-" + String(mesSel.m + 1).padStart(2, "0");
 
-        Object.keys(PRESUPUESTOS_QUINCENAL).forEach((cat) => {
-          const presupQ = PRESUPUESTOS_QUINCENAL[cat];
+        Object.keys(presupuestosQuincenal).forEach((cat) => {
+          const presupQ = presupuestosQuincenal[cat];
           if (isMesActual) {
             const hoy = nowD.getDate();
             const allTx = transactions.filter(
@@ -3686,7 +3771,7 @@
         } else {
           gastoCatsSorted.slice(0, 8).forEach(([cat, total]) => {
             const pct = (total / maxGasto) * 100;
-            const presup = PRESUPUESTOS[cat];
+            const presup = presupuestos[cat];
             const over = presup && total > presup;
             const div = document.createElement("div");
             div.innerHTML = `<div class="flex items-center justify-between mb-1.5"><span class="text-xs font-semibold text-slate-700">${cat}</span><div class="flex items-center gap-3"><span class="text-xs ${over ? "text-red-600 font-bold" : "text-slate-400"}">${presup ? fmt(presup) + " presup." : ""}</span><span class="text-xs font-bold text-slate-700">${fmt(total)}</span></div></div><div class="h-2 rounded-full bg-slate-100"><div class="h-2 rounded-full transition-all duration-500" style="width:${pct}%;background:${over ? "#dc2626" : "#ef4444"}"></div></div>`;
@@ -3712,6 +3797,8 @@
             ti.appendChild(div);
           });
         }
+
+        renderChartPatrimonio();
       }
 
       // ── CRUD transacciones ────────────────────────────────
@@ -3880,6 +3967,198 @@
         document.getElementById("stats-filter-cuenta").value = "";
         document.getElementById("stats-filter-categoria").value = "";
         renderCharts();
+      }
+
+      // ── Gráfica historial de patrimonio ───────────────────
+      function renderChartPatrimonio() {
+        const wrap = document.getElementById("chart-patrimonio-wrap");
+        const emptyMsg = document.getElementById("patrimonio-hist-empty");
+        if (!wrap) return;
+        if (patrimonioHistorial.length < 2) {
+          wrap.style.display = "none";
+          if (emptyMsg) emptyMsg.classList.remove("hidden");
+          return;
+        }
+        wrap.style.display = "block";
+        if (emptyMsg) emptyMsg.classList.add("hidden");
+        destroyChart("patrimonio");
+        wrap.innerHTML = '<canvas id="chart-patrimonio"></canvas>';
+        const labels = patrimonioHistorial.map(s => {
+          const [y, m] = s.fecha.split("-");
+          return ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"][parseInt(m)-1] + " " + y.slice(2);
+        });
+        const nwData = patrimonioHistorial.map(s => s.netWorth);
+        const dispData = patrimonioHistorial.map(s => s.disponible);
+        const ctx = document.getElementById("chart-patrimonio").getContext("2d");
+        charts["patrimonio"] = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels,
+            datasets: [
+              {
+                label: "Net Worth",
+                data: nwData,
+                borderColor: "#38BDF8",
+                backgroundColor: "rgba(56,189,248,0.08)",
+                borderWidth: 2,
+                pointRadius: 4,
+                pointBackgroundColor: "#38BDF8",
+                tension: 0.3,
+                fill: true,
+              },
+              {
+                label: "Disponible",
+                data: dispData,
+                borderColor: "#22D68A",
+                backgroundColor: "rgba(34,214,138,0.06)",
+                borderWidth: 2,
+                pointRadius: 4,
+                pointBackgroundColor: "#22D68A",
+                tension: 0.3,
+                fill: true,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { labels: { color: "#8892B0", font: { size: 11 } } },
+              tooltip: {
+                callbacks: {
+                  label: ctx => " " + fmt(ctx.raw),
+                },
+              },
+            },
+            scales: {
+              x: { ticks: { color: "#3D4A6B", font: { size: 10 } }, grid: { color: "rgba(255,255,255,0.04)" } },
+              y: {
+                ticks: {
+                  color: "#3D4A6B",
+                  font: { size: 10 },
+                  callback: v => "$" + (Math.abs(v) >= 1000000 ? (v/1000000).toFixed(1)+"M" : Math.abs(v) >= 1000 ? (v/1000).toFixed(0)+"K" : v),
+                },
+                grid: { color: "rgba(255,255,255,0.04)" },
+              },
+            },
+          },
+        });
+      }
+
+      // ── Presupuestos ──────────────────────────────────────
+      let _presPendientes = {};
+
+      function renderPresupuestos() {
+        const list = document.getElementById("pres-list");
+        if (!list) return;
+        _presPendientes = {
+          normal: { ...presupuestos },
+          quincenal: { ...presupuestosQuincenal },
+        };
+        const rows = [
+          ...Object.entries(presupuestos).map(([cat, monto]) => ({ cat, monto, tipo: "mensual" })),
+          ...Object.entries(presupuestosQuincenal).map(([cat, monto]) => ({ cat, monto, tipo: "quincenal" })),
+        ];
+        if (rows.length === 0) {
+          list.innerHTML = `<p class="text-xs text-center py-5" style="color: var(--text3)">Sin presupuestos definidos</p>`;
+          return;
+        }
+        list.innerHTML = rows.map((r, i) => {
+          const border = i < rows.length - 1 ? "border-bottom:1px solid rgba(255,255,255,0.05);" : "";
+          const tipoBadge = r.tipo === "quincenal"
+            ? `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full ml-1" style="background:rgba(245,188,69,0.15);color:var(--accent);border:1px solid rgba(245,188,69,0.2)">×2/mes</span>`
+            : `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full ml-1" style="background:rgba(56,189,248,0.1);color:var(--blue);border:1px solid rgba(56,189,248,0.2)">mensual</span>`;
+          return `
+            <div class="flex items-center gap-3 px-4 py-3" style="${border}">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center flex-wrap gap-1 mb-0.5">
+                  <span class="text-sm font-semibold" style="color:var(--text)">${r.cat}</span>
+                  ${tipoBadge}
+                </div>
+                <div class="flex items-center gap-2 mt-1">
+                  <button onclick="cambiarTipoPres('${r.cat.replace(/'/g,"\\'")}','${r.tipo}')" class="text-[9px] px-2 py-0.5 rounded-full transition active:opacity-60" style="background:var(--glass);color:var(--text3);border:1px solid var(--glass-b)">
+                    Cambiar a ${r.tipo === "mensual" ? "quincenal" : "mensual"}
+                  </button>
+                  <button onclick="eliminarFilaPres('${r.cat.replace(/'/g,"\\'")}','${r.tipo}')" class="text-[9px] px-2 py-0.5 rounded-full transition active:opacity-60" style="background:rgba(255,77,106,0.08);color:var(--red);border:1px solid rgba(255,77,106,0.2)">
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+              <div class="flex items-center gap-1 flex-shrink-0">
+                <span class="text-xs font-semibold" style="color:var(--text3)">$</span>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  value="${parseInt(r.monto).toLocaleString('es-CO')}"
+                  data-cat="${r.cat}" data-tipo="${r.tipo}"
+                  oninput="onPresInput(this)"
+                  class="text-sm font-bold text-right rounded-xl px-2 py-1.5 w-28 focus:outline-none"
+                  style="background:var(--glass-b);color:var(--text);border:1px solid rgba(255,255,255,0.1)"
+                />
+              </div>
+            </div>`;
+        }).join("");
+        lucide.createIcons();
+      }
+
+      function onPresInput(el) {
+        const raw = el.value.replace(/\D/g, "");
+        el.value = raw ? parseInt(raw).toLocaleString("es-CO") : "";
+        const cat = el.dataset.cat;
+        const tipo = el.dataset.tipo;
+        const val = parseInt(raw) || 0;
+        if (tipo === "quincenal") _presPendientes.quincenal[cat] = val;
+        else _presPendientes.normal[cat] = val;
+      }
+
+      function cambiarTipoPres(cat, tipoActual) {
+        const monto = tipoActual === "mensual"
+          ? (_presPendientes.normal[cat] || presupuestos[cat] || 0)
+          : (_presPendientes.quincenal[cat] || presupuestosQuincenal[cat] || 0);
+        if (tipoActual === "mensual") {
+          delete _presPendientes.normal[cat];
+          _presPendientes.quincenal[cat] = monto;
+        } else {
+          delete _presPendientes.quincenal[cat];
+          _presPendientes.normal[cat] = monto;
+        }
+        presupuestos = { ..._presPendientes.normal };
+        presupuestosQuincenal = { ..._presPendientes.quincenal };
+        renderPresupuestos();
+      }
+
+      function eliminarFilaPres(cat, tipo) {
+        if (tipo === "quincenal") delete _presPendientes.quincenal[cat];
+        else delete _presPendientes.normal[cat];
+        presupuestos = { ..._presPendientes.normal };
+        presupuestosQuincenal = { ..._presPendientes.quincenal };
+        renderPresupuestos();
+      }
+
+      function agregarFilaPres() {
+        const cat = prompt("Nombre de la categoría:");
+        if (!cat || !cat.trim()) return;
+        const catN = cat.trim();
+        if (_presPendientes.normal[catN] || _presPendientes.quincenal[catN]) {
+          showToast("Esta categoría ya tiene presupuesto", "error"); return;
+        }
+        _presPendientes.normal[catN] = 0;
+        presupuestos = { ..._presPendientes.normal };
+        renderPresupuestos();
+      }
+
+      async function guardarPresupuestos() {
+        // Leer valores actuales de los inputs antes de guardar
+        document.querySelectorAll("#pres-list input[data-cat]").forEach(el => onPresInput(el));
+        try {
+          await db.collection("config_frank").doc("presupuestos").set({
+            normal: _presPendientes.normal,
+            quincenal: _presPendientes.quincenal,
+          });
+          showToast("Presupuestos guardados ✓", "success");
+        } catch (e) {
+          showToast("Error al guardar", "error");
+        }
       }
 
       function csvEscape(value) {
