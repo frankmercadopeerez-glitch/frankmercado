@@ -146,6 +146,17 @@
         white-space: nowrap;
       }
 
+      /* ── Tab Panel Animations ───────────────── */
+      @keyframes panelIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      #panels-container > div:not(.hidden) {
+        animation: panelIn 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+      }
+      .nav-item:active { transform: scale(0.9); }
+      .nav-item { transition: color 0.2s, transform 0.1s; }
+
       /* ── Bottom Nav ──────────────────────────── */
       #bottom-nav {
         position: fixed;
@@ -666,9 +677,15 @@
         </div>
       </header>
 
-      <div class="max-w-7xl mx-auto p-3 sm:p-5 lg:p-7" style="padding-bottom: calc(var(--bnav-h) + var(--sab) + 16px)">
-        <!-- PATRIMONIO NETO WIDGET -->
-        <div class="glass-card mb-4 p-4 sm:p-5" style="border: 1px solid rgba(245,188,69,0.15); background: linear-gradient(135deg, rgba(245,188,69,0.04) 0%, rgba(56,189,248,0.03) 100%)">
+      <div class="max-w-7xl mx-auto" style="padding-bottom: calc(var(--bnav-h) + var(--sab) + 16px)">
+        <!-- PANELS CONTAINER -->
+        <div id="panels-container">
+
+          <!-- TAB RESUMEN / INICIO -->
+          <div id="panel-resumen" class="p-4 sm:p-6">
+
+            <!-- PATRIMONIO NETO WIDGET -->
+            <div class="glass-card mb-4 p-4 sm:p-5" style="border: 1px solid rgba(245,188,69,0.15); background: linear-gradient(135deg, rgba(245,188,69,0.04) 0%, rgba(56,189,248,0.03) 100%)">
           <div class="flex items-center gap-2 mb-3">
             <i data-lucide="trending-up" class="w-4 h-4" style="color: var(--accent)"></i>
             <span class="text-xs font-bold uppercase tracking-widest" style="color: var(--accent)">Resumen Financiero</span>
@@ -754,11 +771,6 @@
           </div>
         </div>
 
-        <!-- PANELS CONTAINER -->
-        <div id="panels-container">
-
-            <!-- TAB RESUMEN -->
-          <div id="panel-resumen" class="p-4 sm:p-6">
             <div class="flex items-center justify-between mb-4">
               <h2 class="text-sm font-semibold flex items-center gap-2" style="color: var(--text)">
                 <i data-lucide="bar-chart-2" class="w-4 h-4" style="color: var(--accent)"></i>
@@ -2146,7 +2158,9 @@
         });
         const navMas = document.getElementById("nav-mas");
         if (navMas) navMas.classList.toggle("active", ["deudas","pagos","notas"].includes(tab));
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        const navFab = document.getElementById("nav-nuevo");
+        if (navFab) navFab.style.opacity = tab === "nuevo" ? "0.7" : "1";
+        window.scrollTo({ top: 0, behavior: "instant" });
         if (tab === "estadisticas") renderCharts();
         if (tab === "movimientos") renderMovimientos();
         if (tab === "deudas") renderDeudas();
