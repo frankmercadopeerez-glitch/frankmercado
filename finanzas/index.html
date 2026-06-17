@@ -853,15 +853,16 @@
                   />
                   <div
                     id="toggle-track"
-                    class="w-10 h-5 rounded-full transition"
-                    style="background: #e2e8f0"
+                    class="w-10 h-5 rounded-full transition-all duration-200"
+                    style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2)"
                   ></div>
                   <div
                     id="toggle-thumb"
-                    class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform"
+                    class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full shadow transition-transform duration-200"
+                    style="background: var(--text2)"
                   ></div>
                 </div>
-                <span class="text-xs font-semibold text-slate-500"
+                <span class="text-xs font-semibold" style="color: var(--text2)"
                   >Ver todos los meses</span
                 >
               </label>
@@ -2964,11 +2965,14 @@
         const todosMeses = todosMesesEl && todosMesesEl.checked;
         const track = document.getElementById("toggle-track");
         const thumb = document.getElementById("toggle-thumb");
-        if (track) track.style.background = todosMeses ? "#1A365D" : "#e2e8f0";
-        if (thumb)
-          thumb.style.transform = todosMeses
-            ? "translateX(1.25rem)"
-            : "translateX(0)";
+        if (track) {
+          track.style.background = todosMeses ? "var(--accent)" : "rgba(255,255,255,0.15)";
+          track.style.border = todosMeses ? "1px solid var(--accent)" : "1px solid rgba(255,255,255,0.2)";
+        }
+        if (thumb) {
+          thumb.style.background = todosMeses ? "#1a0f00" : "var(--text2)";
+          thumb.style.transform = todosMeses ? "translateX(1.25rem)" : "translateX(0)";
+        }
 
         const pool = todosMeses ? transactions : txDelMes(transactions);
         const countEl = document.getElementById("todos-meses-count");
