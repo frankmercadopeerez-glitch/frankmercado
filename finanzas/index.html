@@ -703,8 +703,8 @@
             </div>
           </div>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <div class="rounded-2xl p-3 text-center" style="background: rgba(34,214,138,0.07); border: 1px solid rgba(34,214,138,0.18)">
-              <span class="block text-[10px] font-semibold uppercase tracking-wide mb-1" style="color: rgba(34,214,138,0.75)">Disponible</span>
+            <div class="rounded-2xl p-3 text-center" id="nw-cuentas-card" style="background: rgba(34,214,138,0.07); border: 1px solid rgba(34,214,138,0.18)">
+              <span class="block text-[10px] font-semibold uppercase tracking-wide mb-1" id="nw-cuentas-label" style="color: rgba(34,214,138,0.75)">Disponible</span>
               <span class="block font-bold text-lg leading-tight" style="color: var(--green)" id="nw-cuentas">$0</span>
               <span class="block text-[9px] mt-0.5" style="color: var(--text3)">cuentas</span>
             </div>
@@ -2650,7 +2650,18 @@
         const nwDeudasStatsEl = document.getElementById("nw-deudas-stats");
         const nwTotalStatsEl = document.getElementById("nw-total-stats");
 
-        if (nwCuentasEl) nwCuentasEl.textContent = fmt(saldoDisponible);
+        if (nwCuentasEl) {
+          nwCuentasEl.textContent = fmt(saldoDisponible);
+          const neg = saldoDisponible < 0;
+          nwCuentasEl.style.color = neg ? "var(--red)" : "var(--green)";
+          const card = document.getElementById("nw-cuentas-card");
+          if (card) {
+            card.style.background = neg ? "rgba(255,77,106,0.07)" : "rgba(34,214,138,0.07)";
+            card.style.border = neg ? "1px solid rgba(255,77,106,0.3)" : "1px solid rgba(34,214,138,0.18)";
+          }
+          const lbl = document.getElementById("nw-cuentas-label");
+          if (lbl) lbl.style.color = neg ? "rgba(255,77,106,0.75)" : "rgba(34,214,138,0.75)";
+        }
         if (nwBolsillosEl) nwBolsillosEl.textContent = fmt(totalBolsillos);
         if (nwCuentasTotalEl) nwCuentasTotalEl.textContent = fmt(totalCuentas);
         if (nwDeudasStatsEl) nwDeudasStatsEl.textContent = fmt(totalDeudas);
