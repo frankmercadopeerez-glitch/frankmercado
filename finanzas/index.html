@@ -993,7 +993,14 @@
 
           <!-- TAB ESTADÍSTICAS -->
           <div id="panel-estadisticas" class="p-4 sm:p-6 hidden">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-semibold uppercase tracking-widest" style="color: var(--text3)">Patrimonio</span>
+              <button onclick="toggleStatsPatrimonio()" id="btn-toggle-patrimonio" class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl transition" style="background: var(--glass); border: 1px solid var(--glass-b); color: var(--text2)">
+                <i data-lucide="eye-off" id="icon-toggle-patrimonio" class="w-3.5 h-3.5"></i>
+                <span id="label-toggle-patrimonio">Mostrar</span>
+              </button>
+            </div>
+            <div id="stats-patrimonio-cards" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4" style="display:none">
               <div class="rounded-2xl p-4" style="background: rgba(255,77,106,0.08); border: 1px solid rgba(255,77,106,0.2)">
                 <p class="text-xs mb-1 uppercase font-semibold tracking-wide" style="color: rgba(255,77,106,0.75)">Deudas Activas</p>
                 <p class="text-xl font-bold" style="color: var(--red)" id="nw-deudas-stats">$0</p>
@@ -2190,6 +2197,18 @@
       function closeMasDrawer() {
         document.getElementById("mas-drawer-overlay").classList.remove("open");
         document.getElementById("mas-drawer").classList.remove("open");
+      }
+
+      // ── Stats patrimonio toggle ───────────────────────────
+      function toggleStatsPatrimonio() {
+        const cards = document.getElementById("stats-patrimonio-cards");
+        const icon  = document.getElementById("icon-toggle-patrimonio");
+        const label = document.getElementById("label-toggle-patrimonio");
+        const visible = cards.style.display !== "none";
+        cards.style.display = visible ? "none" : "grid";
+        icon.setAttribute("data-lucide", visible ? "eye-off" : "eye");
+        label.textContent = visible ? "Mostrar" : "Ocultar";
+        lucide.createIcons();
       }
 
       // ── Mes ───────────────────────────────────────────────
