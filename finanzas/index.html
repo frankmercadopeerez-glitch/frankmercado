@@ -2159,6 +2159,7 @@
       const MOVIMIENTOS_PREVIEW_LIMIT = 12;
       let movimientosExpandido = false;
       function showTab(tab) {
+        closeMasDrawer();
         currentTab = tab;
         ["resumen","movimientos","estadisticas","deudas","nuevo","pagos","notas"].forEach(t => {
           const p = document.getElementById("panel-" + t);
