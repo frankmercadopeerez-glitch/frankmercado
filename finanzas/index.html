@@ -17,7 +17,7 @@
       content="black-translucent"
     />
     <meta name="apple-mobile-web-app-title" content="Finanzas Frank" />
-    <meta name="theme-color" content="#050B14" />
+    <meta name="theme-color" content="#060910" />
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
@@ -33,8 +33,8 @@
         theme: {
           extend: {
             colors: {
-              navy: { 900: "#050B14", 800: "#112238", 700: "#1A365D" },
-              gold: { 500: "#B8904D" },
+              navy: { 900: "#060910", 800: "#0c1019", 700: "#131929" },
+              gold: { 500: "#F5BC45" },
             },
             fontFamily: { sans: ["Poppins", "system-ui", "sans-serif"] },
           },
@@ -45,42 +45,80 @@
       :root {
         --sat: env(safe-area-inset-top, 0px);
         --sab: env(safe-area-inset-bottom, 0px);
+        --bg: #060910;
+        --bg2: #0c1019;
+        --glass: rgba(255,255,255,0.045);
+        --glass-b: rgba(255,255,255,0.09);
+        --glass-hover: rgba(255,255,255,0.07);
+        --accent: #F5BC45;
+        --green: #22D68A;
+        --red: #FF4D6A;
+        --blue: #38BDF8;
+        --purple: #A78BFA;
+        --text: #EEF2FF;
+        --text2: #8892B0;
+        --text3: #3D4A6B;
+        --bnav-h: 68px;
       }
+      * { box-sizing: border-box; }
       body {
         font-family: "Poppins", system-ui, sans-serif;
-        background: #0f1117;
-        color: #e2e8f0;
+        background: var(--bg);
+        background-image:
+          radial-gradient(ellipse 90% 50% at 10% 0%, rgba(245,188,69,0.07) 0%, transparent 60%),
+          radial-gradient(ellipse 70% 60% at 90% 100%, rgba(56,189,248,0.07) 0%, transparent 60%);
+        background-attachment: fixed;
+        color: var(--text);
+        min-height: 100dvh;
+        overflow-x: hidden;
       }
-      nav#main-nav {
-        padding-top: env(safe-area-inset-top, 0px);
+
+      /* ── Top Header ───────────────────────────── */
+      #top-header {
+        padding-top: var(--sat);
+        background: rgba(6,9,16,0.75);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border-bottom: 1px solid var(--glass-b);
+        position: sticky;
+        top: 0;
+        z-index: 30;
       }
-      @supports (padding-top: env(safe-area-inset-top)) {
-        nav#main-nav .nav-inner {
-          padding-top: 0.1rem;
-          padding-bottom: 0.1rem;
-        }
-      }
+
+      /* ── Glass Cards ─────────────────────────── */
       .glass-card {
-        background: #161b27;
-        border-radius: 14px;
-        border: 1px solid #252d3f;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+        background: var(--glass);
+        backdrop-filter: blur(16px) saturate(160%);
+        -webkit-backdrop-filter: blur(16px) saturate(160%);
+        border: 1px solid var(--glass-b);
+        border-radius: 18px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+        transition: box-shadow 0.25s, border-color 0.25s;
       }
       .glass-card:hover {
-        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
-        border-color: rgba(184, 144, 77, 0.25);
-        transition:
-          box-shadow 0.2s,
-          border-color 0.2s;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.09);
+        border-color: rgba(245,188,69,0.2);
       }
+
+      /* ── KPI Cards ───────────────────────────── */
       .kpi-card {
-        background: #161b27;
-        border-radius: 14px;
-        border: 1px solid #252d3f;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+        background: var(--glass);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--glass-b);
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
         padding: 1rem 1.25rem;
         position: relative;
         overflow: hidden;
+      }
+      .kpi-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.025) 0%, transparent 60%);
+        pointer-events: none;
+        border-radius: inherit;
       }
       .kpi-card .kpi-icon {
         position: absolute;
@@ -92,174 +130,228 @@
         height: 3.2rem;
       }
       .kpi-card .kpi-label {
-        font-size: 0.67rem;
+        font-size: 0.65rem;
         font-weight: 600;
         letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: #94a3b8;
+        color: var(--text2);
       }
       .kpi-card .kpi-value {
         font-size: clamp(0.85rem, 3.5vw, 1.6rem);
         font-weight: 700;
         line-height: 1.2;
-        margin-top: 0.15rem;
+        margin-top: 0.2rem;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
       }
-      .tab-btn {
-        position: relative;
-        color: #94a3b8;
-        font-weight: 500;
-        font-size: 0.82rem;
-        padding: 0.65rem 1rem;
-        transition: color 0.15s, background 0.15s;
-        white-space: nowrap;
-        border-radius: 0;
-      }
-      .tab-btn::after {
-        content: "";
-        position: absolute;
-        bottom: -1px;
+
+      /* ── Bottom Nav ──────────────────────────── */
+      #bottom-nav {
+        position: fixed;
+        bottom: 0;
         left: 0;
         right: 0;
-        height: 2px;
+        height: calc(var(--bnav-h) + var(--sab));
+        padding-bottom: var(--sab);
+        background: rgba(6,9,16,0.8);
+        backdrop-filter: blur(40px) saturate(200%);
+        -webkit-backdrop-filter: blur(40px) saturate(200%);
+        border-top: 1px solid rgba(255,255,255,0.06);
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        z-index: 40;
+        padding-left: max(env(safe-area-inset-left,0px), 4px);
+        padding-right: max(env(safe-area-inset-right,0px), 4px);
+      }
+      .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        padding: 6px 10px;
+        border-radius: 14px;
+        cursor: pointer;
+        color: var(--text3);
+        font-size: 0.58rem;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        transition: color 0.2s;
+        flex: 1;
+        border: none;
         background: transparent;
-        border-radius: 2px 2px 0 0;
-        transition: background 0.15s;
+        min-width: 0;
       }
-      .tab-btn:hover {
-        color: #e2e8f0;
-        background: rgba(184, 144, 77, 0.08);
+      .nav-item svg { width: 22px; height: 22px; stroke-width: 1.8; }
+      .nav-item.active { color: var(--accent); }
+      .nav-item.active svg { filter: drop-shadow(0 0 8px rgba(245,188,69,0.55)); }
+      .nav-fab {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #F5BC45 0%, #E8A020 100%);
+        box-shadow: 0 4px 20px rgba(245,188,69,0.45), inset 0 1px 0 rgba(255,255,255,0.25);
+        cursor: pointer;
+        border: none;
+        color: #1a0f00;
+        margin-bottom: 4px;
+        transition: transform 0.15s, box-shadow 0.15s;
+        flex-shrink: 0;
       }
-      .tab-btn.active {
-        color: #b8904d;
-        font-weight: 700;
+      .nav-fab:active { transform: scale(0.93); box-shadow: 0 2px 10px rgba(245,188,69,0.3); }
+      .nav-fab svg { width: 24px; height: 24px; stroke-width: 2.5; }
+
+      /* ── Más Drawer ──────────────────────────── */
+      #mas-drawer-overlay {
+        position: fixed; inset: 0; z-index: 38;
+        background: rgba(0,0,0,0);
+        pointer-events: none;
+        transition: background 0.3s;
       }
-      .tab-btn.active::after {
-        background: #b8904d;
+      #mas-drawer-overlay.open {
+        background: rgba(0,0,0,0.55);
+        pointer-events: auto;
       }
-      .toggle-btn {
-        transition: all 0.15s ease;
+      #mas-drawer {
+        position: fixed;
+        bottom: 0;
+        left: 0; right: 0;
+        background: rgba(10,14,26,0.95);
+        backdrop-filter: blur(30px) saturate(200%);
+        -webkit-backdrop-filter: blur(30px) saturate(200%);
+        border-top: 1px solid rgba(255,255,255,0.1);
+        border-radius: 22px 22px 0 0;
+        z-index: 39;
+        padding: 12px 20px calc(var(--bnav-h) + var(--sab) + 20px);
+        transform: translateY(110%);
+        transition: transform 0.35s cubic-bezier(0.34,1.06,0.64,1);
       }
+      #mas-drawer.open { transform: translateY(0); }
+      .drawer-pill {
+        width: 36px; height: 4px;
+        background: rgba(255,255,255,0.15);
+        border-radius: 2px;
+        margin: 0 auto 16px;
+      }
+      .drawer-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 16px;
+        border-radius: 16px;
+        cursor: pointer;
+        background: var(--glass);
+        border: 1px solid var(--glass-b);
+        margin-bottom: 10px;
+        transition: background 0.2s, border-color 0.2s;
+        text-align: left;
+        width: 100%;
+        color: var(--text);
+      }
+      .drawer-item:hover, .drawer-item:active {
+        background: var(--glass-hover);
+        border-color: rgba(245,188,69,0.2);
+      }
+      .drawer-icon {
+        width: 42px; height: 42px;
+        border-radius: 13px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+      }
+
+      /* ── Toggle Buttons ──────────────────────── */
+      .toggle-btn { transition: all 0.15s ease; }
       .toggle-btn.active-green {
-        border-color: #22c55e;
-        background: #f0fdf4;
-        color: #15803d;
+        border-color: var(--green);
+        background: rgba(34,214,138,0.12);
+        color: var(--green);
         font-weight: 700;
       }
       .toggle-btn.active-red {
-        border-color: #ef4444;
-        background: #fef2f2;
-        color: #b91c1c;
+        border-color: var(--red);
+        background: rgba(255,77,106,0.12);
+        color: var(--red);
         font-weight: 700;
       }
       .toggle-btn.active-blue {
-        border-color: #3b82f6;
-        background: #eff6ff;
-        color: #1d4ed8;
+        border-color: var(--blue);
+        background: rgba(56,189,248,0.12);
+        color: var(--blue);
         font-weight: 700;
       }
       .toggle-btn.active-indigo {
-        border-color: #6366f1;
-        background: #eef2ff;
-        color: #4338ca;
+        border-color: #818CF8;
+        background: rgba(129,140,248,0.12);
+        color: #818CF8;
         font-weight: 700;
       }
       .toggle-btn.inactive {
-        border-color: #252d3f;
-        background: #1a1f2e;
-        color: #6e7681;
+        border-color: rgba(255,255,255,0.09);
+        background: rgba(255,255,255,0.03);
+        color: var(--text3);
       }
+
+      /* ── Forms ───────────────────────────────── */
       select {
         appearance: none;
         -webkit-appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23b8904d' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23F5BC45' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
         background-repeat: no-repeat;
         background-position: right 0.75rem center;
         padding-right: 2.5rem !important;
       }
-      input[type="date"] {
-        -webkit-appearance: none;
-        appearance: none;
-        color: #e2e8f0;
-      }
-      input:focus,
-      select:focus {
+      input[type="date"] { -webkit-appearance: none; appearance: none; color: var(--text); }
+      input:focus, select:focus {
         outline: none;
-        border-color: #b8904d;
-        box-shadow: 0 0 0 3px rgba(184, 144, 77, 0.15);
+        border-color: var(--accent) !important;
+        box-shadow: 0 0 0 3px rgba(245,188,69,0.15);
       }
-      #ios-banner {
-        display: none;
-        padding-bottom: calc(1rem + var(--sab));
-      }
-      ::-webkit-scrollbar {
-        width: 5px;
-        height: 5px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #334155;
-        border-radius: 10px;
-      }
-      @media (max-width: 640px) {
-        .tab-btn {
-          padding: 0.5rem 0.7rem;
-          font-size: 0.73rem;
-        }
-        .kpi-card {
-          padding: 0.75rem 0.9rem;
-        }
-      }
+
+      /* ── Toast ───────────────────────────────── */
       #toast {
         position: fixed;
-        bottom: 5rem;
+        bottom: calc(var(--bnav-h) + var(--sab) + 14px);
         left: 50%;
         transform: translateX(-50%) translateY(4rem);
         z-index: 60;
-        background: #14532d;
+        background: rgba(20,83,45,0.92);
         color: white;
         padding: 0.7rem 1.5rem;
         border-radius: 2rem;
         font-size: 0.82rem;
         font-weight: 600;
-        box-shadow: 0 8px 24px rgba(5, 11, 20, 0.4);
-        border: 1px solid rgba(34, 197, 94, 0.5);
-        transition:
-          transform 0.3s ease,
-          opacity 0.3s ease;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        border: 1px solid rgba(34,214,138,0.4);
+        backdrop-filter: blur(10px);
+        transition: transform 0.3s ease, opacity 0.3s ease;
         opacity: 0;
         pointer-events: none;
         white-space: nowrap;
       }
-      #toast.show {
-        transform: translateX(-50%) translateY(0);
-        opacity: 1;
-      }
-      #toast.toast-success {
-        background: #14532d;
-        border-color: #22c55e;
-      }
-      #toast.toast-delete {
-        background: #7f1d1d;
-        border-color: #ef4444;
-      }
-      #toast.toast-info {
-        background: #1e3a5f;
-        border-color: #3b82f6;
-      }
+      #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+      #toast.toast-success { background: rgba(20,83,45,0.92); border-color: var(--green); }
+      #toast.toast-delete { background: rgba(127,29,29,0.92); border-color: var(--red); }
+      #toast.toast-info { background: rgba(30,58,95,0.92); border-color: var(--blue); }
+
+      /* ── Deuda Card ──────────────────────────── */
       .deuda-card {
-        border-radius: 14px;
-        border: 1px solid #252d3f;
-        background: #161b27;
+        border-radius: 16px;
+        border: 1px solid var(--glass-b);
+        background: var(--glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
         padding: 1rem;
       }
+
+      /* ── Progress ────────────────────────────── */
       .progress-bar-track {
-        height: 8px;
-        background: #252d3f;
+        height: 6px;
+        background: rgba(255,255,255,0.07);
         border-radius: 9999px;
         overflow: hidden;
       }
@@ -268,83 +360,192 @@
         border-radius: 9999px;
         transition: width 0.5s ease;
       }
+
+      /* ── Cuenta Chip ─────────────────────────── */
       .cuenta-chip {
         display: inline-flex;
         align-items: center;
         gap: 4px;
         padding: 2px 8px;
         border-radius: 9999px;
-        font-size: 0.7rem;
+        font-size: 0.68rem;
         font-weight: 600;
-        max-width: 100%;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        max-width: 100%;
       }
-      /* ── Dark Theme Overrides ─────────────────────────── */
-      #main-app .bg-white {
-        background-color: #161b27 !important;
+
+      /* ── Notes / Notas ───────────────────────── */
+      .notas-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
       }
-      #main-app .bg-slate-50 {
-        background-color: #0f1117 !important;
+      @media (min-width: 640px) { .notas-grid { grid-template-columns: repeat(3, 1fr); } }
+      @media (min-width: 1024px) { .notas-grid { grid-template-columns: repeat(4, 1fr); } }
+      .nota-card {
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.09);
+        background: rgba(255,255,255,0.04);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 14px;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+        min-height: 110px;
+        position: relative;
+        overflow: hidden;
       }
-      #main-app .bg-slate-100 {
-        background-color: #1d2235 !important;
+      .nota-card:active { transform: scale(0.97); }
+      .nota-card:hover {
+        border-color: rgba(255,255,255,0.15);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
       }
-      #main-app .text-slate-800 {
-        color: #e2e8f0 !important;
+      .nota-color-bar {
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        border-radius: 16px 16px 0 0;
       }
-      #main-app .text-slate-700 {
-        color: #c9d1d9 !important;
+      .nota-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 5px;
+        margin-top: 6px;
+        line-height: 1.3;
       }
-      #main-app .text-slate-600 {
-        color: #a0aec0 !important;
+      .nota-body {
+        font-size: 0.71rem;
+        color: var(--text2);
+        line-height: 1.55;
+        display: -webkit-box;
+        -webkit-line-clamp: 6;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
       }
-      #main-app .text-slate-500 {
-        color: #8b949e !important;
+      .nota-item-check {
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+        margin-bottom: 3px;
+        font-size: 0.71rem;
+        color: var(--text2);
       }
-      #main-app .text-slate-400 {
-        color: #6e7681 !important;
+      .nota-item-check.done { color: var(--text3); text-decoration: line-through; }
+      .nota-item-check input[type="checkbox"] {
+        width: 13px; height: 13px;
+        margin-top: 1px;
+        accent-color: var(--accent);
+        flex-shrink: 0;
+        cursor: pointer;
       }
-      #main-app .border-slate-100,
-      #main-app .border-slate-200 {
-        border-color: #252d3f !important;
+      .nota-add-btn {
+        border: 2px dashed rgba(255,255,255,0.1);
+        border-radius: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 110px;
+        cursor: pointer;
+        color: var(--text3);
+        gap: 6px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        background: transparent;
+        border-style: dashed;
+        width: 100%;
+        transition: border-color 0.2s, color 0.2s;
       }
+      .nota-add-btn:hover { border-color: rgba(245,188,69,0.35); color: var(--accent); }
+
+      /* ── Modal Nota ──────────────────────────── */
+      .nota-check-input {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+      }
+      .nota-check-input input[type="checkbox"] {
+        width: 16px; height: 16px;
+        accent-color: var(--accent);
+        flex-shrink: 0;
+        cursor: pointer;
+      }
+      .nota-check-input input[type="text"] {
+        flex: 1;
+        background: transparent !important;
+        border: none !important;
+        color: var(--text) !important;
+        font-size: 0.82rem;
+        padding: 2px 0 !important;
+        box-shadow: none !important;
+      }
+      .nota-check-input .del-item {
+        width: 22px; height: 22px;
+        cursor: pointer;
+        color: var(--text3);
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 50%;
+        transition: color 0.15s, background 0.15s;
+        background: transparent;
+        border: none;
+        flex-shrink: 0;
+        padding: 0;
+      }
+      .nota-check-input .del-item:hover { color: var(--red); background: rgba(255,77,106,0.1); }
+      .color-dot {
+        width: 24px; height: 24px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: transform 0.15s, border-color 0.15s;
+      }
+      .color-dot.selected { border-color: white; transform: scale(1.25); }
+      .active-nota-tipo {
+        border-color: var(--accent) !important;
+        color: var(--accent) !important;
+        background: rgba(245,188,69,0.1) !important;
+      }
+
+      /* ── Scrollbar ───────────────────────────── */
+      ::-webkit-scrollbar { width: 4px; height: 4px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+      /* ── iOS Banner ──────────────────────────── */
+      #ios-banner { display: none; padding-bottom: calc(1rem + var(--sab)); }
+
+      /* ── Responsive ──────────────────────────── */
+      @media (max-width: 640px) { .kpi-card { padding: 0.75rem 0.9rem; } }
+
+      /* ── Dark theme overrides ────────────────── */
+      #main-app .bg-white { background-color: rgba(255,255,255,0.04) !important; }
+      #main-app .bg-slate-50 { background-color: var(--bg) !important; }
+      #main-app .bg-slate-100 { background-color: rgba(255,255,255,0.06) !important; }
+      #main-app .text-slate-800 { color: var(--text) !important; }
+      #main-app .text-slate-700 { color: #CBD5E1 !important; }
+      #main-app .text-slate-600 { color: #94A3B8 !important; }
+      #main-app .text-slate-500 { color: #64748B !important; }
+      #main-app .text-slate-400 { color: #475569 !important; }
+      #main-app .border-slate-100, #main-app .border-slate-200 { border-color: rgba(255,255,255,0.08) !important; }
       #main-app .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
-      #main-app .divide-slate-50 > :not([hidden]) ~ :not([hidden]) {
-        border-color: #252d3f !important;
+      #main-app .divide-slate-50 > :not([hidden]) ~ :not([hidden]) { border-color: rgba(255,255,255,0.06) !important; }
+      #main-app input:not([type="checkbox"]):not([type="radio"]), #main-app select {
+        background-color: rgba(255,255,255,0.04) !important;
+        color: var(--text) !important;
+        border-color: rgba(255,255,255,0.1) !important;
       }
-      #main-app input:not([type="checkbox"]):not([type="radio"]),
-      #main-app select {
-        background-color: #0f1117 !important;
-        color: #e2e8f0 !important;
-        border-color: #252d3f !important;
-      }
-      #main-app thead[style] {
-        background: #1d2235 !important;
-      }
-      #main-app .hover\:bg-slate-50:hover {
-        background-color: #1d2235 !important;
-      }
-      #main-app .bg-green-50 {
-        background-color: rgba(34, 197, 94, 0.08) !important;
-      }
-      #main-app .bg-red-50 {
-        background-color: rgba(239, 68, 68, 0.08) !important;
-      }
-      #main-app .bg-yellow-50 {
-        background-color: rgba(234, 179, 8, 0.08) !important;
-      }
-      #main-app .bg-blue-50 {
-        background-color: rgba(59, 130, 246, 0.08) !important;
-      }
-      #main-app .rounded-xl.border.border-slate-200 {
-        background-color: #0f1117 !important;
-      }
-      .tabs-wrapper {
-        background: #161b27 !important;
-        border-color: #252d3f !important;
-      }
+      #main-app thead[style] { background: rgba(255,255,255,0.05) !important; }
+      #main-app .hover\:bg-slate-50:hover { background-color: rgba(255,255,255,0.05) !important; }
+      #main-app .bg-green-50 { background-color: rgba(34,214,138,0.08) !important; }
+      #main-app .bg-red-50 { background-color: rgba(255,77,106,0.08) !important; }
+      #main-app .bg-yellow-50 { background-color: rgba(245,188,69,0.08) !important; }
+      #main-app .bg-blue-50 { background-color: rgba(56,189,248,0.08) !important; }
+      #main-app .rounded-xl.border.border-slate-200 { background-color: rgba(255,255,255,0.03) !important; }
     </style>
   </head>
   <body class="antialiased min-h-screen">
@@ -383,49 +584,50 @@
     <div
       id="lock-screen"
       class="fixed inset-0 z-30 flex items-center justify-center"
-      style="background: #050b14"
+      style="background: var(--bg)"
     >
       <div class="text-center p-8 max-w-sm w-full mx-4">
         <div class="flex justify-center mb-5">
           <div
-            class="w-20 h-20 rounded-2xl flex items-center justify-center"
+            class="w-20 h-20 rounded-3xl flex items-center justify-center"
             style="
-              background: rgba(184, 144, 77, 0.15);
-              border: 1px solid rgba(184, 144, 77, 0.3);
+              background: rgba(245,188,69,0.12);
+              border: 1px solid rgba(245,188,69,0.25);
+              box-shadow: 0 0 40px rgba(245,188,69,0.1);
             "
           >
             <i
               data-lucide="shield"
               class="w-10 h-10"
-              style="color: #b8904d"
+              style="color: var(--accent)"
             ></i>
           </div>
         </div>
-        <h1 class="text-white text-2xl font-bold mb-1 tracking-wide">
+        <h1 class="text-2xl font-bold mb-1 tracking-wide" style="color: var(--text)">
           Finanzas Frank
         </h1>
-        <p class="text-slate-500 mb-8 text-sm">
+        <p class="mb-8 text-sm" style="color: var(--text2)">
           Panel Privado · Finanzas Personales
         </p>
         <input
           type="email"
           id="auth-email"
           placeholder="Correo electrónico"
-          class="block w-full rounded-xl border p-3 text-center mb-3 text-sm focus:outline-none"
-          style="background: #112238; border-color: #1e3a5f; color: white"
+          class="block w-full rounded-2xl border p-3.5 text-center mb-3 text-sm focus:outline-none"
+          style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: var(--text)"
         />
         <input
           type="password"
           id="auth-password"
           placeholder="Contraseña"
-          class="block w-full rounded-xl border p-3 text-center mb-5 text-sm focus:outline-none"
-          style="background: #112238; border-color: #1e3a5f; color: white"
+          class="block w-full rounded-2xl border p-3.5 text-center mb-5 text-sm focus:outline-none"
+          style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: var(--text)"
         />
         <button
           onclick="loginWithEmail()"
           id="login-btn"
-          class="w-full text-white font-semibold py-3 px-4 rounded-xl text-sm tracking-wide transition"
-          style="background: linear-gradient(135deg, #b8904d, #d4a85e)"
+          class="w-full font-bold py-3.5 px-4 rounded-2xl text-sm tracking-wide transition"
+          style="background: linear-gradient(135deg, var(--accent), #E8A020); color: #1a0f00; box-shadow: 0 4px 20px rgba(245,188,69,0.35)"
         >
           Ingresar
         </button>
@@ -435,278 +637,131 @@
 
     <!-- MAIN APP -->
     <div id="main-app" class="hidden">
-      <!-- NAV -->
-      <nav
-        id="main-nav"
-        style="background: #050b14"
-        class="text-white shadow-xl sticky top-0 z-20 border-b border-white/5"
-      >
-        <div
-          class="nav-inner max-w-7xl mx-auto px-4 py-2 md:py-3 flex justify-between items-center"
-        >
+      <!-- HEADER -->
+      <header id="top-header">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
           <div class="flex items-center gap-2.5">
-            <div
-              class="w-7 h-7 rounded-lg flex items-center justify-center"
-              style="background: rgba(184, 144, 77, 0.2)"
-            >
-              <i
-                data-lucide="shield"
-                class="w-4 h-4"
-                style="color: #b8904d"
-              ></i>
+            <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background: rgba(245,188,69,0.15); border: 1px solid rgba(245,188,69,0.25)">
+              <i data-lucide="shield" class="w-4 h-4" style="color: var(--accent)"></i>
             </div>
-            <span
-              class="text-sm md:text-base font-semibold tracking-wider"
-              style="color: #e2e8f0"
-              >Finanzas <span style="color: #b8904d">Frank</span></span
-            >
+            <div>
+              <span class="text-sm font-bold tracking-wide" style="color: var(--text)">Finanzas</span>
+              <span class="text-sm font-bold tracking-wide" style="color: var(--accent)"> Frank</span>
+            </div>
           </div>
           <div class="flex items-center gap-3">
-            <span
-              id="sync-status"
-              class="text-xs flex items-center gap-1 text-yellow-400"
-            >
+            <span id="sync-status" class="text-xs flex items-center gap-1" style="color: #EAB308">
               <i data-lucide="loader" class="w-3.5 h-3.5"></i>
               <span class="hidden sm:inline">Conectando...</span>
             </span>
-            <button
-              onclick="exportarTodoCSV()"
-              class="text-xs text-slate-400 hover:text-white flex items-center gap-1 transition"
-              title="Exportar todo en CSV"
-            >
-              <i data-lucide="file-down" class="w-4 h-4"></i>
-              <span class="hidden sm:inline">Exportar Todo</span>
+            <button onclick="exportarTodoCSV()" class="text-xs flex items-center gap-1 transition px-2 py-1.5 rounded-lg" style="color: var(--text2); background: var(--glass); border: 1px solid var(--glass-b)" title="Exportar CSV">
+              <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
+              <span class="hidden sm:inline">CSV</span>
             </button>
-            <button
-              onclick="logout()"
-              class="text-xs text-slate-400 hover:text-white flex items-center gap-1 transition"
-            >
-              <i data-lucide="log-out" class="w-4 h-4"></i>
+            <button onclick="logout()" class="text-xs flex items-center gap-1 transition px-2 py-1.5 rounded-lg" style="color: var(--text2); background: var(--glass); border: 1px solid var(--glass-b)">
+              <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
               <span class="hidden sm:inline">Salir</span>
             </button>
           </div>
         </div>
-      </nav>
+      </header>
 
-      <div class="max-w-7xl mx-auto p-3 sm:p-5 lg:p-7 pb-28">
+      <div class="max-w-7xl mx-auto p-3 sm:p-5 lg:p-7" style="padding-bottom: calc(var(--bnav-h) + var(--sab) + 16px)">
         <!-- PATRIMONIO NETO WIDGET -->
-        <div
-          class="rounded-2xl mb-4 p-4 sm:p-5"
-          style="
-            background: linear-gradient(135deg, #050b14 0%, #112238 100%);
-            border: 1px solid rgba(184, 144, 77, 0.2);
-          "
-        >
+        <div class="glass-card mb-4 p-4 sm:p-5" style="border: 1px solid rgba(245,188,69,0.15); background: linear-gradient(135deg, rgba(245,188,69,0.04) 0%, rgba(56,189,248,0.03) 100%)">
           <div class="flex items-center gap-2 mb-3">
-            <i
-              data-lucide="trending-up"
-              class="w-4 h-4"
-              style="color: #b8904d"
-            ></i>
-            <span
-              class="text-xs font-bold uppercase tracking-widest"
-              style="color: #b8904d"
-              >Resumen Financiero</span
-            >
-            <span class="text-xs text-slate-500 ml-auto">Tiempo real</span>
-          </div>
-          <div class="grid grid-cols-1 gap-3">
-            <div class="glass-card grid grid-cols-2 sm:grid-cols-4 gap-0 w-full mb-4" style="background:rgba(10,18,30,0.95)">
-              <div class="flex flex-col items-center text-center justify-center p-4 border-r border-white/5">
-                <span class="text-[10px] font-semibold uppercase tracking-wide mb-1 text-green-300">Saldo Disponible</span>
-                <span class="font-bold text-green-400 leading-tight text-xl" id="nw-cuentas">$0</span>
-                <span class="text-[9px] text-slate-500 mt-0.5">en cuentas reales</span>
-              </div>
-              <div class="flex flex-col items-center text-center justify-center p-4 border-r border-white/5 sm:border-r">
-                <span class="text-[10px] font-semibold uppercase tracking-wide mb-1 text-cyan-300">En Bolsillos</span>
-                <span class="font-bold text-cyan-400 leading-tight text-xl" id="nw-bolsillos">$0</span>
-                <span class="text-[9px] text-slate-500 mt-0.5">ahorros separados</span>
-              </div>
-              <div class="flex flex-col items-center text-center justify-center p-4 border-r border-white/5 border-t sm:border-t-0">
-                <span class="text-[10px] font-semibold uppercase tracking-wide mb-1 text-yellow-300">Total en Cuentas</span>
-                <span class="font-bold text-yellow-400 leading-tight text-xl" id="nw-cuentas-total">$0</span>
-                <span class="text-[9px] text-slate-500 mt-0.5">cuentas + bolsillos</span>
-              </div>
-              <div class="flex flex-col items-center text-center justify-center p-4 border-t sm:border-t-0">
-                <span class="text-[10px] font-semibold uppercase tracking-wide mb-1 text-blue-300">Flujo Mes</span>
-                <span class="font-bold text-blue-300 leading-tight text-xl" id="nw-flujo">$0</span>
-                <span class="text-[9px] text-slate-500 mt-0.5">ingresos − gastos</span>
-              </div>
+            <i data-lucide="trending-up" class="w-4 h-4" style="color: var(--accent)"></i>
+            <span class="text-xs font-bold uppercase tracking-widest" style="color: var(--accent)">Resumen Financiero</span>
+            <div class="ml-auto flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full" style="background: var(--green); box-shadow: 0 0 6px var(--green)"></span>
+              <span class="text-xs" style="color: var(--text2)">Tiempo real</span>
             </div>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div class="rounded-2xl p-3 text-center" style="background: rgba(34,214,138,0.07); border: 1px solid rgba(34,214,138,0.18)">
+              <span class="block text-[10px] font-semibold uppercase tracking-wide mb-1" style="color: rgba(34,214,138,0.75)">Disponible</span>
+              <span class="block font-bold text-lg leading-tight" style="color: var(--green)" id="nw-cuentas">$0</span>
+              <span class="block text-[9px] mt-0.5" style="color: var(--text3)">cuentas</span>
+            </div>
+            <div class="rounded-2xl p-3 text-center" style="background: rgba(56,189,248,0.07); border: 1px solid rgba(56,189,248,0.18)">
+              <span class="block text-[10px] font-semibold uppercase tracking-wide mb-1" style="color: rgba(56,189,248,0.75)">Bolsillos</span>
+              <span class="block font-bold text-lg leading-tight" style="color: var(--blue)" id="nw-bolsillos">$0</span>
+              <span class="block text-[9px] mt-0.5" style="color: var(--text3)">ahorros</span>
+            </div>
+            <div class="rounded-2xl p-3 text-center" style="background: rgba(245,188,69,0.07); border: 1px solid rgba(245,188,69,0.18)">
+              <span class="block text-[10px] font-semibold uppercase tracking-wide mb-1" style="color: rgba(245,188,69,0.75)">Total</span>
+              <span class="block font-bold text-lg leading-tight" style="color: var(--accent)" id="nw-cuentas-total">$0</span>
+              <span class="block text-[9px] mt-0.5" style="color: var(--text3)">todo junto</span>
+            </div>
+            <div class="rounded-2xl p-3 text-center" style="background: rgba(167,139,250,0.07); border: 1px solid rgba(167,139,250,0.18)">
+              <span class="block text-[10px] font-semibold uppercase tracking-wide mb-1" style="color: rgba(167,139,250,0.75)">Flujo Mes</span>
+              <span class="block font-bold text-lg leading-tight" style="color: var(--purple)" id="nw-flujo">$0</span>
+              <span class="block text-[9px] mt-0.5" style="color: var(--text3)">ingr. − gastos</span>
+            </div>
+          </div>
         </div>
 
         <!-- CUENTAS WIDGET -->
         <div class="glass-card px-4 pt-4 pb-3 mb-4">
           <div class="flex items-center gap-2 mb-3">
-            <i data-lucide="wallet" class="w-4 h-4" style="color: #b8904d"></i>
-            <span
-              class="text-xs font-bold uppercase tracking-widest"
-              style="color: #b8904d"
-              >Mis Cuentas</span
-            >
+            <i data-lucide="wallet" class="w-4 h-4" style="color: var(--accent)"></i>
+            <span class="text-xs font-bold uppercase tracking-widest" style="color: var(--accent)">Mis Cuentas</span>
             <button
               type="button"
-              onclick="
-                showTab('nuevo');
-                setTipo('transferencia');
-                document
-                  .getElementById('panel-nuevo')
-                  .scrollIntoView({ behavior: 'smooth', block: 'start' });
-              "
-              class="ml-auto text-xs font-semibold px-2 py-1 rounded-lg"
-              style="background: rgba(184, 144, 77, 0.1); color: #b8904d"
-            >
-              + Mover
-            </button>
+              onclick="showTab('nuevo'); setTipo('transferencia');"
+              class="ml-auto text-xs font-semibold px-3 py-1.5 rounded-xl transition"
+              style="background: rgba(245,188,69,0.1); color: var(--accent); border: 1px solid rgba(245,188,69,0.2)"
+            >+ Mover</button>
           </div>
-          <div
-            id="cuentas-grid"
-            class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2"
-          ></div>
+          <div id="cuentas-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2"></div>
         </div>
 
         <!-- MES SELECTOR -->
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-1">
-            <button
-              onclick="cambiarMes(-1)"
-              class="p-2 rounded-xl hover:bg-white hover:shadow transition"
-            >
-              <i data-lucide="chevron-left" class="w-4 h-4 text-slate-500"></i>
+            <button onclick="cambiarMes(-1)" class="p-2 rounded-xl transition" style="background: var(--glass); border: 1px solid var(--glass-b)">
+              <i data-lucide="chevron-left" class="w-4 h-4" style="color: var(--text2)"></i>
             </button>
-            <span
-              id="mes-label"
-              class="text-base font-bold text-slate-700 min-w-[150px] text-center capitalize px-2"
-            ></span>
-            <button
-              onclick="cambiarMes(1)"
-              id="btn-mes-sig"
-              class="p-2 rounded-xl hover:bg-white hover:shadow transition"
-            >
-              <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i>
+            <span id="mes-label" class="text-base font-bold min-w-[150px] text-center capitalize px-2" style="color: var(--text)"></span>
+            <button onclick="cambiarMes(1)" id="btn-mes-sig" class="p-2 rounded-xl transition" style="background: var(--glass); border: 1px solid var(--glass-b)">
+              <i data-lucide="chevron-right" class="w-4 h-4" style="color: var(--text2)"></i>
             </button>
           </div>
-          <span class="text-xs text-slate-400 font-medium"
-            >Detalle mensual</span
-          >
+          <span class="text-xs font-medium" style="color: var(--text3)">Detalle mensual</span>
         </div>
 
         <!-- KPIs MENSUALES -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-          <div class="kpi-card border-l-4 border-green-400">
-            <p class="kpi-label">
-              Ingresos
-              <span class="normal-case font-normal text-slate-300">· mes</span>
-            </p>
-            <p class="kpi-value text-green-600" id="kpi-ingresos">$0</p>
+          <div class="kpi-card" style="border-left: 4px solid var(--green)">
+            <p class="kpi-label">Ingresos <span class="normal-case font-normal" style="color: var(--text2)">· mes</span></p>
+            <p class="kpi-value" style="color: var(--green)" id="kpi-ingresos">$0</p>
             <i data-lucide="trending-up" class="kpi-icon"></i>
           </div>
-          <div class="kpi-card border-l-4 border-red-400">
-            <p class="kpi-label">
-              Gastos
-              <span class="normal-case font-normal text-slate-300">· mes</span>
-            </p>
-            <p class="kpi-value text-red-600" id="kpi-gastos">$0</p>
+          <div class="kpi-card" style="border-left: 4px solid var(--red)">
+            <p class="kpi-label">Gastos <span class="normal-case font-normal" style="color: var(--text2)">· mes</span></p>
+            <p class="kpi-value" style="color: var(--red)" id="kpi-gastos">$0</p>
             <i data-lucide="trending-down" class="kpi-icon"></i>
           </div>
-          <div
-            class="kpi-card"
-            style="
-              background: rgba(34, 197, 94, 0.08);
-              border-left: 4px solid #22c55e;
-            "
-          >
-            <p class="kpi-label">
-              Flujo Neto
-              <span class="normal-case font-normal text-slate-300">· mes</span>
-            </p>
+          <div class="kpi-card" style="border-left: 4px solid #34D399">
+            <p class="kpi-label">Flujo Neto <span class="normal-case font-normal" style="color: var(--text2)">· mes</span></p>
             <p class="kpi-value" id="kpi-profit">$0</p>
             <i data-lucide="bar-chart-2" class="kpi-icon"></i>
           </div>
-          <div class="kpi-card border-l-4 border-blue-400">
-            <p class="kpi-label">
-              Ahorro
-              <span class="normal-case font-normal text-slate-300">· mes</span>
-            </p>
-            <p class="kpi-value text-blue-600" id="kpi-margen">0%</p>
+          <div class="kpi-card" style="border-left: 4px solid var(--blue)">
+            <p class="kpi-label">Ahorro <span class="normal-case font-normal" style="color: var(--text2)">· mes</span></p>
+            <p class="kpi-value" style="color: var(--blue)" id="kpi-margen">0%</p>
             <i data-lucide="percent" class="kpi-icon"></i>
           </div>
         </div>
 
-        <!-- TABS CARD -->
-        <div class="glass-card mb-5">
-          <div
-            class="flex border-b"
-            style="
-              overflow-x: auto;
-              overflow-y: hidden;
-              touch-action: pan-x;
-              overscroll-behavior-x: contain;
-              -webkit-overflow-scrolling: touch;
-              background: linear-gradient(135deg, #050b14 0%, #0d1a2e 100%);
-              border-bottom-color: rgba(184,144,77,0.3);
-            "
-          >
-            <button
-              onclick="showTab('resumen')"
-              id="tab-resumen"
-              class="tab-btn active"
-            >
-              <span class="flex items-center gap-1.5"
-                ><i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i
-                >Resumen</span
-              >
-            </button>
-            <button
-              onclick="showTab('movimientos')"
-              id="tab-movimientos"
-              class="tab-btn"
-            >
-              <span class="flex items-center gap-1.5"
-                ><i data-lucide="list" class="w-3.5 h-3.5"></i>Movimientos</span
-              >
-            </button>
-            <button
-              onclick="showTab('estadisticas')"
-              id="tab-estadisticas"
-              class="tab-btn"
-            >
-              <span class="flex items-center gap-1.5"
-                ><i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i
-                >Estadísticas</span
-              >
-            </button>
-            <button onclick="showTab('deudas')" id="tab-deudas" class="tab-btn">
-              <span class="flex items-center gap-1.5"
-                ><i data-lucide="credit-card" class="w-3.5 h-3.5"></i
-                >Deudas</span
-              >
-            </button>
-            <button onclick="showTab('nuevo')" id="tab-nuevo" class="tab-btn">
-              <span class="flex items-center gap-1.5"
-                ><i data-lucide="plus-circle" class="w-3.5 h-3.5"></i
-                >Nuevo</span
-              >
-            </button>
-            <button onclick="showTab('pagos')" id="tab-pagos" class="tab-btn">
-              <span class="flex items-center gap-1.5"
-                ><i data-lucide="calendar-check" class="w-3.5 h-3.5"></i
-                >Pagos</span
-              >
-            </button>
-          </div>
+        <!-- PANELS CONTAINER -->
+        <div id="panels-container">
 
             <!-- TAB RESUMEN -->
           <div id="panel-resumen" class="p-4 sm:p-6">
             <div class="flex items-center justify-between mb-4">
-              <h2
-                class="text-sm font-semibold text-slate-700 flex items-center gap-2"
-              >
-                <i
-                  data-lucide="bar-chart-2"
-                  class="w-4 h-4"
-                  style="color: #b8904d"
-                ></i>
+              <h2 class="text-sm font-semibold flex items-center gap-2" style="color: var(--text)">
+                <i data-lucide="bar-chart-2" class="w-4 h-4" style="color: var(--accent)"></i>
                 <span id="summary-title">Resumen del mes</span>
               </h2>
             </div>
@@ -918,37 +973,13 @@
           <!-- TAB ESTADÍSTICAS -->
           <div id="panel-estadisticas" class="p-4 sm:p-6 hidden">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-              <div
-                class="rounded-xl p-3"
-                style="
-                  background: linear-gradient(135deg, #7f1d1d, #991b1b);
-                  border: 1px solid rgba(239, 68, 68, 0.3);
-                "
-              >
-                <p
-                  class="text-xs text-red-200 mb-1 uppercase font-semibold tracking-wide"
-                >
-                  Deudas Activas
-                </p>
-                <p class="text-xl font-bold text-white" id="nw-deudas-stats">
-                  $0
-                </p>
+              <div class="rounded-2xl p-4" style="background: rgba(255,77,106,0.08); border: 1px solid rgba(255,77,106,0.2)">
+                <p class="text-xs mb-1 uppercase font-semibold tracking-wide" style="color: rgba(255,77,106,0.75)">Deudas Activas</p>
+                <p class="text-xl font-bold" style="color: var(--red)" id="nw-deudas-stats">$0</p>
               </div>
-              <div
-                class="rounded-xl p-3"
-                style="
-                  background: linear-gradient(135deg, #0f2d4b, #1a365d);
-                  border: 1px solid rgba(59, 130, 246, 0.3);
-                "
-              >
-                <p
-                  class="text-xs text-blue-200 mb-1 uppercase font-semibold tracking-wide"
-                >
-                  Net Worth
-                </p>
-                <p class="text-xl font-bold text-white" id="nw-total-stats">
-                  $0
-                </p>
+              <div class="rounded-2xl p-4" style="background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.2)">
+                <p class="text-xs mb-1 uppercase font-semibold tracking-wide" style="color: rgba(56,189,248,0.75)">Net Worth</p>
+                <p class="text-xl font-bold" style="color: var(--blue)" id="nw-total-stats">$0</p>
               </div>
             </div>
             <div class="glass-card p-4 mb-4">
@@ -1091,14 +1122,8 @@
           <!-- TAB DEUDAS -->
           <div id="panel-deudas" class="p-4 sm:p-6 hidden">
             <div class="flex items-center justify-between mb-4">
-              <h2
-                class="text-sm font-semibold text-slate-700 flex items-center gap-2"
-              >
-                <i
-                  data-lucide="credit-card"
-                  class="w-4 h-4"
-                  style="color: #b8904d"
-                ></i>
+              <h2 class="text-sm font-semibold flex items-center gap-2" style="color: var(--text)">
+                <i data-lucide="credit-card" class="w-4 h-4" style="color: var(--red)"></i>
                 Deudas Activas
               </h2>
               <div class="flex items-center gap-2">
@@ -1113,8 +1138,8 @@
                 </button>
                 <button
                   onclick="abrirModalNuevaDeuda()"
-                  class="flex items-center gap-1.5 text-xs font-semibold text-white px-3 py-2 rounded-xl"
-                  style="background: #1a365d"
+                  class="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl"
+                  style="background: rgba(255,77,106,0.12); color: var(--red); border: 1px solid rgba(255,77,106,0.25)"
                 >
                   <i data-lucide="plus" class="w-3.5 h-3.5"></i> Nueva Deuda
                 </button>
@@ -1122,19 +1147,9 @@
             </div>
             <!-- Resumen deudas -->
             <div class="mb-5">
-              <div
-                class="rounded-xl p-3"
-                style="
-                  background: linear-gradient(135deg, #7f1d1d, #991b1b);
-                  border: 1px solid rgba(239, 68, 68, 0.3);
-                "
-              >
-                <p
-                  class="text-xs text-red-200 mb-1 uppercase font-semibold tracking-wide"
-                >
-                  Total Deudas
-                </p>
-                <p class="text-xl font-bold text-white" id="deudas-total">••••••</p>
+              <div class="rounded-2xl p-4" style="background: rgba(255,77,106,0.08); border: 1px solid rgba(255,77,106,0.2)">
+                <p class="text-xs mb-1 uppercase font-semibold tracking-wide" style="color: rgba(255,77,106,0.75)">Total Deudas</p>
+                <p class="text-xl font-bold" style="color: var(--red)" id="deudas-total">••••••</p>
               </div>
             </div>
             <!-- Deudas corto plazo -->
@@ -1156,17 +1171,11 @@
           <!-- TAB NUEVO -->
           <div id="panel-nuevo" class="p-4 sm:p-6 hidden">
             <div class="max-w-lg mx-auto">
-              <div class="flex items-center justify-between mb-5">
-                <h2
-                  class="text-sm font-semibold text-slate-700 flex items-center gap-2"
-                >
-                  <i
-                    data-lucide="plus-circle"
-                    class="w-4 h-4"
-                    style="color: #b8904d"
-                  ></i>
-                  Nuevo Registro
-                </h2>
+              <div class="flex items-center gap-2 mb-5">
+                <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background: rgba(245,188,69,0.12); border: 1px solid rgba(245,188,69,0.2)">
+                  <i data-lucide="plus-circle" class="w-4 h-4" style="color: var(--accent)"></i>
+                </div>
+                <h2 class="text-sm font-semibold" style="color: var(--text)">Nuevo Registro</h2>
               </div>
               <form id="tx-form" class="space-y-4">
                 <div>
@@ -1331,8 +1340,8 @@
                 <button
                   type="submit"
                   id="btn-submit"
-                  class="w-full text-white font-semibold py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm tracking-wide"
-                  style="background: linear-gradient(135deg, #1a365d, #0d2540)"
+                  class="w-full font-bold py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm tracking-wide"
+                  style="background: linear-gradient(135deg, var(--accent), #E8A020); color: #1a0f00; box-shadow: 0 4px 20px rgba(245,188,69,0.35)"
                 >
                   <i data-lucide="save" class="w-4 h-4"></i> Guardar Registro
                 </button>
@@ -1340,7 +1349,8 @@
                   type="button"
                   id="btn-cancelar-edicion"
                   onclick="cancelarEdicion()"
-                  class="hidden w-full font-semibold py-3 px-4 rounded-xl border-2 border-slate-200 text-slate-500 hover:bg-slate-50 transition flex items-center justify-center gap-2 text-sm"
+                  class="hidden w-full font-semibold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm"
+                  style="border: 2px solid rgba(255,255,255,0.1); color: var(--text2); background: transparent"
                 >
                   <i data-lucide="x" class="w-4 h-4"></i> Cancelar edición
                 </button>
@@ -1348,36 +1358,92 @@
             </div>
           </div>
         </div>
+
         <!-- TAB PAGOS RECURRENTES -->
         <div id="panel-pagos" class="hidden p-4 sm:p-6">
           <div id="pagos-content"></div>
         </div>
 
-        <!-- /tabs card -->
-      </div>
+        <!-- TAB NOTAS -->
+        <div id="panel-notas" class="hidden p-4 sm:p-6">
+          <div class="flex items-center justify-between mb-5">
+            <h2 class="text-sm font-semibold flex items-center gap-2" style="color: var(--text)">
+              <i data-lucide="notebook-pen" class="w-4 h-4" style="color: var(--purple)"></i>
+              Mis Notas
+            </h2>
+            <button onclick="abrirModalNota()" class="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl transition" style="background: rgba(167,139,250,0.12); color: var(--purple); border: 1px solid rgba(167,139,250,0.25)">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i> Nueva nota
+            </button>
+          </div>
+          <div id="notas-container" class="notas-grid"></div>
+        </div>
+
+        </div><!-- /panels-container -->
+      </div><!-- /max-w-7xl -->
     </div>
     <!-- /main-app -->
 
-    <!-- FAB Nuevo Registro -->
-    <button
-      onclick="showTab('nuevo')"
-      id="fab-nuevo"
-      class="hidden fixed z-30 flex items-center gap-2 shadow-2xl transition-all active:scale-95"
-      style="
-        bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
-        right: 1.25rem;
-        background: linear-gradient(135deg, #1a365d, #0d2540);
-        color: white;
-        padding: 0.9rem 1.4rem;
-        border-radius: 2rem;
-        font-size: 0.9rem;
-        font-weight: 700;
-        border: 2px solid rgba(184, 144, 77, 0.5);
-      "
-    >
-      <i data-lucide="plus" class="w-5 h-5" style="color: #b8904d"></i>
-      Nuevo
-    </button>
+    <!-- BOTTOM NAV -->
+    <nav id="bottom-nav" style="display:none">
+      <button class="nav-item active" id="nav-resumen" onclick="showTab('resumen')">
+        <i data-lucide="home"></i>
+        <span>Inicio</span>
+      </button>
+      <button class="nav-item" id="nav-movimientos" onclick="showTab('movimientos')">
+        <i data-lucide="list"></i>
+        <span>Movimientos</span>
+      </button>
+      <button class="nav-fab" id="nav-nuevo" onclick="showTab('nuevo')" title="Nuevo registro">
+        <i data-lucide="plus"></i>
+      </button>
+      <button class="nav-item" id="nav-estadisticas" onclick="showTab('estadisticas')">
+        <i data-lucide="bar-chart-2"></i>
+        <span>Stats</span>
+      </button>
+      <button class="nav-item" id="nav-mas" onclick="toggleMasDrawer()">
+        <i data-lucide="grid-2x2"></i>
+        <span>Más</span>
+      </button>
+    </nav>
+
+    <!-- MÁS DRAWER OVERLAY -->
+    <div id="mas-drawer-overlay" onclick="closeMasDrawer()"></div>
+
+    <!-- MÁS DRAWER -->
+    <div id="mas-drawer">
+      <div class="drawer-pill"></div>
+      <p class="text-xs font-bold uppercase tracking-widest mb-3" style="color: var(--text3)">Más secciones</p>
+      <button class="drawer-item" onclick="showTab('deudas'); closeMasDrawer()">
+        <div class="drawer-icon" style="background: rgba(255,77,106,0.12)">
+          <i data-lucide="credit-card" style="color: var(--red); width:20px; height:20px"></i>
+        </div>
+        <div class="flex-1 text-left">
+          <p class="font-semibold text-sm" style="color: var(--text)">Deudas</p>
+          <p class="text-xs mt-0.5" style="color: var(--text2)">Gestiona tus deudas activas</p>
+        </div>
+        <i data-lucide="chevron-right" style="color: var(--text3); width:18px; height:18px; flex-shrink:0"></i>
+      </button>
+      <button class="drawer-item" onclick="showTab('pagos'); closeMasDrawer()">
+        <div class="drawer-icon" style="background: rgba(56,189,248,0.12)">
+          <i data-lucide="calendar-check" style="color: var(--blue); width:20px; height:20px"></i>
+        </div>
+        <div class="flex-1 text-left">
+          <p class="font-semibold text-sm" style="color: var(--text)">Pagos Recurrentes</p>
+          <p class="text-xs mt-0.5" style="color: var(--text2)">Suscripciones y pagos fijos</p>
+        </div>
+        <i data-lucide="chevron-right" style="color: var(--text3); width:18px; height:18px; flex-shrink:0"></i>
+      </button>
+      <button class="drawer-item" onclick="showTab('notas'); closeMasDrawer()">
+        <div class="drawer-icon" style="background: rgba(167,139,250,0.12)">
+          <i data-lucide="notebook-pen" style="color: var(--purple); width:20px; height:20px"></i>
+        </div>
+        <div class="flex-1 text-left">
+          <p class="font-semibold text-sm" style="color: var(--text)">Notas</p>
+          <p class="text-xs mt-0.5" style="color: var(--text2)">Notas y listas de compras</p>
+        </div>
+        <i data-lucide="chevron-right" style="color: var(--text3); width:18px; height:18px; flex-shrink:0"></i>
+      </button>
+    </div>
 
     <!-- MODAL NUEVA DEUDA -->
     <div
@@ -1667,6 +1733,54 @@
           >
             Guardar
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL NOTA -->
+    <div id="modal-nota" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center" style="background: rgba(0,0,0,0.65)">
+      <div class="rounded-t-3xl sm:rounded-2xl w-full sm:max-w-md shadow-2xl" style="background: #0a0e1a; border: 1px solid rgba(255,255,255,0.1); max-height: 92dvh; overflow-y: auto; border-bottom: none">
+        <div id="nota-modal-colorbar" style="height:4px; border-radius: 12px 12px 0 0; background: var(--accent); transition: background 0.2s"></div>
+        <div class="p-5">
+          <!-- Tipo -->
+          <div class="flex gap-2 mb-4">
+            <button id="btn-tipo-nota" type="button" onclick="setNotaTipo('nota')" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition border-2 flex items-center justify-center gap-1.5" style="border-color: rgba(255,255,255,0.1); color: var(--text2)">
+              <i data-lucide="file-text" style="width:14px;height:14px"></i> Nota de texto
+            </button>
+            <button id="btn-tipo-lista" type="button" onclick="setNotaTipo('lista')" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition border-2 flex items-center justify-center gap-1.5" style="border-color: rgba(255,255,255,0.1); color: var(--text2)">
+              <i data-lucide="check-square" style="width:14px;height:14px"></i> Lista
+            </button>
+          </div>
+          <!-- Título -->
+          <input type="text" id="nota-titulo" placeholder="Título (opcional)" class="block w-full rounded-xl p-3 mb-3 text-sm font-semibold focus:outline-none placeholder-slate-500" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text)" />
+          <!-- Texto -->
+          <div id="nota-section-texto">
+            <textarea id="nota-texto" placeholder="Escribe tu nota aquí..." rows="5" class="block w-full rounded-xl p-3 mb-3 text-sm focus:outline-none resize-none placeholder-slate-500" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text)"></textarea>
+          </div>
+          <!-- Lista -->
+          <div id="nota-section-lista" class="hidden">
+            <div id="nota-items-list" class="mb-2"></div>
+            <button type="button" onclick="addNotaItemRow()" class="flex items-center gap-2 text-xs font-semibold px-3 py-2 rounded-xl mb-3" style="color: var(--text2); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08)">
+              <i data-lucide="plus" style="width:14px;height:14px"></i> Agregar elemento
+            </button>
+          </div>
+          <!-- Color picker -->
+          <div class="mb-5">
+            <p class="text-xs font-semibold uppercase tracking-wide mb-2.5" style="color: var(--text3)">Color</p>
+            <div id="nota-color-picker" class="flex gap-2.5 flex-wrap"></div>
+          </div>
+          <!-- Botones -->
+          <div class="flex gap-2">
+            <button id="btn-borrar-nota" type="button" onclick="borrarNota()" class="hidden py-2.5 px-4 rounded-xl text-sm font-semibold flex items-center gap-1.5" style="background: rgba(255,77,106,0.12); color: var(--red); border: 1px solid rgba(255,77,106,0.25)">
+              <i data-lucide="trash-2" style="width:14px;height:14px"></i> Borrar
+            </button>
+            <button type="button" onclick="cerrarModalNota()" class="flex-1 py-2.5 rounded-xl text-sm font-semibold" style="border: 2px solid rgba(255,255,255,0.1); color: var(--text2); background: transparent">
+              Cancelar
+            </button>
+            <button type="button" onclick="guardarNota()" class="flex-1 py-2.5 rounded-xl text-sm font-bold" style="background: linear-gradient(135deg, #F5BC45, #E8A020); color: #1a0f00">
+              Guardar
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -1971,26 +2085,41 @@
       let movimientosExpandido = false;
       function showTab(tab) {
         currentTab = tab;
-        ["resumen", "movimientos", "estadisticas", "deudas", "nuevo", "pagos"].forEach(
-          (t) => {
-            document
-              .getElementById("panel-" + t)
-              .classList.toggle("hidden", t !== tab);
-            document
-              .getElementById("tab-" + t)
-              .classList.toggle("active", t === tab);
-          },
-        );
-        document
-          .getElementById("panel-" + tab)
-          .scrollIntoView({ behavior: "smooth", block: "start" });
-        const fab = document.getElementById("fab-nuevo");
-        if (fab) fab.classList.toggle("hidden", tab === "nuevo");
+        ["resumen","movimientos","estadisticas","deudas","nuevo","pagos","notas"].forEach(t => {
+          const p = document.getElementById("panel-" + t);
+          if (p) p.classList.toggle("hidden", t !== tab);
+        });
+        // Actualizar nav inferior
+        ["resumen","movimientos","estadisticas"].forEach(t => {
+          const btn = document.getElementById("nav-" + t);
+          if (btn) btn.classList.toggle("active", t === tab);
+        });
+        const navMas = document.getElementById("nav-mas");
+        if (navMas) navMas.classList.toggle("active", ["deudas","pagos","notas"].includes(tab));
+        window.scrollTo({ top: 0, behavior: "smooth" });
         if (tab === "estadisticas") renderCharts();
         if (tab === "movimientos") renderMovimientos();
         if (tab === "deudas") renderDeudas();
         if (tab === "pagos") renderPagos();
+        if (tab === "notas") renderNotas();
         lucide.createIcons();
+      }
+
+      // ── Más Drawer ────────────────────────────────────────
+      function toggleMasDrawer() {
+        const overlay = document.getElementById("mas-drawer-overlay");
+        const drawer = document.getElementById("mas-drawer");
+        const open = drawer.classList.contains("open");
+        if (open) closeMasDrawer();
+        else {
+          overlay.classList.add("open");
+          drawer.classList.add("open");
+          lucide.createIcons();
+        }
+      }
+      function closeMasDrawer() {
+        document.getElementById("mas-drawer-overlay").classList.remove("open");
+        document.getElementById("mas-drawer").classList.remove("open");
       }
 
       // ── Mes ───────────────────────────────────────────────
@@ -2068,14 +2197,14 @@
             document.getElementById("tx-hora").value = new Date()
               .toTimeString()
               .slice(0, 5);
-            const fab = document.getElementById("fab-nuevo");
-            if (fab) fab.classList.remove("hidden");
+            // nav inferior siempre visible al autenticarse
+            const bnav = document.getElementById("bottom-nav");
+            if (bnav) bnav.style.display = "flex";
             actualizarMesLabel();
             setTipo("ingreso");
             const ss = document.getElementById("sync-status");
-            ss.className = "text-xs flex items-center gap-1 text-green-400";
-            ss.innerHTML =
-              '<i data-lucide="cloud" class="w-3.5 h-3.5"></i><span class="hidden sm:inline">Sincronizado</span>';
+            ss.style.color = "var(--green)";
+            ss.innerHTML = '<i data-lucide="cloud" class="w-3.5 h-3.5"></i><span class="hidden sm:inline">Sincronizado</span>';
             lucide.createIcons();
 
             // iOS banner
@@ -2217,11 +2346,16 @@
               },
               (err) => console.error("Firestore pagos_checks:", err),
             );
+
+            // Inicializar notas
+            initNotas();
           } else {
             document.getElementById("lock-screen").classList.remove("hidden");
             document.getElementById("main-app").classList.add("hidden");
             document.getElementById("login-btn").disabled = false;
             document.getElementById("login-btn").textContent = "Ingresar";
+            const bnav2 = document.getElementById("bottom-nav");
+            if (bnav2) bnav2.style.display = "none";
           }
         });
       }
@@ -4230,6 +4364,202 @@
       document.getElementById("modal-abonar").addEventListener("click", (e) => {
         if (e.target === e.currentTarget) cerrarModalAbonar();
       });
+      document.getElementById("modal-nota").addEventListener("click", (e) => {
+        if (e.target === e.currentTarget) cerrarModalNota();
+      });
+
+      // ── Notas ─────────────────────────────────────────────
+      let notas = [];
+      const NOTA_COLORS = ["#F5BC45","#22D68A","#38BDF8","#FF4D6A","#A78BFA","#F97316","#EC4899"];
+      let notaEditandoId = null;
+      let notaColorSeleccionado = NOTA_COLORS[0];
+      let notaTipoActual = "nota";
+
+      function initNotas() {
+        db.collection("notas_frank")
+          .orderBy("creadoEn", "desc")
+          .onSnapshot(snap => {
+            notas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            if (currentTab === "notas") renderNotas();
+          }, err => console.error("Firestore notas:", err));
+      }
+
+      function renderNotas() {
+        const container = document.getElementById("notas-container");
+        if (!container) return;
+        if (notas.length === 0) {
+          container.innerHTML = `
+            <button class="nota-add-btn" onclick="abrirModalNota()" style="grid-column:span 2;height:160px">
+              <i data-lucide="plus" style="width:32px;height:32px;opacity:0.35"></i>
+              <span>Crear primera nota</span>
+              <span style="font-size:0.65rem;color:var(--text3)">Notas de texto o listas de compras</span>
+            </button>`;
+          lucide.createIcons();
+          return;
+        }
+        container.innerHTML =
+          `<button class="nota-add-btn" onclick="abrirModalNota()">
+            <i data-lucide="plus" style="width:22px;height:22px;opacity:0.4"></i>
+            <span>Nueva</span>
+          </button>` +
+          notas.map(n => buildNotaCard(n)).join('');
+        lucide.createIcons();
+      }
+
+      function buildNotaCard(nota) {
+        const color = nota.color || "#F5BC45";
+        const colorBarHtml = `<div class="nota-color-bar" style="background:${color}"></div>`;
+        if (nota.tipo === "lista") {
+          const items = nota.items || [];
+          const itemsHtml = items.slice(0, 6).map(item => `
+            <div class="nota-item-check ${item.checked ? 'done' : ''}">
+              <input type="checkbox" ${item.checked ? 'checked' : ''} onclick="toggleNotaItem('${nota.id}','${item.id}',event)" />
+              <span>${item.texto}</span>
+            </div>`).join('');
+          const extra = items.length > 6 ? `<div style="color:var(--text3);font-size:0.65rem;margin-top:3px">+${items.length-6} más</div>` : '';
+          return `<div class="nota-card" onclick="abrirModalNota('${nota.id}')">
+            ${colorBarHtml}
+            ${nota.titulo ? `<p class="nota-title">${nota.titulo}</p>` : '<div style="margin-top:6px"></div>'}
+            <div class="nota-body">${itemsHtml}${extra}</div>
+          </div>`;
+        }
+        return `<div class="nota-card" onclick="abrirModalNota('${nota.id}')">
+          ${colorBarHtml}
+          ${nota.titulo ? `<p class="nota-title">${nota.titulo}</p>` : '<div style="margin-top:6px"></div>'}
+          <p class="nota-body">${nota.texto || ''}</p>
+        </div>`;
+      }
+
+      async function toggleNotaItem(notaId, itemId, ev) {
+        ev.stopPropagation();
+        const nota = notas.find(n => n.id === notaId);
+        if (!nota) return;
+        const items = nota.items.map(i => i.id === itemId ? { ...i, checked: !i.checked } : i);
+        await db.collection("notas_frank").doc(notaId).update({ items, actualizadoEn: new Date().toISOString() });
+      }
+
+      function abrirModalNota(notaId = null) {
+        const modal = document.getElementById("modal-nota");
+        modal.classList.remove("hidden");
+        // Reset
+        notaEditandoId = null;
+        notaColorSeleccionado = NOTA_COLORS[0];
+        document.getElementById("nota-titulo").value = "";
+        document.getElementById("nota-texto").value = "";
+        document.getElementById("nota-items-list").innerHTML = "";
+        document.getElementById("btn-borrar-nota").classList.add("hidden");
+        if (notaId) {
+          const nota = notas.find(n => n.id === notaId);
+          if (!nota) return;
+          notaEditandoId = notaId;
+          notaColorSeleccionado = nota.color || NOTA_COLORS[0];
+          document.getElementById("nota-titulo").value = nota.titulo || "";
+          setNotaTipo(nota.tipo || "nota");
+          if (nota.tipo === "lista") {
+            (nota.items || []).forEach(item => addNotaItemRow(item));
+          } else {
+            document.getElementById("nota-texto").value = nota.texto || "";
+          }
+          document.getElementById("btn-borrar-nota").classList.remove("hidden");
+        } else {
+          setNotaTipo("nota");
+        }
+        renderColorPickerNota();
+        lucide.createIcons();
+      }
+
+      function cerrarModalNota() {
+        document.getElementById("modal-nota").classList.add("hidden");
+        notaEditandoId = null;
+      }
+
+      function setNotaTipo(tipo) {
+        notaTipoActual = tipo;
+        document.getElementById("nota-section-texto").classList.toggle("hidden", tipo !== "nota");
+        document.getElementById("nota-section-lista").classList.toggle("hidden", tipo !== "lista");
+        document.getElementById("btn-tipo-nota").className =
+          document.getElementById("btn-tipo-nota").className.replace(/\bactive-nota-tipo\b/g, '').trim() +
+          (tipo === "nota" ? " active-nota-tipo" : "");
+        document.getElementById("btn-tipo-lista").className =
+          document.getElementById("btn-tipo-lista").className.replace(/\bactive-nota-tipo\b/g, '').trim() +
+          (tipo === "lista" ? " active-nota-tipo" : "");
+      }
+
+      function renderColorPickerNota() {
+        const picker = document.getElementById("nota-color-picker");
+        picker.innerHTML = NOTA_COLORS.map(c =>
+          `<div class="color-dot ${c === notaColorSeleccionado ? 'selected' : ''}"
+               style="background:${c}"
+               onclick="selectNotaColor('${c}')"></div>`
+        ).join('');
+        const bar = document.getElementById("nota-modal-colorbar");
+        if (bar) bar.style.background = notaColorSeleccionado;
+      }
+
+      function selectNotaColor(color) {
+        notaColorSeleccionado = color;
+        renderColorPickerNota();
+      }
+
+      function addNotaItemRow(item = null) {
+        const id = item ? item.id : "item_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5);
+        const list = document.getElementById("nota-items-list");
+        const div = document.createElement("div");
+        div.className = "nota-check-input";
+        div.dataset.id = id;
+        div.innerHTML = `
+          <input type="checkbox" ${item && item.checked ? 'checked' : ''} />
+          <input type="text" placeholder="Elemento de lista..." value="${item ? item.texto.replace(/"/g, '&quot;') : ''}" />
+          <button type="button" class="del-item" onclick="this.closest('.nota-check-input').remove()">
+            <i data-lucide="x" style="width:12px;height:12px"></i>
+          </button>`;
+        list.appendChild(div);
+        lucide.createIcons();
+        if (!item) div.querySelector('input[type="text"]').focus();
+      }
+
+      async function guardarNota() {
+        const titulo = document.getElementById("nota-titulo").value.trim();
+        const data = {
+          titulo,
+          color: notaColorSeleccionado,
+          tipo: notaTipoActual,
+          actualizadoEn: new Date().toISOString(),
+        };
+        if (notaTipoActual === "lista") {
+          const items = [];
+          document.querySelectorAll("#nota-items-list .nota-check-input").forEach(row => {
+            const texto = row.querySelector('input[type="text"]').value.trim();
+            if (texto) items.push({ id: row.dataset.id, texto, checked: row.querySelector('input[type="checkbox"]').checked });
+          });
+          data.items = items;
+          data.texto = "";
+        } else {
+          data.texto = document.getElementById("nota-texto").value.trim();
+          data.items = [];
+        }
+        if (!titulo && !data.texto && (!data.items || data.items.length === 0)) {
+          cerrarModalNota();
+          return;
+        }
+        if (notaEditandoId) {
+          await db.collection("notas_frank").doc(notaEditandoId).update(data);
+          showToast("Nota actualizada ✓", "success");
+        } else {
+          data.creadoEn = new Date().toISOString();
+          await db.collection("notas_frank").add(data);
+          showToast("Nota guardada ✓", "success");
+        }
+        cerrarModalNota();
+      }
+
+      async function borrarNota() {
+        if (!notaEditandoId) return;
+        if (!confirm("¿Eliminar esta nota?")) return;
+        await db.collection("notas_frank").doc(notaEditandoId).delete();
+        showToast("Nota eliminada", "delete");
+        cerrarModalNota();
+      }
 
       lucide.createIcons();
 
