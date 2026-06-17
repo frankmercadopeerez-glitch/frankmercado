@@ -1737,6 +1737,54 @@
       </div>
     </div>
 
+    <!-- MODAL EDITAR PAGO RECURRENTE -->
+    <div id="modal-editar-pago" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+      <div class="rounded-2xl p-6 w-full max-w-sm shadow-2xl" style="background: #161b27; border: 1px solid #252d3f">
+        <h3 class="font-bold text-white mb-4 flex items-center gap-2">
+          <i data-lucide="pencil" class="w-4 h-4" style="color: var(--accent)"></i>
+          Editar Pago Recurrente
+        </h3>
+        <div class="space-y-3">
+          <input type="text" id="edit-pago-nombre" placeholder="Nombre del pago"
+            class="block w-full rounded-xl p-3 text-sm focus:outline-none text-white placeholder-slate-500"
+            style="background: #0f1117; border: 1px solid #252d3f" />
+          <div class="flex gap-2">
+            <input type="text" id="edit-pago-monto" placeholder="Monto" inputmode="numeric"
+              oninput="formatMontoInput(this)"
+              class="flex-1 rounded-xl p-3 text-sm focus:outline-none font-semibold text-white placeholder-slate-500"
+              style="background: #0f1117; border: 1px solid #252d3f" />
+            <select id="edit-pago-moneda" class="flex-shrink-0 w-20 rounded-xl p-3 text-sm focus:outline-none text-white"
+              style="background: #0f1117; border: 1px solid #252d3f">
+              <option value="COP">COP</option>
+              <option value="USD">USD</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold mb-1.5 uppercase tracking-wide" style="color: #94a3b8">
+              Día(s) de pago — separados por coma
+            </label>
+            <input type="text" id="edit-pago-dias" placeholder="Ej. 25  ó  15, 30"
+              class="block w-full rounded-xl p-3 text-sm focus:outline-none text-white placeholder-slate-500"
+              style="background: #0f1117; border: 1px solid #252d3f" />
+          </div>
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input type="checkbox" id="edit-pago-aproximado" />
+            <span class="text-xs" style="color: #94a3b8">Monto aproximado</span>
+          </label>
+        </div>
+        <div class="flex gap-2 mt-4">
+          <button onclick="cerrarModalEditarPago()" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
+            style="border: 2px solid #252d3f; color: #94a3b8; background: transparent">
+            Cancelar
+          </button>
+          <button onclick="guardarEditarPago()" class="flex-1 py-2.5 rounded-xl text-white text-sm font-semibold"
+            style="background: linear-gradient(135deg, var(--accent), #E8A020); color: #1a0f00">
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- MODAL NOTA -->
     <div id="modal-nota" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center" style="background: rgba(0,0,0,0.65)">
       <div class="rounded-t-3xl sm:rounded-2xl w-full sm:max-w-md shadow-2xl" style="background: #0a0e1a; border: 1px solid rgba(255,255,255,0.1); max-height: 92dvh; overflow-y: auto; border-bottom: none">
@@ -2025,6 +2073,8 @@
       let deudas = [];
       let pagosRecurrentes = [];
       let pagosChecks = [];
+      // Unsubscribe refs para evitar listeners duplicados al re-autenticar
+      let _unsubTx = null, _unsubDeudas = null, _unsubPagos = null, _unsubChecks = null, _unsubNotas = null;
       const _td = new Date();
       const todayStr =
         _td.getFullYear() +
@@ -2218,8 +2268,15 @@
               }
             }
 
+            // Cancelar listeners anteriores (evita datos duplicados al re-autenticar)
+            if (_unsubTx) _unsubTx();
+            if (_unsubDeudas) _unsubDeudas();
+            if (_unsubPagos) _unsubPagos();
+            if (_unsubChecks) _unsubChecks();
+            if (_unsubNotas) _unsubNotas();
+
             // Cargar transacciones
-            db.collection("transacciones_frank")
+            _unsubTx = db.collection("transacciones_frank")
               .orderBy("fecha", "desc")
               .onSnapshot(
                 (snap) => {
@@ -2234,7 +2291,7 @@
 
             // Cargar / inicializar deudas
             let _seedingDeudas = false;
-            db.collection("deudas_frank").onSnapshot(
+            _unsubDeudas = db.collection("deudas_frank").onSnapshot(
               (snap) => {
                 if (_seedingDeudas) return;
 
@@ -2286,7 +2343,7 @@
 
             // Cargar / inicializar pagos recurrentes
             let _seedingPagos = false;
-            db.collection("pagos_recurrentes_frank").onSnapshot(
+            _unsubPagos = db.collection("pagos_recurrentes_frank").onSnapshot(
               (snap) => {
                 if (_seedingPagos) return;
                 // Reset v2: borrar todo y re-sembrar con semilla actualizada
@@ -2339,7 +2396,7 @@
               (err) => console.error("Firestore pagos:", err),
             );
 
-            db.collection("pagos_checks_frank").onSnapshot(
+            _unsubChecks = db.collection("pagos_checks_frank").onSnapshot(
               (snap) => {
                 pagosChecks = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
                 if (currentTab === "pagos") renderPagos();
@@ -3122,7 +3179,7 @@
               : `<p class="text-xs mt-0.5" style="color:#6e7681">Original: ${fmtDeuda(d.montoInicial)}</p>`;
             const div = document.createElement("div");
             div.className = "deuda-card";
-            div.innerHTML = `<div class="flex justify-between items-start mb-2"><div class="flex-1 min-w-0 pr-2"><p class="font-semibold text-sm" style="color:#e2e8f0">${d.nombre}</p>${origenLine}<p class="text-xs mt-1">Saldo restante: <span style="font-weight:700;color:#ef4444">${fmtDeuda(d.saldo)}</span></p></div><div class="flex flex-col gap-1.5"><button onclick="abrirModalAbonar('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl text-white" style="background:#16a34a">Abonar</button><button onclick="abrirModalEditarDeuda('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl text-white" style="background:#b8904d">Editar</button><button onclick="archivarDeuda('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl border text-center" style="border-color:#252d3f;color:#6e7681">✓ Pagada</button></div></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%;background:${pct >= 100 ? "#22c55e" : "#b8904d"}"></div></div><p class="text-xs mt-1" style="color:#6e7681">${pct}% pagado de ${fmtDeuda(negociado)}</p>`;
+            div.innerHTML = `<div class="flex justify-between items-start mb-2"><div class="flex-1 min-w-0 pr-2"><p class="font-semibold text-sm" style="color:#e2e8f0">${d.nombre}</p>${origenLine}<p class="text-xs mt-1">Saldo restante: <span style="font-weight:700;color:#ef4444">${fmtDeuda(d.saldo)}</span></p></div><div class="flex flex-col gap-1.5"><button onclick="abrirModalAbonar('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl text-white" style="background:#16a34a">Abonar</button><button onclick="abrirModalEditarDeuda('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl text-white" style="background:#b8904d">Editar</button><button onclick="archivarDeuda('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl border text-center" style="border-color:#252d3f;color:#6e7681">✓ Pagada</button><button onclick="eliminarDeuda('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl border text-center" style="border-color:rgba(239,68,68,0.3);color:#f87171;background:rgba(239,68,68,0.07)">🗑 Borrar</button></div></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%;background:${pct >= 100 ? "#22c55e" : "#b8904d"}"></div></div><p class="text-xs mt-1" style="color:#6e7681">${pct}% pagado de ${fmtDeuda(negociado)}</p>`;
             el.appendChild(div);
           });
       }
@@ -3229,6 +3286,11 @@
         });
         cerrarModalDeuda();
         showToast("Deuda registrada ✓");
+      }
+      async function eliminarDeuda(id) {
+        if (!confirm("¿Eliminar esta deuda completamente? No quedará ningún registro.")) return;
+        await db.collection("deudas_frank").doc(id).delete();
+        showToast("Deuda eliminada", "delete");
       }
       async function archivarDeuda(id) {
         if (!confirm("¿Marcar esta deuda como pagada y archivarla?")) return;
@@ -4248,6 +4310,12 @@
                       ><i data-lucide="circle" class="w-3.5 h-3.5"></i>Pagar</button>`
                 }
                 <button
+                  onclick="abrirModalEditarPago('${pago.id}')"
+                  class="p-1.5 rounded-lg"
+                  style="color:#b8904d;background:rgba(184,144,77,0.08);border:1px solid rgba(184,144,77,0.2)"
+                  title="Editar"
+                ><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+                <button
                   onclick="eliminarPagoRecurrente('${pago.id}')"
                   class="p-1.5 rounded-lg"
                   style="color:#334155"
@@ -4339,6 +4407,46 @@
         }
       }
 
+      let pagoEditarId = null;
+      function abrirModalEditarPago(id) {
+        const pago = pagosRecurrentes.find(p => p.id === id);
+        if (!pago) return;
+        pagoEditarId = id;
+        document.getElementById("edit-pago-nombre").value = pago.nombre || "";
+        document.getElementById("edit-pago-monto").value = pago.monto ? parseInt(pago.monto).toLocaleString("es-CO") : "";
+        document.getElementById("edit-pago-moneda").value = pago.moneda || "COP";
+        document.getElementById("edit-pago-dias").value = (pago.diasPago || []).join(", ");
+        document.getElementById("edit-pago-aproximado").checked = !!pago.esAproximado;
+        document.getElementById("modal-editar-pago").classList.remove("hidden");
+        lucide.createIcons();
+      }
+      function cerrarModalEditarPago() {
+        document.getElementById("modal-editar-pago").classList.add("hidden");
+        pagoEditarId = null;
+      }
+      async function guardarEditarPago() {
+        if (!pagoEditarId) return;
+        const nombre = document.getElementById("edit-pago-nombre").value.trim();
+        const monto = getMontoValue("edit-pago-monto");
+        const moneda = document.getElementById("edit-pago-moneda").value;
+        const diasRaw = document.getElementById("edit-pago-dias").value;
+        const esAproximado = document.getElementById("edit-pago-aproximado").checked;
+        if (!nombre || !monto || !diasRaw) {
+          showToast("Completa todos los campos", "info");
+          return;
+        }
+        const diasPago = diasRaw.split(",").map(d => parseInt(d.trim())).filter(d => !isNaN(d) && d >= 1 && d <= 31);
+        if (diasPago.length === 0) {
+          showToast("Ingresa días válidos (1-31)", "info");
+          return;
+        }
+        await db.collection("pagos_recurrentes_frank").doc(pagoEditarId).update({
+          nombre, monto, moneda, diasPago, esAproximado,
+        });
+        showToast("Pago actualizado ✓", "success");
+        cerrarModalEditarPago();
+      }
+
       async function eliminarPagoRecurrente(id) {
         if (!confirm("¿Eliminar este pago recurrente?")) return;
         try {
@@ -4352,6 +4460,9 @@
       // Cerrar modal nuevo pago al click fuera
       document.getElementById("modal-nuevo-pago").addEventListener("click", (e) => {
         if (e.target === e.currentTarget) cerrarModalNuevoPago();
+      });
+      document.getElementById("modal-editar-pago").addEventListener("click", (e) => {
+        if (e.target === e.currentTarget) cerrarModalEditarPago();
       });
 
       // Cerrar modales al click fuera
@@ -4376,7 +4487,7 @@
       let notaTipoActual = "nota";
 
       function initNotas() {
-        db.collection("notas_frank")
+        _unsubNotas = db.collection("notas_frank")
           .orderBy("creadoEn", "desc")
           .onSnapshot(snap => {
             notas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
