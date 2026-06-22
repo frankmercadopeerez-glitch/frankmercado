@@ -558,6 +558,16 @@
         color: var(--text) !important;
         border-color: rgba(255,255,255,0.1) !important;
       }
+      #main-app select option,
+      #main-app select optgroup {
+        background-color: #0c1019;
+        color: #EEF2FF;
+      }
+      #modal-nuevo-pago select,
+      #modal-editar-pago select {
+        padding-right: 0.75rem !important;
+        background-image: none;
+      }
       #main-app thead[style] { background: rgba(255,255,255,0.05) !important; }
       #main-app .hover\:bg-slate-50:hover { background-color: rgba(255,255,255,0.05) !important; }
       #main-app .bg-green-50 { background-color: rgba(34,214,138,0.08) !important; }
@@ -1699,7 +1709,7 @@
               placeholder="Monto"
               inputmode="numeric"
               oninput="formatMontoInput(this)"
-              class="flex-1 rounded-xl p-3 text-sm focus:outline-none font-semibold text-white placeholder-slate-500"
+              class="flex-1 min-w-0 rounded-xl p-3 text-sm focus:outline-none font-semibold text-white placeholder-slate-500"
               style="background: #0f1117; border: 1px solid #252d3f"
             />
             <select
@@ -1763,7 +1773,7 @@
           <div class="flex gap-2">
             <input type="text" id="edit-pago-monto" placeholder="Monto" inputmode="numeric"
               oninput="formatMontoInput(this)"
-              class="flex-1 rounded-xl p-3 text-sm focus:outline-none font-semibold text-white placeholder-slate-500"
+              class="flex-1 min-w-0 rounded-xl p-3 text-sm focus:outline-none font-semibold text-white placeholder-slate-500"
               style="background: #0f1117; border: 1px solid #252d3f" />
             <select id="edit-pago-moneda" class="flex-shrink-0 w-20 rounded-xl p-3 text-sm focus:outline-none text-white"
               style="background: #0f1117; border: 1px solid #252d3f">
