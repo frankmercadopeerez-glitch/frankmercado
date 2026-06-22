@@ -792,15 +792,15 @@
             <!-- HOY -->
             <div id="hoy-resumen" class="mb-4"></div>
 
+            <!-- Negocio del carro: Ingresos + Profit -->
+            <div id="producido-carro-banner" class="mb-4"></div>
+
             <!-- CATEGORÍAS DEL MES (compacto) -->
             <div class="flex items-center justify-between mb-2">
               <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text3)" id="summary-title">Categorías del mes</span>
               <span id="summary-alerta-chip"></span>
             </div>
             <div id="summary-cats" class="glass-card overflow-hidden mb-4"></div>
-
-            <!-- Producido carro banner -->
-            <div id="producido-carro-banner" class="mb-3"></div>
 
             <!-- Alertas de presupuesto -->
             <div id="budget-alerts" class="mb-2"></div>
@@ -2831,32 +2831,44 @@
 
         const entries = Object.entries(catMap).sort((a, b) => b[1] - a[1]);
 
-        // ── Banner producido carro ─────────────────────────────
+        // ── Widget negocio del carro: Ingresos + Profit ───────
         const producidoMes = mes
           .filter((t) => t.tipo === "ingreso" && t.categoria === "Producido Carro")
           .reduce((s, t) => s + t.monto, 0);
+        const gastosCarro = mes
+          .filter((t) => t.tipo === "gasto" && t.categoria === "Gastos del Carro")
+          .reduce((s, t) => s + t.monto, 0);
+        const cuotaCarro = mes
+          .filter((t) => t.tipo === "gasto" && t.categoria === "Cuota de Vehiculo")
+          .reduce((s, t) => s + t.monto, 0);
+        const totalEgresosCarro = gastosCarro + cuotaCarro;
+        const profitCarro = producidoMes - totalEgresosCarro;
+        const isProfit = profitCarro >= 0;
+        const profitColor = isProfit ? "#86efac" : "#fca5a5";
+        const profitBorderColor = isProfit ? "rgba(34,197,94,0.25)" : "rgba(255,77,106,0.25)";
+        const profitBg = isProfit ? "#0a1f0f" : "#1a0808";
+
         const producidoBanner = document.getElementById("producido-carro-banner");
         if (producidoBanner) {
-          producidoBanner.innerHTML = producidoMes > 0
-            ? `<div class="rounded-xl p-3 flex items-center gap-3 cursor-pointer active:opacity-70" style="background:#0a1f0f;border:1px solid rgba(34,197,94,0.25)" onclick="irAMovimientosCat('Producido Carro')">
-                <div class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center" style="background:rgba(34,197,94,0.15)">
-                  <i data-lucide="car" class="w-4 h-4" style="color:#4ade80"></i>
+          producidoBanner.innerHTML = `
+            <div class="rounded-xl p-3" style="background:#0a1f0f;border:1px solid rgba(34,197,94,0.2)">
+              <div class="flex items-center gap-1.5 mb-3">
+                <i data-lucide="car" class="w-3.5 h-3.5" style="color:#4ade80"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest" style="color:#4ade80">Negocio del Carro · ${MESES[mesSel.m]}</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div class="rounded-xl p-3 cursor-pointer active:opacity-70" style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.15)" onclick="irAMovimientosCat('Producido Carro')">
+                  <p class="text-[10px] font-semibold uppercase tracking-wide mb-1" style="color:rgba(74,222,128,0.7)">Ingresos</p>
+                  <p class="text-xl font-black leading-tight" style="color:#86efac">${fmt(producidoMes)}</p>
+                  <p class="text-[10px] mt-0.5" style="color:#475569">Producido Carro</p>
                 </div>
-                <div class="flex-1 min-w-0">
-                  <p class="text-[11px] uppercase tracking-wide font-semibold" style="color:#4ade80">Producido Carro · mes</p>
-                  <p class="text-lg font-black leading-tight" style="color:#86efac">${fmt(producidoMes)}</p>
+                <div class="rounded-xl p-3" style="background:${profitBg};border:1px solid ${profitBorderColor}">
+                  <p class="text-[10px] font-semibold uppercase tracking-wide mb-1" style="color:${isProfit ? 'rgba(74,222,128,0.7)' : 'rgba(248,113,113,0.7)'}">Profit Total</p>
+                  <p class="text-xl font-black leading-tight" style="color:${profitColor}">${isProfit ? "+" : ""}${fmt(profitCarro)}</p>
+                  <p class="text-[10px] mt-0.5" style="color:#475569">−${fmt(totalEgresosCarro)} gastos</p>
                 </div>
-                <i data-lucide="chevron-right" class="w-4 h-4 flex-shrink-0" style="color:#4ade80"></i>
-              </div>`
-            : `<div class="rounded-xl p-3 flex items-center gap-3" style="background:#0a1f0f;border:1px solid rgba(34,197,94,0.1)">
-                <div class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center" style="background:rgba(34,197,94,0.08)">
-                  <i data-lucide="car" class="w-4 h-4" style="color:#475569"></i>
-                </div>
-                <div class="flex-1">
-                  <p class="text-[11px] uppercase tracking-wide font-semibold" style="color:#475569">Producido Carro · mes</p>
-                  <p class="text-sm font-semibold" style="color:#475569">Sin registros este mes</p>
-                </div>
-              </div>`;
+              </div>
+            </div>`;
         }
 
         // ── HOY: gastos del día en curso ──────────────────────
