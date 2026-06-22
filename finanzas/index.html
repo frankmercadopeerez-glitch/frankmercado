@@ -2850,23 +2850,42 @@
 
         const producidoBanner = document.getElementById("producido-carro-banner");
         if (producidoBanner) {
+          const _barMax = Math.max(producidoMes, totalEgresosCarro, 1);
+          const _ingrPct = Math.round((producidoMes / _barMax) * 100);
+          const _egrPct  = Math.round((totalEgresosCarro / _barMax) * 100);
           producidoBanner.innerHTML = `
-            <div class="rounded-xl p-3" style="background:#0a1f0f;border:1px solid rgba(34,197,94,0.2)">
-              <div class="flex items-center gap-1.5 mb-3">
+            <div class="rounded-xl p-4" style="background:#0a1f0f;border:1px solid rgba(34,197,94,0.2)">
+              <div class="flex items-center gap-1.5 mb-4">
                 <i data-lucide="car" class="w-3.5 h-3.5" style="color:#4ade80"></i>
                 <span class="text-[10px] font-bold uppercase tracking-widest" style="color:#4ade80">Negocio del Carro · ${MESES[mesSel.m]}</span>
               </div>
-              <div class="grid grid-cols-2 gap-2">
-                <div class="rounded-xl p-3 cursor-pointer active:opacity-70" style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.15)" onclick="irAMovimientosCat('Producido Carro')">
-                  <p class="text-[10px] font-semibold uppercase tracking-wide mb-1" style="color:rgba(74,222,128,0.7)">Ingresos</p>
-                  <p class="text-xl font-black leading-tight" style="color:#86efac">${fmt(producidoMes)}</p>
-                  <p class="text-[10px] mt-0.5" style="color:#475569">Producido Carro</p>
+
+              <!-- Barra Ingresos -->
+              <div class="mb-3 cursor-pointer active:opacity-70" onclick="irAMovimientosCat('Producido Carro')">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="text-[10px] font-semibold uppercase tracking-wide" style="color:rgba(74,222,128,0.8)">Ingresos</span>
+                  <span class="text-sm font-black" style="color:#86efac">${fmt(producidoMes)}</span>
                 </div>
-                <div class="rounded-xl p-3" style="background:${profitBg};border:1px solid ${profitBorderColor}">
-                  <p class="text-[10px] font-semibold uppercase tracking-wide mb-1" style="color:${isProfit ? 'rgba(74,222,128,0.7)' : 'rgba(248,113,113,0.7)'}">Profit Total</p>
-                  <p class="text-xl font-black leading-tight" style="color:${profitColor}">${isProfit ? "+" : ""}${fmt(profitCarro)}</p>
-                  <p class="text-[10px] mt-0.5" style="color:#475569">−${fmt(totalEgresosCarro)} gastos</p>
+                <div class="rounded-full overflow-hidden" style="height:8px;background:rgba(34,197,94,0.1)">
+                  <div class="h-full rounded-full transition-all" style="width:${_ingrPct}%;background:linear-gradient(90deg,#22c55e,#86efac)"></div>
                 </div>
+              </div>
+
+              <!-- Barra Gastos -->
+              <div class="mb-4">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="text-[10px] font-semibold uppercase tracking-wide" style="color:rgba(248,113,113,0.8)">Gastos</span>
+                  <span class="text-sm font-black" style="color:#fca5a5">−${fmt(totalEgresosCarro)}</span>
+                </div>
+                <div class="rounded-full overflow-hidden" style="height:8px;background:rgba(255,77,106,0.1)">
+                  <div class="h-full rounded-full transition-all" style="width:${_egrPct}%;background:linear-gradient(90deg,#ef4444,#fca5a5)"></div>
+                </div>
+              </div>
+
+              <!-- Profit -->
+              <div class="flex items-center justify-between pt-3" style="border-top:1px solid rgba(255,255,255,0.06)">
+                <span class="text-[10px] font-bold uppercase tracking-widest" style="color:${isProfit ? 'rgba(74,222,128,0.7)' : 'rgba(248,113,113,0.7)'}">Profit Total</span>
+                <span class="text-lg font-black" style="color:${profitColor}">${isProfit ? "+" : ""}${fmt(profitCarro)}</span>
               </div>
             </div>`;
         }
