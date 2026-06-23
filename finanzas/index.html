@@ -83,6 +83,26 @@
         color: var(--text);
         min-height: 100dvh;
         overflow-x: hidden;
+        /* Cifras de ancho fijo: los montos quedan alineados en columna */
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: "tnum" 1;
+      }
+
+      /* Feedback de toque uniforme en todos los botones */
+      #main-app button, #mas-drawer button {
+        transition: transform 0.12s ease, opacity 0.12s ease,
+                    background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+      }
+      #main-app button:active, #mas-drawer button:active {
+        transform: scale(0.97);
+      }
+
+      /* Tarjeta héroe (Patrimonio): mayor peso visual y jerarquía */
+      .hero-card {
+        box-shadow:
+          0 10px 34px rgba(0,0,0,0.5),
+          0 0 0 1px rgba(245,188,69,0.10),
+          inset 0 1px 0 rgba(255,255,255,0.08);
       }
 
       /* ── Skeleton de carga de datos ──────────── */
@@ -588,9 +608,9 @@
       #main-app .bg-slate-100 { background-color: rgba(255,255,255,0.06) !important; }
       #main-app .text-slate-800 { color: var(--text) !important; }
       #main-app .text-slate-700 { color: #CBD5E1 !important; }
-      #main-app .text-slate-600 { color: #94A3B8 !important; }
-      #main-app .text-slate-500 { color: #64748B !important; }
-      #main-app .text-slate-400 { color: #475569 !important; }
+      #main-app .text-slate-600 { color: #8892B0 !important; }
+      #main-app .text-slate-500 { color: #8892B0 !important; }
+      #main-app .text-slate-400 { color: #3D4A6B !important; }
       #main-app .border-slate-100, #main-app .border-slate-200 { border-color: rgba(255,255,255,0.08) !important; }
       #main-app .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
       #main-app .divide-slate-50 > :not([hidden]) ~ :not([hidden]) { border-color: rgba(255,255,255,0.06) !important; }
@@ -745,7 +765,7 @@
             </div>
           </div>
           <div class="flex items-center gap-3">
-            <span id="sync-status" class="text-xs flex items-center gap-1" style="color: #EAB308">
+            <span id="sync-status" class="text-xs flex items-center gap-1" style="color: #F5BC45">
               <i data-lucide="loader" class="w-3.5 h-3.5"></i>
               <span class="hidden sm:inline">Conectando...</span>
             </span>
@@ -769,7 +789,7 @@
           <div id="panel-resumen" class="p-4 sm:p-6">
 
             <!-- PATRIMONIO NETO WIDGET -->
-            <div class="glass-card mb-4 p-4 sm:p-5" style="border: 1px solid rgba(245,188,69,0.15); background: linear-gradient(135deg, rgba(245,188,69,0.04) 0%, rgba(56,189,248,0.03) 100%)">
+            <div class="glass-card hero-card mb-5 p-4 sm:p-5" style="border: 1px solid rgba(245,188,69,0.18); background: linear-gradient(135deg, rgba(245,188,69,0.06) 0%, rgba(56,189,248,0.04) 100%)">
           <div class="flex items-center gap-2 mb-3">
             <i data-lucide="trending-up" class="w-4 h-4" style="color: var(--accent)"></i>
             <span class="text-xs font-bold uppercase tracking-widest" style="color: var(--accent)">Resumen Financiero</span>
@@ -1006,7 +1026,7 @@
                 class="text-xs font-semibold px-3 py-1.5 rounded-lg"
                 style="
                   background: rgba(220, 38, 38, 0.12);
-                  color: #f87171;
+                  color: #FF9DAD;
                   border: 1px solid rgba(220, 38, 38, 0.3);
                 "
               >
@@ -1116,11 +1136,11 @@
               <div class="grid grid-cols-3 gap-2 mb-3">
                 <div class="rounded-xl p-2.5 text-center" style="background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.18)">
                   <p class="text-[9px] uppercase tracking-wide font-semibold mb-0.5" style="color: rgba(34,197,94,0.75)">Ingresos año</p>
-                  <p class="text-sm font-bold" style="color: #4ade80" id="anual-total-ingresos">$0</p>
+                  <p class="text-sm font-bold" style="color: #7DEBC0" id="anual-total-ingresos">$0</p>
                 </div>
                 <div class="rounded-xl p-2.5 text-center" style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.18)">
                   <p class="text-[9px] uppercase tracking-wide font-semibold mb-0.5" style="color: rgba(239,68,68,0.75)">Gastos año</p>
-                  <p class="text-sm font-bold" style="color: #fca5a5" id="anual-total-gastos">$0</p>
+                  <p class="text-sm font-bold" style="color: #FF9DAD" id="anual-total-gastos">$0</p>
                 </div>
                 <div class="rounded-xl p-2.5 text-center" style="background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.18)">
                   <p class="text-[9px] uppercase tracking-wide font-semibold mb-0.5" style="color: rgba(56,189,248,0.75)">Ahorro año</p>
@@ -1616,7 +1636,7 @@
             class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
             style="
               border: 2px solid #252d3f;
-              color: #94a3b8;
+              color: #8892B0;
               background: transparent;
             "
           >
@@ -1694,7 +1714,7 @@
           <button
             onclick="cerrarModalEditarDeuda()"
             class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
-            style="border:2px solid #252d3f;color:#94a3b8;background:transparent"
+            style="border:2px solid #252d3f;color:#8892B0;background:transparent"
           >Cancelar</button>
           <button
             onclick="guardarEditarDeuda()"
@@ -1727,7 +1747,7 @@
           <div>
             <label
               class="block text-xs font-semibold mb-1.5 uppercase tracking-wide"
-              style="color: #94a3b8"
+              style="color: #8892B0"
               >Monto del abono</label
             >
             <input
@@ -1743,7 +1763,7 @@
           <div>
             <label
               class="block text-xs font-semibold mb-1.5 uppercase tracking-wide"
-              style="color: #94a3b8"
+              style="color: #8892B0"
               >Débitar de cuenta</label
             >
             <select
@@ -1764,7 +1784,7 @@
             class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
             style="
               border: 2px solid #252d3f;
-              color: #94a3b8;
+              color: #8892B0;
               background: transparent;
             "
           >
@@ -1773,7 +1793,7 @@
           <button
             onclick="confirmarAbono()"
             class="flex-1 py-2.5 rounded-xl text-white text-sm font-semibold"
-            style="background: #16a34a"
+            style="background: #22D68A"
           >
             Abonar
           </button>
@@ -1824,7 +1844,7 @@
           <div>
             <label
               class="block text-xs font-semibold mb-1.5 uppercase tracking-wide"
-              style="color: #94a3b8"
+              style="color: #8892B0"
               >Día(s) de pago — separados por coma</label
             >
             <input
@@ -1837,14 +1857,14 @@
           </div>
           <label class="flex items-center gap-2 cursor-pointer select-none">
             <input type="checkbox" id="pago-aproximado" />
-            <span class="text-xs" style="color: #94a3b8">Monto aproximado</span>
+            <span class="text-xs" style="color: #8892B0">Monto aproximado</span>
           </label>
         </div>
         <div class="flex gap-2 mt-4">
           <button
             onclick="cerrarModalNuevoPago()"
             class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
-            style="border: 2px solid #252d3f; color: #94a3b8; background: transparent"
+            style="border: 2px solid #252d3f; color: #8892B0; background: transparent"
           >
             Cancelar
           </button>
@@ -1882,7 +1902,7 @@
             </select>
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-1.5 uppercase tracking-wide" style="color: #94a3b8">
+            <label class="block text-xs font-semibold mb-1.5 uppercase tracking-wide" style="color: #8892B0">
               Día(s) de pago — separados por coma
             </label>
             <input type="text" id="edit-pago-dias" placeholder="Ej. 25  ó  15, 30"
@@ -1891,12 +1911,12 @@
           </div>
           <label class="flex items-center gap-2 cursor-pointer select-none">
             <input type="checkbox" id="edit-pago-aproximado" />
-            <span class="text-xs" style="color: #94a3b8">Monto aproximado</span>
+            <span class="text-xs" style="color: #8892B0">Monto aproximado</span>
           </label>
         </div>
         <div class="flex gap-2 mt-4">
           <button onclick="cerrarModalEditarPago()" class="flex-1 py-2.5 rounded-xl text-sm font-semibold"
-            style="border: 2px solid #252d3f; color: #94a3b8; background: transparent">
+            style="border: 2px solid #252d3f; color: #8892B0; background: transparent">
             Cancelar
           </button>
           <button onclick="guardarEditarPago()" class="flex-1 py-2.5 rounded-xl text-white text-sm font-semibold"
@@ -2778,7 +2798,7 @@
 
         function makeCard(c) {
           const s = saldos[c] || 0;
-          const color = CUENTA_COLORS[c] || "#64748b";
+          const color = CUENTA_COLORS[c] || "#8892B0";
           const isBolsillo = BOLSILLOS.includes(c);
           const meta = BOLSILLO_META[c];
           const pctTope = meta?.tope ? Math.min((s / meta.tope) * 100, 100) : 0;
@@ -2797,7 +2817,7 @@
             : s >= 0
               ? "text-slate-800"
               : "text-red-600";
-          div.innerHTML = `<div class="flex items-start gap-1.5 mb-1"><div class="w-2 h-2 rounded-full flex-shrink-0 mt-1" style="background:${color}"></div><p class="${titleClass}" title="${c}">${c}</p></div><p class="text-sm font-bold ${montoClass}">${fmt(s)}</p>${meta?.tope ? `<p class="text-[10px] text-slate-400 mt-1">Tope: ${fmt(meta.tope)}</p><div class="h-1.5 rounded-full bg-slate-700 mt-1"><div class="h-1.5 rounded-full" style="width:${pctTope}%;background:${superaTope ? "#22c55e" : color}"></div></div>` : ""}${meta?.metaMensual ? `<p class="text-[10px] text-slate-400 mt-1">Meta: ${fmt(meta.metaMensual)}</p>` : ""}`;
+          div.innerHTML = `<div class="flex items-start gap-1.5 mb-1"><div class="w-2 h-2 rounded-full flex-shrink-0 mt-1" style="background:${color}"></div><p class="${titleClass}" title="${c}">${c}</p></div><p class="text-sm font-bold ${montoClass}">${fmt(s)}</p>${meta?.tope ? `<p class="text-[10px] text-slate-400 mt-1">Tope: ${fmt(meta.tope)}</p><div class="h-1.5 rounded-full bg-slate-700 mt-1"><div class="h-1.5 rounded-full" style="width:${pctTope}%;background:${superaTope ? "#22D68A" : color}"></div></div>` : ""}${meta?.metaMensual ? `<p class="text-[10px] text-slate-400 mt-1">Meta: ${fmt(meta.metaMensual)}</p>` : ""}`;
           return div;
         }
 
@@ -2859,11 +2879,11 @@
         if (nwDeudasStatsEl) nwDeudasStatsEl.textContent = fmt(totalDeudas);
         if (nwTotalStatsEl) {
           nwTotalStatsEl.textContent = fmt(netWorth);
-          nwTotalStatsEl.style.color = netWorth >= 0 ? "#86efac" : "#fda4af";
+          nwTotalStatsEl.style.color = netWorth >= 0 ? "#7DEBC0" : "#FF9DAD";
         }
         if (nwFlujoEl) {
           nwFlujoEl.textContent = (flujoMes >= 0 ? "+" : "") + fmt(flujoMes);
-          nwFlujoEl.style.color = flujoMes >= 0 ? "#93c5fd" : "#f87171";
+          nwFlujoEl.style.color = flujoMes >= 0 ? "#93c5fd" : "#FF9DAD";
         }
 
         // Guardar snapshot mensual del patrimonio
@@ -2907,10 +2927,10 @@
         document.getElementById("kpi-gastos").textContent = fmt(gastos);
         document.getElementById("kpi-profit").textContent = fmt(flujo);
         document.getElementById("kpi-profit").style.color =
-          flujo >= 0 ? "#16a34a" : "#dc2626";
+          flujo >= 0 ? "#22D68A" : "#FF4D6A";
         document.getElementById("kpi-margen").textContent = ahorro + "%";
         document.getElementById("kpi-margen").style.color =
-          flujo >= 0 ? "#2563eb" : "#dc2626";
+          flujo >= 0 ? "#38BDF8" : "#FF4D6A";
       }
 
       function renderResumen(mes) {
@@ -2987,7 +3007,7 @@
         const totalEgresosCarro = gastosCarro + cuotaCarro;
         const profitCarro = producidoMes - totalEgresosCarro;
         const isProfit = profitCarro >= 0;
-        const profitColor = isProfit ? "#86efac" : "#fca5a5";
+        const profitColor = isProfit ? "#7DEBC0" : "#FF9DAD";
         const profitBorderColor = isProfit ? "rgba(34,197,94,0.25)" : "rgba(255,77,106,0.25)";
         const profitBg = isProfit ? "#0a1f0f" : "#1a0808";
 
@@ -2999,18 +3019,18 @@
           producidoBanner.innerHTML = `
             <div class="rounded-xl p-4" style="background:#0a1f0f;border:1px solid rgba(34,197,94,0.2)">
               <div class="flex items-center gap-1.5 mb-4">
-                <i data-lucide="car" class="w-3.5 h-3.5" style="color:#4ade80"></i>
-                <span class="text-[10px] font-bold uppercase tracking-widest" style="color:#4ade80">Negocio del Carro · ${MESES[mesSel.m]}</span>
+                <i data-lucide="car" class="w-3.5 h-3.5" style="color:#7DEBC0"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest" style="color:#7DEBC0">Negocio del Carro · ${MESES[mesSel.m]}</span>
               </div>
 
               <!-- Barra Ingresos -->
               <div class="mb-3 cursor-pointer active:opacity-70" onclick="irAMovimientosCat('Producido Carro')">
                 <div class="flex items-center justify-between mb-1.5">
                   <span class="text-[10px] font-semibold uppercase tracking-wide" style="color:rgba(74,222,128,0.8)">Ingresos</span>
-                  <span class="text-sm font-black" style="color:#86efac">${fmt(producidoMes)}</span>
+                  <span class="text-sm font-black" style="color:#7DEBC0">${fmt(producidoMes)}</span>
                 </div>
                 <div class="rounded-full overflow-hidden" style="height:8px;background:rgba(34,197,94,0.1)">
-                  <div class="h-full rounded-full transition-all" style="width:${_ingrPct}%;background:linear-gradient(90deg,#22c55e,#86efac)"></div>
+                  <div class="h-full rounded-full transition-all" style="width:${_ingrPct}%;background:linear-gradient(90deg,#22D68A,#7DEBC0)"></div>
                 </div>
               </div>
 
@@ -3018,10 +3038,10 @@
               <div class="mb-4">
                 <div class="flex items-center justify-between mb-1.5">
                   <span class="text-[10px] font-semibold uppercase tracking-wide" style="color:rgba(248,113,113,0.8)">Gastos</span>
-                  <span class="text-sm font-black" style="color:#fca5a5">−${fmt(totalEgresosCarro)}</span>
+                  <span class="text-sm font-black" style="color:#FF9DAD">−${fmt(totalEgresosCarro)}</span>
                 </div>
                 <div class="rounded-full overflow-hidden" style="height:8px;background:rgba(255,77,106,0.1)">
-                  <div class="h-full rounded-full transition-all" style="width:${_egrPct}%;background:linear-gradient(90deg,#ef4444,#fca5a5)"></div>
+                  <div class="h-full rounded-full transition-all" style="width:${_egrPct}%;background:linear-gradient(90deg,#FF4D6A,#FF9DAD)"></div>
                 </div>
               </div>
 
@@ -3099,8 +3119,8 @@
               const pct = presup ? Math.min(Math.round((gastado / presup) * 100), 100) : null;
               const over = presup && gastado > presup;
               const nearLimit = presup && !over && gastado >= presup * 0.8;
-              const barColor = over ? "var(--red)" : nearLimit ? "#EAB308" : "var(--green)";
-              const dot = over ? `<span style="color:var(--red)">●</span>` : nearLimit ? `<span style="color:#EAB308">●</span>` : "";
+              const barColor = over ? "var(--red)" : nearLimit ? "#F5BC45" : "var(--green)";
+              const dot = over ? `<span style="color:var(--red)">●</span>` : nearLimit ? `<span style="color:#F5BC45">●</span>` : "";
               const qLabel = quincenalLabels[cat]
                 ? `<span class="text-[9px] ml-1" style="color: var(--text3)">${quincenalLabels[cat]}</span>` : "";
               const border = i < entries.length - 1 ? `border-bottom: 1px solid rgba(255,255,255,0.05);` : "";
@@ -3272,8 +3292,8 @@
               ? "text-green-600"
               : "text-red-600";
           const sign = isTransf ? "⇄" : isIn ? "+" : "-";
-          const cuentaColor = CUENTA_COLORS[cuentaNombre] || "#94a3b8";
-          const destinoColor = CUENTA_COLORS[destinoNombre] || "#94a3b8";
+          const cuentaColor = CUENTA_COLORS[cuentaNombre] || "#8892B0";
+          const destinoColor = CUENTA_COLORS[destinoNombre] || "#8892B0";
           const cuentaBadges =
             isTransf && tx.destino
               ? `<span class="cuenta-chip" style="background:${cuentaColor}20;color:${cuentaColor}">${cuentaNombre}</span><span class="text-xs text-slate-400 font-semibold">→</span><span class="cuenta-chip" style="background:${destinoColor}20;color:${destinoColor}">${destinoNombre}</span>`
@@ -3302,8 +3322,8 @@
               ? "text-green-600"
               : "text-red-600";
           const sign = isTransf ? "⇄" : isIn ? "+" : "-";
-          const cuentaColor = CUENTA_COLORS[cuentaNombre] || "#94a3b8";
-          const destinoColor = CUENTA_COLORS[destinoNombre] || "#94a3b8";
+          const cuentaColor = CUENTA_COLORS[cuentaNombre] || "#8892B0";
+          const destinoColor = CUENTA_COLORS[destinoNombre] || "#8892B0";
           const cuentaBadges =
             isTransf && tx.destino
               ? `<span class="cuenta-chip" style="background:${cuentaColor}20;color:${cuentaColor}">${cuentaNombre}</span><span class="text-xs text-slate-400 font-semibold">→</span><span class="cuenta-chip" style="background:${destinoColor}20;color:${destinoColor}">${destinoNombre}</span>`
@@ -3364,14 +3384,14 @@
             const tieneNegociado =
               d.montoNegociado && d.montoNegociado !== d.montoInicial;
             const ahorroTag = tieneNegociado
-              ? `<span style="background:rgba(34,197,94,0.12);color:#22c55e;border-radius:4px;padding:1px 6px;font-size:0.65rem;font-weight:700;margin-left:6px">-${Math.round((1 - d.montoNegociado / d.montoInicial) * 100)}%</span>`
+              ? `<span style="background:rgba(34,197,94,0.12);color:#22D68A;border-radius:4px;padding:1px 6px;font-size:0.65rem;font-weight:700;margin-left:6px">-${Math.round((1 - d.montoNegociado / d.montoInicial) * 100)}%</span>`
               : "";
             const origenLine = tieneNegociado
               ? `<p class="text-xs mt-0.5" style="color:#6e7681">Original: <span style="text-decoration:line-through;color:#6e7681">${fmtDeuda(d.montoInicial)}</span>${ahorroTag}</p><p class="text-xs" style="color:#b8904d;font-weight:600">&#128077; Negociado: ${fmtDeuda(negociado)}</p>`
               : `<p class="text-xs mt-0.5" style="color:#6e7681">Original: ${fmtDeuda(d.montoInicial)}</p>`;
             const div = document.createElement("div");
             div.className = "deuda-card";
-            div.innerHTML = `<div class="flex justify-between items-start mb-2"><div class="flex-1 min-w-0 pr-2"><p class="font-semibold text-sm" style="color:#e2e8f0">${d.nombre}</p>${origenLine}<p class="text-xs mt-1">Saldo restante: <span style="font-weight:700;color:#ef4444">${fmtDeuda(d.saldo)}</span></p></div><div class="flex flex-col gap-1.5"><button onclick="abrirModalAbonar('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl text-white" style="background:#16a34a">Abonar</button><button onclick="abrirModalEditarDeuda('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl text-white" style="background:#b8904d">Editar</button><button onclick="archivarDeuda('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl border text-center" style="border-color:#252d3f;color:#6e7681">✓ Pagada</button><button onclick="eliminarDeuda('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl border text-center" style="border-color:rgba(239,68,68,0.3);color:#f87171;background:rgba(239,68,68,0.07)">🗑 Borrar</button></div></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%;background:${pct >= 100 ? "#22c55e" : "#b8904d"}"></div></div><p class="text-xs mt-1" style="color:#6e7681">${pct}% pagado de ${fmtDeuda(negociado)}</p>`;
+            div.innerHTML = `<div class="flex justify-between items-start mb-2"><div class="flex-1 min-w-0 pr-2"><p class="font-semibold text-sm" style="color:#e2e8f0">${d.nombre}</p>${origenLine}<p class="text-xs mt-1">Saldo restante: <span style="font-weight:700;color:#FF4D6A">${fmtDeuda(d.saldo)}</span></p></div><div class="flex flex-col gap-1.5"><button onclick="abrirModalAbonar('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl text-white" style="background:#22D68A">Abonar</button><button onclick="abrirModalEditarDeuda('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl text-white" style="background:#b8904d">Editar</button><button onclick="archivarDeuda('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl border text-center" style="border-color:#252d3f;color:#6e7681">✓ Pagada</button><button onclick="eliminarDeuda('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl border text-center" style="border-color:rgba(239,68,68,0.3);color:#FF9DAD;background:rgba(239,68,68,0.07)">🗑 Borrar</button></div></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%;background:${pct >= 100 ? "#22D68A" : "#b8904d"}"></div></div><p class="text-xs mt-1" style="color:#6e7681">${pct}% pagado de ${fmtDeuda(negociado)}</p>`;
             el.appendChild(div);
           });
       }
@@ -3550,7 +3570,7 @@
         if (elG) elG.textContent = fmt(totGas);
         if (elF) {
           elF.textContent = (totFlujo >= 0 ? "+" : "") + fmt(totFlujo);
-          elF.style.color = totFlujo >= 0 ? "#38bdf8" : "#fca5a5";
+          elF.style.color = totFlujo >= 0 ? "#38bdf8" : "#FF9DAD";
         }
 
         destroyChart("anual");
@@ -3566,24 +3586,24 @@
               {
                 label: "Ingresos",
                 data: ings,
-                borderColor: "#22c55e",
+                borderColor: "#22D68A",
                 backgroundColor: "rgba(34,197,94,0.12)",
                 fill: true,
                 tension: 0.35,
                 borderWidth: 2,
                 pointRadius: 3,
-                pointBackgroundColor: "#22c55e",
+                pointBackgroundColor: "#22D68A",
               },
               {
                 label: "Gastos",
                 data: gast,
-                borderColor: "#ef4444",
+                borderColor: "#FF4D6A",
                 backgroundColor: "rgba(239,68,68,0.10)",
                 fill: true,
                 tension: 0.35,
                 borderWidth: 2,
                 pointRadius: 3,
-                pointBackgroundColor: "#ef4444",
+                pointBackgroundColor: "#FF4D6A",
               },
             ],
           },
@@ -3594,7 +3614,7 @@
             plugins: {
               legend: {
                 labels: {
-                  color: "#94a3b8",
+                  color: "#8892B0",
                   font: { family: "Poppins", size: 11 },
                   boxWidth: 12,
                   padding: 16,
@@ -3609,7 +3629,7 @@
             scales: {
               y: {
                 ticks: {
-                  color: "#64748b",
+                  color: "#8892B0",
                   callback: (v) =>
                     "$" +
                     (v >= 1e6
@@ -3620,7 +3640,7 @@
                 grid: { color: "#252d3f" },
               },
               x: {
-                ticks: { color: "#64748b", font: { size: 10 } },
+                ticks: { color: "#8892B0", font: { size: 10 } },
                 grid: { display: false },
               },
             },
@@ -3713,7 +3733,7 @@
         if (totalFlowEl) {
           totalFlowEl.textContent =
             (flujoFiltrado >= 0 ? "+" : "") + fmt(flujoFiltrado);
-          totalFlowEl.style.color = flujoFiltrado >= 0 ? "#1d4ed8" : "#dc2626";
+          totalFlowEl.style.color = flujoFiltrado >= 0 ? "#38BDF8" : "#FF4D6A";
         }
 
         const periodoLabel =
@@ -3947,23 +3967,23 @@
               {
                 label: "Ingresos",
                 data: ingSem,
-                borderColor: "#22c55e",
+                borderColor: "#22D68A",
                 backgroundColor: "rgba(34,197,94,0.1)",
                 tension: 0.35,
                 fill: true,
                 pointRadius: 5,
-                pointBackgroundColor: "#22c55e",
+                pointBackgroundColor: "#22D68A",
                 borderWidth: 2,
               },
               {
                 label: "Gastos",
                 data: gastSem,
-                borderColor: "#ef4444",
+                borderColor: "#FF4D6A",
                 backgroundColor: "rgba(239,68,68,0.07)",
                 tension: 0.35,
                 fill: true,
                 pointRadius: 5,
-                pointBackgroundColor: "#ef4444",
+                pointBackgroundColor: "#FF4D6A",
                 borderWidth: 2,
               },
             ],
@@ -4018,7 +4038,7 @@
                   label: "Saldo",
                   data: cuentaEntries.map(([, v]) => v),
                   backgroundColor: cuentaEntries.map(
-                    ([k]) => (CUENTA_COLORS[k] || "#64748b") + "CC",
+                    ([k]) => (CUENTA_COLORS[k] || "#8892B0") + "CC",
                   ),
                   borderRadius: 8,
                   borderSkipped: false,
@@ -4073,7 +4093,7 @@
             const presup = presupuestos[cat];
             const over = presup && total > presup;
             const div = document.createElement("div");
-            div.innerHTML = `<div class="flex items-center justify-between mb-1.5"><span class="text-xs font-semibold text-slate-700">${cat}</span><div class="flex items-center gap-3"><span class="text-xs ${over ? "text-red-600 font-bold" : "text-slate-400"}">${presup ? fmt(presup) + " presup." : ""}</span><span class="text-xs font-bold text-slate-700">${fmt(total)}</span></div></div><div class="h-2 rounded-full bg-slate-100"><div class="h-2 rounded-full transition-all duration-500" style="width:${pct}%;background:${over ? "#dc2626" : "#ef4444"}"></div></div>`;
+            div.innerHTML = `<div class="flex items-center justify-between mb-1.5"><span class="text-xs font-semibold text-slate-700">${cat}</span><div class="flex items-center gap-3"><span class="text-xs ${over ? "text-red-600 font-bold" : "text-slate-400"}">${presup ? fmt(presup) + " presup." : ""}</span><span class="text-xs font-bold text-slate-700">${fmt(total)}</span></div></div><div class="h-2 rounded-full bg-slate-100"><div class="h-2 rounded-full transition-all duration-500" style="width:${pct}%;background:${over ? "#FF4D6A" : "#FF4D6A"}"></div></div>`;
             tg.appendChild(div);
           });
         }
@@ -4092,7 +4112,7 @@
           ingresoCatsSorted.slice(0, 8).forEach(([cat, total]) => {
             const pct = (total / maxIngreso) * 100;
             const div = document.createElement("div");
-            div.innerHTML = `<div class="flex items-center justify-between mb-1.5"><span class="text-xs font-semibold text-slate-700">${cat}</span><span class="text-xs font-bold text-green-700">${fmt(total)}</span></div><div class="h-2 rounded-full bg-slate-100"><div class="h-2 rounded-full transition-all duration-500" style="width:${pct}%;background:#22c55e"></div></div>`;
+            div.innerHTML = `<div class="flex items-center justify-between mb-1.5"><span class="text-xs font-semibold text-slate-700">${cat}</span><span class="text-xs font-bold text-green-700">${fmt(total)}</span></div><div class="h-2 rounded-full bg-slate-100"><div class="h-2 rounded-full transition-all duration-500" style="width:${pct}%;background:#22D68A"></div></div>`;
             ti.appendChild(div);
           });
         }
@@ -4687,7 +4707,7 @@
         const hasUSD = items.some((i) => i.pago.moneda === "USD");
 
         const barColor =
-          pct === 100 ? "#22c55e" : pct >= 70 ? "#b8904d" : "#3b82f6";
+          pct === 100 ? "#22D68A" : pct >= 70 ? "#b8904d" : "#38BDF8";
 
         let html = `
           <div class="flex items-center justify-between mb-4">
@@ -4706,27 +4726,27 @@
 
           <div class="rounded-2xl p-4 mb-4" style="background:#161b27;border:1px solid #252d3f">
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-semibold" style="color:#94a3b8">${paidItems} de ${totalItems} pagados</span>
-              <span class="text-xs font-bold" style="color:${pct===100?'#22c55e':'#b8904d'}">${pct}%</span>
+              <span class="text-xs font-semibold" style="color:#8892B0">${paidItems} de ${totalItems} pagados</span>
+              <span class="text-xs font-bold" style="color:${pct===100?'#22D68A':'#b8904d'}">${pct}%</span>
             </div>
             <div class="w-full h-2 rounded-full overflow-hidden" style="background:#0f1117">
               <div class="h-2 rounded-full transition-all duration-500" style="width:${pct}%;background:${barColor}"></div>
             </div>
             <div class="grid grid-cols-3 gap-2 mt-3 text-center">
               <div>
-                <div class="text-xs" style="color:#64748b">Total mes</div>
+                <div class="text-xs" style="color:#8892B0">Total mes</div>
                 <div class="text-sm font-bold" style="color:#e2e8f0">${fmt(totalCOP)}${hasUSD ? "*" : ""}</div>
               </div>
               <div>
-                <div class="text-xs" style="color:#64748b">Pagado</div>
-                <div class="text-sm font-bold" style="color:#22c55e">${fmt(paidCOP)}</div>
+                <div class="text-xs" style="color:#8892B0">Pagado</div>
+                <div class="text-sm font-bold" style="color:#22D68A">${fmt(paidCOP)}</div>
               </div>
               <div>
-                <div class="text-xs" style="color:#64748b">Pendiente</div>
-                <div class="text-sm font-bold" style="color:${pendingCOP > 0 ? "#f87171" : "#22c55e"}">${fmt(pendingCOP)}</div>
+                <div class="text-xs" style="color:#8892B0">Pendiente</div>
+                <div class="text-sm font-bold" style="color:${pendingCOP > 0 ? "#FF9DAD" : "#22D68A"}">${fmt(pendingCOP)}</div>
               </div>
             </div>
-            ${hasUSD ? `<p class="text-xs mt-2 text-center" style="color:#475569">* USD a TRM referencial ~$${USD_TRM.toLocaleString("es-CO")}</p>` : ""}
+            ${hasUSD ? `<p class="text-xs mt-2 text-center" style="color:#3D4A6B">* USD a TRM referencial ~$${USD_TRM.toLocaleString("es-CO")}</p>` : ""}
           </div>
 
           <div class="space-y-2">
@@ -4734,7 +4754,7 @@
 
         if (items.length === 0) {
           html += `
-            <div class="text-center py-10" style="color:#475569">
+            <div class="text-center py-10" style="color:#3D4A6B">
               <i data-lucide="calendar-off" class="w-8 h-8 mx-auto mb-2 opacity-40"></i>
               <p class="text-sm">Sin pagos recurrentes configurados</p>
             </div>
@@ -4745,21 +4765,21 @@
           const isOverdue = isCurrentMonth && dia < today && !pagado;
           const isToday = isCurrentMonth && dia === today && !pagado;
 
-          let statusColor = "#64748b";
+          let statusColor = "#8892B0";
           let dayBg = "#161b27";
           let dayBorder = "#252d3f";
           let rowBorder = "#252d3f";
 
           if (pagado) {
-            statusColor = "#22c55e";
+            statusColor = "#22D68A";
             dayBg = "#14532d22";
-            dayBorder = "#22c55e44";
-            rowBorder = "#22c55e22";
+            dayBorder = "#22D68A44";
+            rowBorder = "#22D68A22";
           } else if (isOverdue) {
-            statusColor = "#f87171";
+            statusColor = "#FF9DAD";
             dayBg = "#7f1d1d22";
-            dayBorder = "#ef444444";
-            rowBorder = "#ef444422";
+            dayBorder = "#FF4D6A44";
+            rowBorder = "#FF4D6A22";
           } else if (isToday) {
             statusColor = "#fbbf24";
             dayBg = "#78350f22";
@@ -4785,14 +4805,14 @@
                 <div class="flex items-center gap-1.5 flex-wrap">
                   <span
                     class="text-sm font-semibold truncate"
-                    style="color:${pagado ? "#475569" : "#e2e8f0"};${pagado ? "text-decoration:line-through" : ""}"
+                    style="color:${pagado ? "#3D4A6B" : "#e2e8f0"};${pagado ? "text-decoration:line-through" : ""}"
                   >${pago.nombre}</span>
                   ${pago.moneda === "USD" ? '<span class="text-xs px-1.5 py-0.5 rounded-full font-bold" style="background:#1e3a5f;color:#60a5fa">USD</span>' : ""}
                   ${pago.esAproximado ? '<span class="text-xs px-1.5 py-0.5 rounded-full" style="background:#292211;color:#d97706">aprox</span>' : ""}
                 </div>
-                <div class="text-xs font-bold mt-0.5" style="color:${pagado ? "#475569" : statusColor === "#64748b" ? "#b8904d" : statusColor}">
+                <div class="text-xs font-bold mt-0.5" style="color:${pagado ? "#3D4A6B" : statusColor === "#8892B0" ? "#b8904d" : statusColor}">
                   ${amountLabel}
-                  ${isOverdue ? '<span style="color:#f87171"> · vencido</span>' : ""}
+                  ${isOverdue ? '<span style="color:#FF9DAD"> · vencido</span>' : ""}
                   ${isToday ? '<span style="color:#fbbf24"> · hoy</span>' : ""}
                 </div>
               </div>
@@ -4802,12 +4822,12 @@
                     ? `<button
                         onclick="togglePagoCheck('${pago.id}',${dia},'${mesStr}','${checkId}')"
                         class="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-semibold"
-                        style="background:#14532d33;color:#22c55e;border:1px solid #22c55e44"
+                        style="background:#14532d33;color:#22D68A;border:1px solid #22D68A44"
                       ><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>Pagado</button>`
                     : `<button
                         onclick="togglePagoCheck('${pago.id}',${dia},'${mesStr}',null)"
                         class="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-semibold"
-                        style="background:#0f1117;color:#94a3b8;border:1px solid #252d3f"
+                        style="background:#0f1117;color:#8892B0;border:1px solid #252d3f"
                       ><i data-lucide="circle" class="w-3.5 h-3.5"></i>Pagar</button>`
                 }
                 <button
