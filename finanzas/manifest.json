@@ -1,0 +1,22 @@
+{
+  "name": "Finanzas Frank",
+  "short_name": "Finanzas",
+  "description": "Panel privado de finanzas personales",
+  "lang": "es",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#060910",
+  "theme_color": "#060910",
+  "categories": ["finance", "productivity"],
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

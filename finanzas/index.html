@@ -27,6 +27,9 @@
     />
     <meta name="apple-mobile-web-app-title" content="Finanzas Frank" />
     <meta name="theme-color" content="#060910" />
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="icon.svg" />
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
@@ -80,6 +83,22 @@
         color: var(--text);
         min-height: 100dvh;
         overflow-x: hidden;
+      }
+
+      /* ── Skeleton de carga de datos ──────────── */
+      #data-loading { display: none; }
+      @keyframes fzshimmer {
+        0%   { background-position: -450px 0; }
+        100% { background-position:  450px 0; }
+      }
+      .fz-sk {
+        background: linear-gradient(90deg,
+          rgba(255,255,255,0.04) 25%,
+          rgba(255,255,255,0.09) 37%,
+          rgba(255,255,255,0.04) 63%);
+        background-size: 900px 100%;
+        animation: fzshimmer 1.4s infinite linear;
+        border-radius: 14px;
       }
 
       /* ── Anti-flash login ────────────────────── */
@@ -696,6 +715,21 @@
       </div>
     </div>
 
+    <!-- SKELETON DE CARGA DE DATOS -->
+    <div id="data-loading" class="fixed inset-0 p-4 sm:p-6" style="z-index: 45; background: var(--bg); transition: opacity 0.35s ease">
+      <div class="max-w-2xl mx-auto pt-6">
+        <div class="fz-sk mb-4" style="height: 120px"></div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+          <div class="fz-sk" style="height: 70px"></div>
+          <div class="fz-sk" style="height: 70px"></div>
+          <div class="fz-sk" style="height: 70px"></div>
+          <div class="fz-sk" style="height: 70px"></div>
+        </div>
+        <div class="fz-sk mb-3" style="height: 90px"></div>
+        <div class="fz-sk" style="height: 150px"></div>
+      </div>
+    </div>
+
     <!-- MAIN APP -->
     <div id="main-app" class="hidden">
       <!-- HEADER -->
@@ -1064,6 +1098,40 @@
                 </div>
               </div>
             </div>
+            <!-- TENDENCIA ANUAL -->
+            <div class="glass-card p-4 mb-6">
+              <div class="flex items-center justify-between mb-3">
+                <p class="text-xs font-semibold uppercase tracking-widest" style="color: var(--text2)">
+                  Tendencia Anual · <span id="chart-anual-year">2026</span>
+                </p>
+                <div class="flex items-center gap-1">
+                  <button onclick="cambiarAnioStats(-1)" class="p-1.5 rounded-lg transition" style="background: var(--glass); border: 1px solid var(--glass-b)">
+                    <i data-lucide="chevron-left" class="w-3.5 h-3.5" style="color: var(--text2)"></i>
+                  </button>
+                  <button onclick="cambiarAnioStats(1)" id="btn-anio-sig" class="p-1.5 rounded-lg transition" style="background: var(--glass); border: 1px solid var(--glass-b)">
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5" style="color: var(--text2)"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-2 mb-3">
+                <div class="rounded-xl p-2.5 text-center" style="background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.18)">
+                  <p class="text-[9px] uppercase tracking-wide font-semibold mb-0.5" style="color: rgba(34,197,94,0.75)">Ingresos año</p>
+                  <p class="text-sm font-bold" style="color: #4ade80" id="anual-total-ingresos">$0</p>
+                </div>
+                <div class="rounded-xl p-2.5 text-center" style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.18)">
+                  <p class="text-[9px] uppercase tracking-wide font-semibold mb-0.5" style="color: rgba(239,68,68,0.75)">Gastos año</p>
+                  <p class="text-sm font-bold" style="color: #fca5a5" id="anual-total-gastos">$0</p>
+                </div>
+                <div class="rounded-xl p-2.5 text-center" style="background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.18)">
+                  <p class="text-[9px] uppercase tracking-wide font-semibold mb-0.5" style="color: rgba(56,189,248,0.75)">Ahorro año</p>
+                  <p class="text-sm font-bold" style="color: #38bdf8" id="anual-total-flujo">$0</p>
+                </div>
+              </div>
+              <div style="height: 240px">
+                <canvas id="chart-anual"></canvas>
+              </div>
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
               <div class="glass-card p-4">
                 <p
@@ -2131,6 +2199,16 @@
       let pagosChecks = [];
       // Unsubscribe refs para evitar listeners duplicados al re-autenticar
       let _unsubTx = null, _unsubDeudas = null, _unsubPagos = null, _unsubChecks = null, _unsubNotas = null;
+      let _firstDataLoaded = false;
+
+      function hideDataLoading() {
+        if (_firstDataLoaded) return;
+        _firstDataLoaded = true;
+        const el = document.getElementById("data-loading");
+        if (!el) return;
+        el.style.opacity = "0";
+        setTimeout(() => { el.style.display = "none"; }, 350);
+      }
       const _td = new Date();
       const todayStr =
         _td.getFullYear() +
@@ -2140,6 +2218,7 @@
         String(_td.getDate()).padStart(2, "0");
       const nowD = new Date();
       let mesSel = { y: nowD.getFullYear(), m: nowD.getMonth() };
+      let statYear = nowD.getFullYear();
       const MESES = [
         "Enero",
         "Febrero",
@@ -2311,9 +2390,24 @@
         firebase.initializeApp(FIREBASE_CONFIG);
         auth = firebase.auth();
         db = firebase.firestore();
+        // Caché offline: los datos quedan disponibles sin internet y la app
+        // abre al instante con lo último, sincronizando en segundo plano.
+        try {
+          db.enablePersistence({ synchronizeTabs: true }).catch((err) => {
+            // failed-precondition = varias pestañas; unimplemented = navegador sin soporte
+            console.warn("Persistencia Firestore no disponible:", err.code);
+          });
+        } catch (e) {}
         auth.onAuthStateChanged((user) => {
           if (user) {
             try { localStorage.setItem("fz_hadSession", "1"); } catch (e) {}
+            // Cubre el panel con skeleton hasta que lleguen las transacciones
+            if (!_firstDataLoaded) {
+              const dl = document.getElementById("data-loading");
+              if (dl) { dl.style.display = "block"; dl.style.opacity = "1"; }
+              // Seguridad: nunca dejar el skeleton atascado
+              setTimeout(hideDataLoading, 8000);
+            }
             document.getElementById("lock-screen").classList.add("hidden");
             document.getElementById("main-app").classList.remove("hidden");
             document.getElementById("tx-fecha").value = todayStr;
@@ -2387,8 +2481,9 @@
                     ...d.data(),
                   }));
                   renderAll();
+                  hideDataLoading();
                 },
-                (err) => console.error("Firestore tx:", err),
+                (err) => { console.error("Firestore tx:", err); hideDataLoading(); },
               );
 
             // Cargar / inicializar deudas
@@ -2511,6 +2606,9 @@
           } else {
             // No hay sesión: limpia el flag y revela el formulario de login
             try { localStorage.removeItem("fz_hadSession"); } catch (e) {}
+            _firstDataLoaded = false;
+            const dl2 = document.getElementById("data-loading");
+            if (dl2) dl2.style.display = "none";
             document.documentElement.classList.remove("fz-resume");
             document.getElementById("lock-screen").classList.remove("hidden");
             document.getElementById("main-app").classList.add("hidden");
@@ -2522,6 +2620,15 @@
         });
       }
       initApp();
+
+      // ── PWA: registrar Service Worker ─────────────────────
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("sw.js").catch((err) =>
+            console.warn("SW no registrado:", err)
+          );
+        });
+      }
 
       // ── Tipo ──────────────────────────────────────────────
       function setTipo(tipo) {
@@ -3409,6 +3516,118 @@
         return result;
       }
 
+      function cambiarAnioStats(delta) {
+        const next = statYear + delta;
+        if (next > nowD.getFullYear()) return; // no años futuros
+        statYear = next;
+        renderAnualChart();
+      }
+
+      function renderAnualChart() {
+        const yearEl = document.getElementById("chart-anual-year");
+        if (yearEl) yearEl.textContent = statYear;
+        const btnSig = document.getElementById("btn-anio-sig");
+        if (btnSig) btnSig.style.opacity = statYear >= nowD.getFullYear() ? "0.35" : "1";
+
+        const ings = new Array(12).fill(0);
+        const gast = new Array(12).fill(0);
+        transactions.forEach((t) => {
+          const f = t.fecha || "";
+          if (!f.startsWith(statYear + "-")) return;
+          const m = parseInt(f.slice(5, 7), 10) - 1;
+          if (m < 0 || m > 11) return;
+          if (t.tipo === "ingreso") ings[m] += t.monto;
+          else if (t.tipo === "gasto") gast[m] += t.monto;
+        });
+
+        const totIng = ings.reduce((s, v) => s + v, 0);
+        const totGas = gast.reduce((s, v) => s + v, 0);
+        const totFlujo = totIng - totGas;
+        const elI = document.getElementById("anual-total-ingresos");
+        const elG = document.getElementById("anual-total-gastos");
+        const elF = document.getElementById("anual-total-flujo");
+        if (elI) elI.textContent = fmt(totIng);
+        if (elG) elG.textContent = fmt(totGas);
+        if (elF) {
+          elF.textContent = (totFlujo >= 0 ? "+" : "") + fmt(totFlujo);
+          elF.style.color = totFlujo >= 0 ? "#38bdf8" : "#fca5a5";
+        }
+
+        destroyChart("anual");
+        const canvas = document.getElementById("chart-anual");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        const labels = MESES.map((m) => m.slice(0, 3));
+        charts["anual"] = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels,
+            datasets: [
+              {
+                label: "Ingresos",
+                data: ings,
+                borderColor: "#22c55e",
+                backgroundColor: "rgba(34,197,94,0.12)",
+                fill: true,
+                tension: 0.35,
+                borderWidth: 2,
+                pointRadius: 3,
+                pointBackgroundColor: "#22c55e",
+              },
+              {
+                label: "Gastos",
+                data: gast,
+                borderColor: "#ef4444",
+                backgroundColor: "rgba(239,68,68,0.10)",
+                fill: true,
+                tension: 0.35,
+                borderWidth: 2,
+                pointRadius: 3,
+                pointBackgroundColor: "#ef4444",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: "index", intersect: false },
+            plugins: {
+              legend: {
+                labels: {
+                  color: "#94a3b8",
+                  font: { family: "Poppins", size: 11 },
+                  boxWidth: 12,
+                  padding: 16,
+                },
+              },
+              tooltip: {
+                callbacks: {
+                  label: (c) => c.dataset.label + ": " + fmt(c.parsed.y),
+                },
+              },
+            },
+            scales: {
+              y: {
+                ticks: {
+                  color: "#64748b",
+                  callback: (v) =>
+                    "$" +
+                    (v >= 1e6
+                      ? (v / 1e6).toFixed(1) + "M"
+                      : (v / 1e3).toFixed(0) + "k"),
+                  font: { size: 10 },
+                },
+                grid: { color: "#252d3f" },
+              },
+              x: {
+                ticks: { color: "#64748b", font: { size: 10 } },
+                grid: { display: false },
+              },
+            },
+          },
+        });
+      }
+
       function renderCharts() {
         const periodoEl = document.getElementById("stats-filter-periodo");
         const tipoEl = document.getElementById("stats-filter-tipo");
@@ -3583,6 +3802,9 @@
             },
           },
         });
+
+        // Chart 1b — Tendencia anual (líneas, 12 meses del año)
+        renderAnualChart();
 
         // Chart 2 — Gastos por categoría (donut)
         destroyChart("categorias");
