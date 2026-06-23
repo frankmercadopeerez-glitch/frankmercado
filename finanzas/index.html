@@ -71,6 +71,9 @@
         --text2: #8892B0;
         --text3: #3D4A6B;
         --bnav-h: 68px;
+        /* Escala de radios: controles 12px · tarjetas 16px · pills full */
+        --r-control: 12px;
+        --r-card: 16px;
       }
       * { box-sizing: border-box; }
       body {
@@ -152,7 +155,7 @@
         backdrop-filter: blur(16px) saturate(160%);
         -webkit-backdrop-filter: blur(16px) saturate(160%);
         border: 1px solid var(--glass-b);
-        border-radius: 18px;
+        border-radius: var(--r-card);
         box-shadow: 0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
         transition: box-shadow 0.25s, border-color 0.25s;
       }
@@ -167,7 +170,7 @@
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
         border: 1px solid var(--glass-b);
-        border-radius: 16px;
+        border-radius: var(--r-card);
         box-shadow: 0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
         padding: 1rem 1.25rem;
         position: relative;
@@ -769,11 +772,11 @@
               <i data-lucide="loader" class="w-3.5 h-3.5"></i>
               <span class="hidden sm:inline">Conectando...</span>
             </span>
-            <button onclick="exportarTodoCSV()" class="text-xs flex items-center gap-1 transition px-2 py-1.5 rounded-lg" style="color: var(--text2); background: var(--glass); border: 1px solid var(--glass-b)" title="Exportar CSV">
+            <button onclick="exportarTodoCSV()" class="text-xs flex items-center gap-1 transition px-2 py-1.5 rounded-xl" style="color: var(--text2); background: var(--glass); border: 1px solid var(--glass-b)" title="Exportar CSV">
               <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
               <span class="hidden sm:inline">CSV</span>
             </button>
-            <button onclick="logout()" class="text-xs flex items-center gap-1 transition px-2 py-1.5 rounded-lg" style="color: var(--text2); background: var(--glass); border: 1px solid var(--glass-b)">
+            <button onclick="logout()" class="text-xs flex items-center gap-1 transition px-2 py-1.5 rounded-xl" style="color: var(--text2); background: var(--glass); border: 1px solid var(--glass-b)">
               <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
               <span class="hidden sm:inline">Salir</span>
             </button>
@@ -1023,7 +1026,7 @@
                 id="btn-reset"
                 type="button"
                 onclick="resetAllTransactions()"
-                class="text-xs font-semibold px-3 py-1.5 rounded-lg"
+                class="text-xs font-semibold px-3 py-1.5 rounded-xl"
                 style="
                   background: rgba(220, 38, 38, 0.12);
                   color: #FF9DAD;
@@ -1125,10 +1128,10 @@
                   Tendencia Anual · <span id="chart-anual-year">2026</span>
                 </p>
                 <div class="flex items-center gap-1">
-                  <button onclick="cambiarAnioStats(-1)" class="p-1.5 rounded-lg transition" style="background: var(--glass); border: 1px solid var(--glass-b)">
+                  <button onclick="cambiarAnioStats(-1)" class="p-1.5 rounded-xl transition" style="background: var(--glass); border: 1px solid var(--glass-b)">
                     <i data-lucide="chevron-left" class="w-3.5 h-3.5" style="color: var(--text2)"></i>
                   </button>
-                  <button onclick="cambiarAnioStats(1)" id="btn-anio-sig" class="p-1.5 rounded-lg transition" style="background: var(--glass); border: 1px solid var(--glass-b)">
+                  <button onclick="cambiarAnioStats(1)" id="btn-anio-sig" class="p-1.5 rounded-xl transition" style="background: var(--glass); border: 1px solid var(--glass-b)">
                     <i data-lucide="chevron-right" class="w-3.5 h-3.5" style="color: var(--text2)"></i>
                   </button>
                 </div>
@@ -2863,7 +2866,7 @@
         const nwTotalStatsEl = document.getElementById("nw-total-stats");
 
         if (nwCuentasEl) {
-          nwCuentasEl.textContent = fmt(saldoDisponible);
+          animateNumber(nwCuentasEl, saldoDisponible);
           const neg = saldoDisponible < 0;
           nwCuentasEl.style.color = neg ? "var(--red)" : "var(--green)";
           const card = document.getElementById("nw-cuentas-card");
@@ -2874,15 +2877,18 @@
           const lbl = document.getElementById("nw-cuentas-label");
           if (lbl) lbl.style.color = neg ? "rgba(255,77,106,0.75)" : "rgba(34,214,138,0.75)";
         }
-        if (nwBolsillosEl) nwBolsillosEl.textContent = fmt(totalBolsillos);
-        if (nwCuentasTotalEl) nwCuentasTotalEl.textContent = fmt(totalCuentas);
-        if (nwDeudasStatsEl) nwDeudasStatsEl.textContent = fmt(totalDeudas);
+        if (nwBolsillosEl) animateNumber(nwBolsillosEl, totalBolsillos);
+        if (nwCuentasTotalEl) animateNumber(nwCuentasTotalEl, totalCuentas);
+        if (nwDeudasStatsEl) animateNumber(nwDeudasStatsEl, totalDeudas);
         if (nwTotalStatsEl) {
-          nwTotalStatsEl.textContent = fmt(netWorth);
+          animateNumber(nwTotalStatsEl, netWorth);
           nwTotalStatsEl.style.color = netWorth >= 0 ? "#7DEBC0" : "#FF9DAD";
         }
         if (nwFlujoEl) {
-          nwFlujoEl.textContent = (flujoMes >= 0 ? "+" : "") + fmt(flujoMes);
+          animateNumber(nwFlujoEl, flujoMes, (v) => {
+            const r = Math.round(v);
+            return (r >= 0 ? "+" : "") + fmt(r);
+          });
           nwFlujoEl.style.color = flujoMes >= 0 ? "#93c5fd" : "#FF9DAD";
         }
 
@@ -2922,13 +2928,19 @@
           .filter((t) => t.tipo === "gasto")
           .reduce((s, t) => s + t.monto, 0);
         const flujo = ingresos - gastos;
-        const ahorro = ingresos > 0 ? ((flujo / ingresos) * 100).toFixed(0) : 0;
-        document.getElementById("kpi-ingresos").textContent = fmt(ingresos);
-        document.getElementById("kpi-gastos").textContent = fmt(gastos);
-        document.getElementById("kpi-profit").textContent = fmt(flujo);
+        const ahorro = ingresos > 0 ? Math.round((flujo / ingresos) * 100) : 0;
+        animateNumber(document.getElementById("kpi-ingresos"), ingresos);
+        animateNumber(document.getElementById("kpi-gastos"), gastos);
+        animateNumber(document.getElementById("kpi-profit"), flujo, (v) =>
+          fmt(Math.round(v)),
+        );
         document.getElementById("kpi-profit").style.color =
           flujo >= 0 ? "#22D68A" : "#FF4D6A";
-        document.getElementById("kpi-margen").textContent = ahorro + "%";
+        animateNumber(
+          document.getElementById("kpi-margen"),
+          ahorro,
+          (v) => Math.round(v) + "%",
+        );
         document.getElementById("kpi-margen").style.color =
           flujo >= 0 ? "#38BDF8" : "#FF4D6A";
       }
@@ -4254,6 +4266,39 @@
           currency: "COP",
           maximumFractionDigits: 0,
         }).format(n);
+
+      // Anima un número de su valor previo al nuevo (count-up suave).
+      // render(valor) devuelve el texto a mostrar. Solo anima cuando cambia.
+      const _prefersReducedMotion =
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      function animateNumber(el, to, render, dur) {
+        if (!el) return;
+        render = render || ((v) => fmt(Math.round(v)));
+        dur = dur || 650;
+        const prev = parseFloat(el.dataset.val);
+        const from = isNaN(prev) ? 0 : prev;
+        el.dataset.val = to;
+        if (el._raf) cancelAnimationFrame(el._raf);
+        if (_prefersReducedMotion || from === to) {
+          el.textContent = render(to);
+          return;
+        }
+        const t0 = performance.now();
+        const step = (now) => {
+          let p = (now - t0) / dur;
+          if (p > 1) p = 1;
+          const eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
+          el.textContent = render(from + (to - from) * eased);
+          if (p < 1) {
+            el._raf = requestAnimationFrame(step);
+          } else {
+            el.textContent = render(to);
+            el._raf = null;
+          }
+        };
+        el._raf = requestAnimationFrame(step);
+      }
       const fmtDate = (s) => (s ? s.split("-").reverse().join("/") : "--");
       function getSemana(fechaStr) {
         const dia = parseInt((fechaStr || "").split("-")[2] || "1", 10);
@@ -4717,7 +4762,7 @@
             </h2>
             <button
               onclick="abrirModalNuevoPago()"
-              class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg"
+              class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl"
               style="background:#1a365d;color:#93c5fd"
             >
               <i data-lucide="plus" class="w-3.5 h-3.5"></i>Agregar
@@ -4821,24 +4866,24 @@
                   pagado
                     ? `<button
                         onclick="togglePagoCheck('${pago.id}',${dia},'${mesStr}','${checkId}')"
-                        class="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-semibold"
+                        class="flex items-center gap-1 text-xs px-3 py-1.5 rounded-xl font-semibold"
                         style="background:#14532d33;color:#22D68A;border:1px solid #22D68A44"
                       ><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>Pagado</button>`
                     : `<button
                         onclick="togglePagoCheck('${pago.id}',${dia},'${mesStr}',null)"
-                        class="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-semibold"
+                        class="flex items-center gap-1 text-xs px-3 py-1.5 rounded-xl font-semibold"
                         style="background:#0f1117;color:#8892B0;border:1px solid #252d3f"
                       ><i data-lucide="circle" class="w-3.5 h-3.5"></i>Pagar</button>`
                 }
                 <button
                   onclick="abrirModalEditarPago('${pago.id}')"
-                  class="p-1.5 rounded-lg"
+                  class="p-1.5 rounded-xl"
                   style="color:#b8904d;background:rgba(184,144,77,0.08);border:1px solid rgba(184,144,77,0.2)"
                   title="Editar"
                 ><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
                 <button
                   onclick="eliminarPagoRecurrente('${pago.id}')"
-                  class="p-1.5 rounded-lg"
+                  class="p-1.5 rounded-xl"
                   style="color:#334155"
                   title="Eliminar"
                 ><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
