@@ -1556,9 +1556,9 @@
       <button class="nav-fab" id="nav-nuevo" onclick="showTab('nuevo')" title="Nuevo registro">
         <i data-lucide="plus"></i>
       </button>
-      <button class="nav-item" id="nav-notas" onclick="showTab('notas')">
-        <i data-lucide="notebook-pen"></i>
-        <span>Notas</span>
+      <button class="nav-item" id="nav-estadisticas" onclick="showTab('estadisticas')">
+        <i data-lucide="bar-chart-2"></i>
+        <span>Estadísticas</span>
       </button>
       <button class="nav-item" id="nav-mas" onclick="toggleMasDrawer()">
         <i data-lucide="grid-2x2"></i>
@@ -1593,13 +1593,13 @@
         </div>
         <i data-lucide="chevron-right" style="color: var(--text3); width:18px; height:18px; flex-shrink:0"></i>
       </button>
-      <button class="drawer-item" onclick="showTab('estadisticas'); closeMasDrawer()">
+      <button class="drawer-item" onclick="showTab('notas'); closeMasDrawer()">
         <div class="drawer-icon" style="background: rgba(167,139,250,0.12)">
-          <i data-lucide="bar-chart-2" style="color: var(--purple); width:20px; height:20px"></i>
+          <i data-lucide="notebook-pen" style="color: var(--purple); width:20px; height:20px"></i>
         </div>
         <div class="flex-1 text-left">
-          <p class="font-semibold text-sm" style="color: var(--text)">Estadísticas</p>
-          <p class="text-xs mt-0.5" style="color: var(--text2)">Gráficas y análisis financiero</p>
+          <p class="font-semibold text-sm" style="color: var(--text)">Notas</p>
+          <p class="text-xs mt-0.5" style="color: var(--text2)">Tus apuntes y recordatorios</p>
         </div>
         <i data-lucide="chevron-right" style="color: var(--text3); width:18px; height:18px; flex-shrink:0"></i>
       </button>
@@ -2324,12 +2324,12 @@
           if (p) p.classList.toggle("hidden", t !== tab);
         });
         // Actualizar nav inferior
-        ["resumen","movimientos","notas"].forEach(t => {
+        ["resumen","movimientos","estadisticas"].forEach(t => {
           const btn = document.getElementById("nav-" + t);
           if (btn) btn.classList.toggle("active", t === tab);
         });
         const navMas = document.getElementById("nav-mas");
-        if (navMas) navMas.classList.toggle("active", ["deudas","pagos","estadisticas","presupuestos"].includes(tab));
+        if (navMas) navMas.classList.toggle("active", ["deudas","pagos","notas","presupuestos"].includes(tab));
         if (tab === "presupuestos") renderPresupuestos();
         const navFab = document.getElementById("nav-nuevo");
         if (navFab) navFab.style.opacity = tab === "nuevo" ? "0.7" : "1";
