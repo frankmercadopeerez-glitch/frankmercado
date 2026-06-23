@@ -10,6 +10,15 @@
     <link rel="shortcut icon" href="../favicon.svg" />
     <title>Finanzas Frank</title>
     <meta name="robots" content="noindex, nofollow" />
+    <script>
+      // Anti-flash login: si ya hubo sesión, marca el <html> antes de pintar
+      // para mostrar el splash en vez del formulario mientras Firebase valida.
+      try {
+        if (localStorage.getItem("fz_hadSession")) {
+          document.documentElement.classList.add("fz-resume");
+        }
+      } catch (e) {}
+    </script>
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta
@@ -71,6 +80,19 @@
         color: var(--text);
         min-height: 100dvh;
         overflow-x: hidden;
+      }
+
+      /* ── Anti-flash login ────────────────────── */
+      #login-loading { display: none; }
+      html.fz-resume #login-form { display: none; }
+      html.fz-resume #login-loading { display: flex; }
+      @keyframes fzspin { to { transform: rotate(360deg); } }
+      .fz-spinner {
+        width: 28px; height: 28px;
+        border: 3px solid rgba(245,188,69,0.2);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: fzspin 0.8s linear infinite;
       }
 
       /* ── Top Header ───────────────────────────── */
@@ -638,29 +660,39 @@
         <p class="mb-8 text-sm" style="color: var(--text2)">
           Panel Privado · Finanzas Personales
         </p>
-        <input
-          type="email"
-          id="auth-email"
-          placeholder="Correo electrónico"
-          class="block w-full rounded-2xl border p-3.5 text-center mb-3 text-sm focus:outline-none"
-          style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: var(--text)"
-        />
-        <input
-          type="password"
-          id="auth-password"
-          placeholder="Contraseña"
-          class="block w-full rounded-2xl border p-3.5 text-center mb-5 text-sm focus:outline-none"
-          style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: var(--text)"
-        />
-        <button
-          onclick="loginWithEmail()"
-          id="login-btn"
-          class="w-full font-bold py-3.5 px-4 rounded-2xl text-sm tracking-wide transition"
-          style="background: linear-gradient(135deg, var(--accent), #E8A020); color: #1a0f00; box-shadow: 0 4px 20px rgba(245,188,69,0.35)"
-        >
-          Ingresar
-        </button>
-        <p id="pin-error" class="text-red-400 mt-3 text-sm hidden"></p>
+
+        <!-- Splash mientras Firebase valida la sesión guardada -->
+        <div id="login-loading" class="flex-col items-center gap-3 mt-2">
+          <div class="fz-spinner"></div>
+          <span class="text-sm" style="color: var(--text2)">Cargando tu panel…</span>
+        </div>
+
+        <!-- Formulario de inicio de sesión -->
+        <div id="login-form">
+          <input
+            type="email"
+            id="auth-email"
+            placeholder="Correo electrónico"
+            class="block w-full rounded-2xl border p-3.5 text-center mb-3 text-sm focus:outline-none"
+            style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: var(--text)"
+          />
+          <input
+            type="password"
+            id="auth-password"
+            placeholder="Contraseña"
+            class="block w-full rounded-2xl border p-3.5 text-center mb-5 text-sm focus:outline-none"
+            style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: var(--text)"
+          />
+          <button
+            onclick="loginWithEmail()"
+            id="login-btn"
+            class="w-full font-bold py-3.5 px-4 rounded-2xl text-sm tracking-wide transition"
+            style="background: linear-gradient(135deg, var(--accent), #E8A020); color: #1a0f00; box-shadow: 0 4px 20px rgba(245,188,69,0.35)"
+          >
+            Ingresar
+          </button>
+          <p id="pin-error" class="text-red-400 mt-3 text-sm hidden"></p>
+        </div>
       </div>
     </div>
 
@@ -2281,6 +2313,7 @@
         db = firebase.firestore();
         auth.onAuthStateChanged((user) => {
           if (user) {
+            try { localStorage.setItem("fz_hadSession", "1"); } catch (e) {}
             document.getElementById("lock-screen").classList.add("hidden");
             document.getElementById("main-app").classList.remove("hidden");
             document.getElementById("tx-fecha").value = todayStr;
@@ -2476,6 +2509,9 @@
             // Inicializar notas
             initNotas();
           } else {
+            // No hay sesión: limpia el flag y revela el formulario de login
+            try { localStorage.removeItem("fz_hadSession"); } catch (e) {}
+            document.documentElement.classList.remove("fz-resume");
             document.getElementById("lock-screen").classList.remove("hidden");
             document.getElementById("main-app").classList.add("hidden");
             document.getElementById("login-btn").disabled = false;
