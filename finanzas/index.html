@@ -219,6 +219,28 @@
         animation: panelIn 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
       }
       .nav-item:active { transform: scale(0.9); }
+
+      /* ── Transición al cambiar de mes ─────────── */
+      @keyframes mesInL {
+        from { opacity: 0; transform: translateX(-16px); }
+        to   { opacity: 1; transform: translateX(0); }
+      }
+      @keyframes mesInR {
+        from { opacity: 0; transform: translateX(16px); }
+        to   { opacity: 1; transform: translateX(0); }
+      }
+      .mes-anim-l { animation: mesInL 0.34s cubic-bezier(0.25,0.46,0.45,0.94); }
+      .mes-anim-r { animation: mesInR 0.34s cubic-bezier(0.25,0.46,0.45,0.94); }
+
+      /* ── Modo privacidad: difumina los montos ─── */
+      body.privacy .money,
+      body.privacy .kpi-value {
+        filter: blur(9px);
+        transition: filter 0.25s ease;
+        user-select: none;
+        cursor: pointer;
+      }
+      .money, .kpi-value { transition: filter 0.25s ease; }
       .nav-item { transition: color 0.2s, transform 0.1s; }
 
       /* ── Bottom Nav ──────────────────────────── */
@@ -772,6 +794,9 @@
               <i data-lucide="loader" class="w-3.5 h-3.5"></i>
               <span class="hidden sm:inline">Conectando...</span>
             </span>
+            <button onclick="togglePrivacy()" id="btn-privacy" class="text-xs flex items-center gap-1 transition px-2 py-1.5 rounded-xl" style="color: var(--text2); background: var(--glass); border: 1px solid var(--glass-b)" title="Ocultar montos">
+              <i data-lucide="eye" id="icon-privacy" class="w-3.5 h-3.5"></i>
+            </button>
             <button onclick="exportarTodoCSV()" class="text-xs flex items-center gap-1 transition px-2 py-1.5 rounded-xl" style="color: var(--text2); background: var(--glass); border: 1px solid var(--glass-b)" title="Exportar CSV">
               <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
               <span class="hidden sm:inline">CSV</span>
@@ -804,22 +829,22 @@
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
             <div class="rounded-2xl p-3 text-center" id="nw-cuentas-card" style="background: rgba(34,214,138,0.07); border: 1px solid rgba(34,214,138,0.18)">
               <span class="block text-[10px] font-semibold uppercase tracking-wide mb-1" id="nw-cuentas-label" style="color: rgba(34,214,138,0.75)">Disponible</span>
-              <span class="block font-bold text-lg leading-tight" style="color: var(--green)" id="nw-cuentas">$0</span>
+              <span class="money block font-bold text-lg leading-tight" style="color: var(--green)" id="nw-cuentas">$0</span>
               <span class="block text-[9px] mt-0.5" style="color: var(--text3)">cuentas</span>
             </div>
             <div class="rounded-2xl p-3 text-center" style="background: rgba(56,189,248,0.07); border: 1px solid rgba(56,189,248,0.18)">
               <span class="block text-[10px] font-semibold uppercase tracking-wide mb-1" style="color: rgba(56,189,248,0.75)">Bolsillos</span>
-              <span class="block font-bold text-lg leading-tight" style="color: var(--blue)" id="nw-bolsillos">$0</span>
+              <span class="money block font-bold text-lg leading-tight" style="color: var(--blue)" id="nw-bolsillos">$0</span>
               <span class="block text-[9px] mt-0.5" style="color: var(--text3)">ahorros</span>
             </div>
             <div class="rounded-2xl p-3 text-center" style="background: rgba(245,188,69,0.07); border: 1px solid rgba(245,188,69,0.18)">
               <span class="block text-[10px] font-semibold uppercase tracking-wide mb-1" style="color: rgba(245,188,69,0.75)">Total</span>
-              <span class="block font-bold text-lg leading-tight" style="color: var(--accent)" id="nw-cuentas-total">$0</span>
+              <span class="money block font-bold text-lg leading-tight" style="color: var(--accent)" id="nw-cuentas-total">$0</span>
               <span class="block text-[9px] mt-0.5" style="color: var(--text3)">todo junto</span>
             </div>
             <div class="rounded-2xl p-3 text-center" style="background: rgba(167,139,250,0.07); border: 1px solid rgba(167,139,250,0.18)">
               <span class="block text-[10px] font-semibold uppercase tracking-wide mb-1" style="color: rgba(167,139,250,0.75)">Flujo Mes</span>
-              <span class="block font-bold text-lg leading-tight" style="color: var(--purple)" id="nw-flujo">$0</span>
+              <span class="money block font-bold text-lg leading-tight" style="color: var(--purple)" id="nw-flujo">$0</span>
               <span class="block text-[9px] mt-0.5" style="color: var(--text3)">ingr. − gastos</span>
             </div>
           </div>
@@ -855,7 +880,7 @@
         </div>
 
         <!-- KPIs MENSUALES -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+        <div id="kpi-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
           <div class="kpi-card" style="border-left: 4px solid var(--green)">
             <p class="kpi-label">Ingresos <span class="normal-case font-normal" style="color: var(--text2)">· mes</span></p>
             <p class="kpi-value" style="color: var(--green)" id="kpi-ingresos">$0</p>
@@ -2334,6 +2359,39 @@
         document.getElementById("mas-drawer").classList.remove("open");
       }
 
+      // ── Modo privacidad (oculta montos con blur) ──────────
+      function aplicarPrivacidad(on) {
+        document.body.classList.toggle("privacy", on);
+        const icon = document.getElementById("icon-privacy");
+        const btn = document.getElementById("btn-privacy");
+        if (icon) icon.setAttribute("data-lucide", on ? "eye-off" : "eye");
+        if (btn) {
+          btn.title = on ? "Mostrar montos" : "Ocultar montos";
+          btn.style.color = on ? "var(--accent)" : "var(--text2)";
+        }
+        lucide.createIcons();
+      }
+      function togglePrivacy() {
+        const on = !document.body.classList.contains("privacy");
+        try { localStorage.setItem("fz_privacy", on ? "1" : "0"); } catch (e) {}
+        aplicarPrivacidad(on);
+      }
+      // Restaura la preferencia al cargar
+      try { aplicarPrivacidad(localStorage.getItem("fz_privacy") === "1"); } catch (e) {}
+      // Tocar un monto difuminado revela todos (captura: evita navegar de paso)
+      document.addEventListener(
+        "click",
+        (e) => {
+          if (!document.body.classList.contains("privacy")) return;
+          if (e.target.closest(".money, .kpi-value")) {
+            e.preventDefault();
+            e.stopPropagation();
+            togglePrivacy();
+          }
+        },
+        true,
+      );
+
       // ── Stats patrimonio toggle ───────────────────────────
       function toggleStatsPatrimonio() {
         const cards = document.getElementById("stats-patrimonio-cards");
@@ -2347,6 +2405,13 @@
       }
 
       // ── Mes ───────────────────────────────────────────────
+      // Re-dispara una animación CSS quitando y re-añadiendo la clase
+      function playAnim(el, cls) {
+        if (!el) return;
+        el.classList.remove("mes-anim-l", "mes-anim-r");
+        void el.offsetWidth; // fuerza reflow para reiniciar la animación
+        el.classList.add(cls);
+      }
       function cambiarMes(delta) {
         mesSel.m += delta;
         if (mesSel.m > 11) {
@@ -2359,6 +2424,10 @@
         }
         actualizarMesLabel();
         renderAll();
+        // El contenido del mes entra deslizándose en el sentido de la navegación
+        const cls = delta > 0 ? "mes-anim-r" : "mes-anim-l";
+        playAnim(document.getElementById("mes-label"), cls);
+        playAnim(document.getElementById("kpi-grid"), cls);
       }
       function actualizarMesLabel() {
         document.getElementById("mes-label").textContent =
@@ -2820,7 +2889,7 @@
             : s >= 0
               ? "text-slate-800"
               : "text-red-600";
-          div.innerHTML = `<div class="flex items-start gap-1.5 mb-1"><div class="w-2 h-2 rounded-full flex-shrink-0 mt-1" style="background:${color}"></div><p class="${titleClass}" title="${c}">${c}</p></div><p class="text-sm font-bold ${montoClass}">${fmt(s)}</p>${meta?.tope ? `<p class="text-[10px] text-slate-400 mt-1">Tope: ${fmt(meta.tope)}</p><div class="h-1.5 rounded-full bg-slate-700 mt-1"><div class="h-1.5 rounded-full" style="width:${pctTope}%;background:${superaTope ? "#22D68A" : color}"></div></div>` : ""}${meta?.metaMensual ? `<p class="text-[10px] text-slate-400 mt-1">Meta: ${fmt(meta.metaMensual)}</p>` : ""}`;
+          div.innerHTML = `<div class="flex items-start gap-1.5 mb-1"><div class="w-2 h-2 rounded-full flex-shrink-0 mt-1" style="background:${color}"></div><p class="${titleClass}" title="${c}">${c}</p></div><p class="money text-sm font-bold ${montoClass}">${fmt(s)}</p>${meta?.tope ? `<p class="text-[10px] text-slate-400 mt-1">Tope: ${fmt(meta.tope)}</p><div class="h-1.5 rounded-full bg-slate-700 mt-1"><div class="h-1.5 rounded-full" style="width:${pctTope}%;background:${superaTope ? "#22D68A" : color}"></div></div>` : ""}${meta?.metaMensual ? `<p class="text-[10px] text-slate-400 mt-1">Meta: ${fmt(meta.metaMensual)}</p>` : ""}`;
           return div;
         }
 
@@ -3039,7 +3108,7 @@
               <div class="mb-3 cursor-pointer active:opacity-70" onclick="irAMovimientosCat('Producido Carro')">
                 <div class="flex items-center justify-between mb-1.5">
                   <span class="text-[10px] font-semibold uppercase tracking-wide" style="color:rgba(74,222,128,0.8)">Ingresos</span>
-                  <span class="text-sm font-black" style="color:#7DEBC0">${fmt(producidoMes)}</span>
+                  <span class="money text-sm font-black" style="color:#7DEBC0">${fmt(producidoMes)}</span>
                 </div>
                 <div class="rounded-full overflow-hidden" style="height:8px;background:rgba(34,197,94,0.1)">
                   <div class="h-full rounded-full transition-all" style="width:${_ingrPct}%;background:linear-gradient(90deg,#22D68A,#7DEBC0)"></div>
@@ -3050,7 +3119,7 @@
               <div class="mb-4">
                 <div class="flex items-center justify-between mb-1.5">
                   <span class="text-[10px] font-semibold uppercase tracking-wide" style="color:rgba(248,113,113,0.8)">Gastos</span>
-                  <span class="text-sm font-black" style="color:#FF9DAD">−${fmt(totalEgresosCarro)}</span>
+                  <span class="money text-sm font-black" style="color:#FF9DAD">−${fmt(totalEgresosCarro)}</span>
                 </div>
                 <div class="rounded-full overflow-hidden" style="height:8px;background:rgba(255,77,106,0.1)">
                   <div class="h-full rounded-full transition-all" style="width:${_egrPct}%;background:linear-gradient(90deg,#FF4D6A,#FF9DAD)"></div>
@@ -3060,7 +3129,7 @@
               <!-- Profit -->
               <div class="flex items-center justify-between pt-3" style="border-top:1px solid rgba(255,255,255,0.06)">
                 <span class="text-[10px] font-bold uppercase tracking-widest" style="color:${isProfit ? 'rgba(74,222,128,0.7)' : 'rgba(248,113,113,0.7)'}">Profit Total</span>
-                <span class="text-lg font-black" style="color:${profitColor}">${isProfit ? "+" : ""}${fmt(profitCarro)}</span>
+                <span class="money text-lg font-black" style="color:${profitColor}">${isProfit ? "+" : ""}${fmt(profitCarro)}</span>
               </div>
             </div>`;
         }
@@ -3088,13 +3157,13 @@
                     <span class="w-1.5 h-1.5 rounded-full" style="background: var(--accent); box-shadow: 0 0 6px var(--accent)"></span>
                     <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--accent)">Hoy · ${fechaLabel}</span>
                   </div>
-                  <span class="text-sm font-bold" style="color: var(--red)">−${fmt(hoyTotal)}</span>
+                  <span class="money text-sm font-bold" style="color: var(--red)">−${fmt(hoyTotal)}</span>
                 </div>
                 <div class="flex flex-wrap gap-1.5">
                   ${hoyEntries.map(([cat, monto]) => `
                     <button onclick="irAMovimientosCat('${cat.replace(/'/g,"\\'")}'); event.stopPropagation();" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium active:opacity-60 transition-opacity" style="background: var(--glass-b); border: 1px solid rgba(255,255,255,0.08)">
                       <span style="color: var(--text)">${cat}</span>
-                      <span class="font-bold" style="color: var(--red)">${fmt(monto)}</span>
+                      <span class="money font-bold" style="color: var(--red)">${fmt(monto)}</span>
                     </button>`).join("")}
                 </div>
               </div>`;
@@ -3146,7 +3215,7 @@
                   ${presup ? `<div class="h-1 rounded-full" style="background: rgba(255,255,255,0.07)"><div style="width:${pct}%; height:100%; border-radius:999px; background:${barColor}; transition:width 0.4s"></div></div>` : ""}
                 </div>
                 <div class="text-right flex-shrink-0">
-                  <span class="text-sm font-bold" style="color: ${over ? "var(--red)" : "var(--text)"}">${fmt(gastado)}</span>
+                  <span class="money text-sm font-bold" style="color: ${over ? "var(--red)" : "var(--text)"}">${fmt(gastado)}</span>
                   ${pct !== null ? `<br><span class="text-[10px]" style="color: var(--text3)">${pct}%</span>` : ""}
                 </div>
               </button>`;
@@ -3342,7 +3411,7 @@
               : `<span class="cuenta-chip" style="background:${cuentaColor}20;color:${cuentaColor}">${cuentaNombre}</span>`;
           const tr = document.createElement("tr");
           tr.className = "hover:bg-slate-50 transition";
-          tr.innerHTML = `<td class="px-3 py-3 whitespace-nowrap text-xs text-slate-500">${fmtDate(tx.fecha)}<br><span class="text-slate-400">${tx.hora || ""}</span></td><td class="px-3 py-3 text-sm text-slate-500 max-w-xs truncate">${tx.descripcion || "--"}</td><td class="px-3 py-3 whitespace-nowrap"><span class="px-2 py-0.5 text-xs font-semibold rounded-full ${isIn ? "bg-green-100 text-green-800" : isTransf ? "bg-blue-100 text-blue-800" : "bg-red-100 text-red-800"}">${categoriaNombre}</span></td><td class="px-3 py-3 whitespace-nowrap"><div class="flex items-center gap-1.5 flex-wrap">${cuentaBadges}</div></td><td class="px-3 py-3 whitespace-nowrap text-sm text-right font-bold ${amountColor}">${sign}${fmt(tx.monto)}</td><td class="px-3 py-3 text-center"><div class="flex items-center justify-center gap-1"><button onclick="editTransaction('${tx.id}')" class="text-slate-300 hover:text-blue-500 p-1 transition"><i data-lucide="pencil" class="w-4 h-4"></i></button><button onclick="deleteTransaction('${tx.id}')" class="text-slate-300 hover:text-red-500 p-1 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></td>`;
+          tr.innerHTML = `<td class="px-3 py-3 whitespace-nowrap text-xs text-slate-500">${fmtDate(tx.fecha)}<br><span class="text-slate-400">${tx.hora || ""}</span></td><td class="px-3 py-3 text-sm text-slate-500 max-w-xs truncate">${tx.descripcion || "--"}</td><td class="px-3 py-3 whitespace-nowrap"><span class="px-2 py-0.5 text-xs font-semibold rounded-full ${isIn ? "bg-green-100 text-green-800" : isTransf ? "bg-blue-100 text-blue-800" : "bg-red-100 text-red-800"}">${categoriaNombre}</span></td><td class="px-3 py-3 whitespace-nowrap"><div class="flex items-center gap-1.5 flex-wrap">${cuentaBadges}</div></td><td class="px-3 py-3 whitespace-nowrap text-sm text-right font-bold ${amountColor}"><span class="money">${sign}${fmt(tx.monto)}</span></td><td class="px-3 py-3 text-center"><div class="flex items-center justify-center gap-1"><button onclick="editTransaction('${tx.id}')" class="text-slate-300 hover:text-blue-500 p-1 transition"><i data-lucide="pencil" class="w-4 h-4"></i></button><button onclick="deleteTransaction('${tx.id}')" class="text-slate-300 hover:text-red-500 p-1 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></td>`;
           tb.appendChild(tr);
         });
         lucide.createIcons();
