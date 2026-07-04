@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Cuenta de Cobro 009 - Estibol S.A.S.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-blue: #1a237e;
+        --accent-gold: #c5a059;
+        --text-dark: #2c3e50;
+        --text-light: #64748b;
+        --danger-red: #dc2626;
+        --success-green: #16a34a;
+      }
+
+      * {
+        box-sizing: border-box;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      body {
+        background-color: #f0f4f8;
+        margin: 0;
+        padding: 20px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-family: "Montserrat", sans-serif;
+        color: var(--text-dark);
+        font-weight: 500;
+        font-size: 12px;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: auto;
+      }
+
+      .nav-bar {
+        width: 8.5in;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding: 10px 15px;
+        background: white;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        font-size: 12px;
+      }
+
+      .nav-bar a {
+        color: var(--primary-blue);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 11px;
+      }
+
+      .nav-bar a:hover {
+        text-decoration: underline;
+      }
+
+      .print-btn {
+        background: var(--primary-blue);
+        color: white;
+        border: none;
+        padding: 7px 18px;
+        border-radius: 4px;
+        font-family: "Montserrat", sans-serif;
+        font-weight: 600;
+        font-size: 11px;
+        cursor: pointer;
+        letter-spacing: 0.5px;
+      }
+
+      .print-btn:hover {
+        background: #283593;
+      }
+
+      .invoice-container {
+        background: white;
+        width: 8.5in;
+        height: 11in;
+        padding: 0.6in 0.8in;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      @media print {
+        @page {
+          size: letter portrait;
+          margin: 0mm;
+        }
+        body {
+          background: white;
+          padding: 0;
+        }
+        .nav-bar {
+          display: none;
+        }
+        .invoice-container {
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          padding: 0.6in 0.8in;
+          page-break-after: avoid;
+          box-shadow: none;
+        }
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 30px;
+        border-bottom: 2px solid var(--primary-blue);
+        padding-bottom: 15px;
+      }
+
+      .brand h1 {
+        font-family: "Playfair Display", serif;
+        font-size: 24px;
+        color: var(--primary-blue);
+        margin: 0;
+        letter-spacing: -0.5px;
+        text-transform: uppercase;
+      }
+
+      .brand p {
+        margin: 5px 0 0;
+        color: var(--accent-gold);
+        font-weight: 700;
+        letter-spacing: 2px;
+        font-size: 8px;
+        text-transform: uppercase;
+      }
+
+      .invoice-meta {
+        text-align: right;
+      }
+
+      .invoice-meta h2 {
+        font-size: 18px;
+        color: var(--text-dark);
+        margin: 0 0 5px;
+        font-weight: 700;
+      }
+
+      .meta-group {
+        margin-bottom: 2px;
+        font-size: 11px;
+      }
+
+      .meta-label {
+        color: var(--text-light);
+        font-weight: 500;
+        margin-right: 10px;
+      }
+
+      .meta-value {
+        color: var(--text-dark);
+        font-weight: 600;
+      }
+
+      .parties-section {
+        display: flex;
+        margin-bottom: 25px;
+        gap: 40px;
+      }
+
+      .party-box {
+        flex: 1;
+      }
+
+      .section-title {
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--text-light);
+        font-weight: 700;
+        margin-bottom: 8px;
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 2px;
+      }
+
+      .party-name {
+        font-weight: 700;
+        font-size: 13px;
+        margin-bottom: 4px;
+        color: var(--primary-blue);
+      }
+
+      .party-details {
+        line-height: 1.4;
+        color: var(--text-dark);
+        font-size: 11px;
+      }
+
+      .period-note {
+        font-size: 10px;
+        color: var(--text-light);
+        margin-top: -20px;
+        margin-bottom: 20px;
+        font-style: italic;
+      }
+
+      .invoice-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+
+      .invoice-table th {
+        text-align: left;
+        padding: 8px 10px;
+        background-color: #f1f5f9;
+        color: var(--primary-blue);
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 9px;
+        letter-spacing: 1px;
+        border-bottom: 2px solid var(--primary-blue);
+      }
+
+      .invoice-table td {
+        padding: 10px 10px;
+        border-bottom: 1px solid #e2e8f0;
+        vertical-align: top;
+      }
+
+      .col-desc {
+        width: 55%;
+      }
+      .col-qty {
+        width: 15%;
+        text-align: center;
+      }
+      .col-unit {
+        width: 15%;
+        text-align: right;
+      }
+      .col-total {
+        width: 15%;
+        text-align: right;
+        font-weight: 600;
+      }
+
+      .item-title {
+        font-weight: 700;
+        margin-bottom: 3px;
+        display: block;
+        color: var(--text-dark);
+        font-size: 12px;
+      }
+
+      .item-subtitle {
+        font-size: 10px;
+        color: var(--text-light);
+        display: block;
+        line-height: 1.3;
+      }
+
+      .footer-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-top: 20px;
+      }
+
+      .amount-words {
+        width: 50%;
+        font-size: 10px;
+        color: var(--text-light);
+        font-style: italic;
+        padding-top: 15px;
+        line-height: 1.3;
+      }
+
+      .total-box {
+        width: 45%;
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: 4px;
+        border: 1px solid #e2e8f0;
+      }
+
+      .total-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+        font-size: 11px;
+      }
+
+      .total-row.final {
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 2px solid var(--primary-blue);
+        font-weight: 700;
+        font-size: 15px;
+        color: var(--primary-blue);
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+
+      .payment-box {
+        margin-top: 30px;
+        background: #fff;
+        border-left: 4px solid var(--accent-gold);
+        padding: 8px 15px;
+      }
+
+      .payment-box h4 {
+        margin: 0 0 4px;
+        color: var(--primary-blue);
+        font-size: 12px;
+      }
+
+      .payment-box p {
+        margin: 2px 0;
+        font-size: 11px;
+      }
+
+      .legal-notice {
+        margin-top: 30px;
+        font-size: 8px;
+        color: #94a3b8;
+        text-align: center;
+        line-height: 1.4;
+        padding: 0 20px;
+      }
+
+      .signature {
+        margin-top: 40px;
+        width: 200px;
+        border-top: 1px solid #000;
+        padding-top: 8px;
+        font-weight: 700;
+        font-size: 11px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="nav-bar">
+      <a href="../">← Volver al índice</a>
+      <button class="print-btn" onclick="window.print()">
+        Imprimir / Guardar PDF
+      </button>
+    </div>
+
+    <div class="invoice-container">
+      <header>
+        <div class="brand">
+          <h1>Frank Mercado</h1>
+          <p>Tecnólogo Naval & Perito Marítimo</p>
+        </div>
+        <div class="invoice-meta">
+          <h2>CUENTA DE COBRO N.° 009</h2>
+          <div class="meta-group">
+            <span class="meta-label">Fecha:</span>
+            <span class="meta-value">19 de Diciembre, 2025</span>
+          </div>
+          <div class="meta-group">
+            <span class="meta-label">Ciudad:</span>
+            <span class="meta-value">Cartagena, Bolívar</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="parties-section">
+        <div class="party-box">
+          <div class="section-title">Prestador del Servicio</div>
+          <div class="party-name">Frank Javier Mercado Pérez</div>
+          <div class="party-details">
+            C.C. 1.143.266.633<br />
+            Cel: 350 603 4354<br />
+            frankmercadoperez@hotmail.com
+          </div>
+        </div>
+        <div class="party-box">
+          <div class="section-title">Cliente</div>
+          <div class="party-name">ESTIBOL S.A.S.</div>
+          <div class="party-details">
+            NIT: 860.508.382<br />
+            <strong>Embarcación:</strong> TYPHOON 1<br />
+            Cartagena, Bolívar
+          </div>
+        </div>
+      </div>
+
+      <div class="period-note">
+        <strong>Período Facturado:</strong> Del 15 de septiembre de 2025 al 19
+        de diciembre de 2025.
+      </div>
+
+      <table class="invoice-table">
+        <thead>
+          <tr>
+            <th class="col-desc">Descripción</th>
+            <th class="col-qty">Cant.</th>
+            <th class="col-unit">Unitario</th>
+            <th class="col-total">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <span class="item-title"
+                >Alistamiento de embarcación "TYPHOON 1"</span
+              >
+              <span class="item-subtitle"
+                >Incluye: Recorrido, lavado, revisión general y flushing de
+                motores.</span
+              >
+            </td>
+            <td class="col-qty">3</td>
+            <td class="col-unit">$ 150.000</td>
+            <td class="col-total">$ 450.000</td>
+          </tr>
+          <tr>
+            <td>
+              <span class="item-title"
+                >Supervisión de trabajos en Nautiagro</span
+              >
+              <span class="item-subtitle">
+                Instalación de motor de arranque (estribor), instalación de
+                baterías, tacómetros nuevos, luces y cambio de terminales de
+                conexión.
+              </span>
+            </td>
+            <td class="col-qty">1</td>
+            <td class="col-unit">$ 150.000</td>
+            <td class="col-total">$ 150.000</td>
+          </tr>
+          <tr>
+            <td>
+              <span class="item-title">Instalación de cerraduras</span>
+              <span class="item-subtitle"
+                >Mano de obra técnica especializada.</span
+              >
+            </td>
+            <td class="col-qty">1</td>
+            <td class="col-unit">$ 100.000</td>
+            <td class="col-total">$ 100.000</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="footer-section">
+        <div class="amount-words">SON: SETECIENTOS MIL PESOS M/CTE.</div>
+        <div class="total-box">
+          <div class="total-row final">
+            <span>Total a Pagar:</span>
+            <span>$ 700.000</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="payment-box">
+        <h4>Información de Pago</h4>
+        <p><strong>Banco:</strong> Bancolombia</p>
+        <p><strong>Tipo de Cuenta:</strong> Ahorros</p>
+        <p><strong>Número:</strong> 495-705125-43</p>
+        <p><strong>Titular:</strong> Frank Javier Mercado Pérez</p>
+      </div>
+
+      <div class="legal-notice">
+        Manifiesto bajo la gravedad del juramento que he realizado los aportes
+        correspondientes al Sistema de Seguridad Social Integral acordes a mis
+        ingresos. El suscrito no es responsable de IVA ni está obligado a
+        expedir factura electrónica según lo establecido en el Art. 616-2 del
+        Estatuto Tributario y el art. 1.6.1.4.3 del Decreto Único Reglamentario
+        1625 de 2016.
+      </div>
+
+      <div class="signature">
+        Frank Javier Mercado Pérez<br />
+        <span
+          style="font-size: 11px; color: var(--text-light); font-weight: 400"
+          >C.C. 1.143.266.633</span
+        ><br />
+        <span
+          style="font-size: 11px; color: var(--text-light); font-weight: 400"
+          >Perito Marítimo - Lic. DIMAR</span
+        >
+      </div>
+    </div>
+  </body>
+</html>

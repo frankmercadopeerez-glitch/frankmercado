@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /finanzas/
+Disallow: /cuentas-de-cobro/
 
 Sitemap: https://frankmercado.com/sitemap.xml

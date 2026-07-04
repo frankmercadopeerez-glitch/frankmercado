@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Cuentas de Cobro — Frank Mercado</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-blue: #1a237e;
+        --accent-gold: #c5a059;
+        --text-dark: #2c3e50;
+        --text-light: #64748b;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: #f0f4f8;
+        font-family: "Montserrat", sans-serif;
+        color: var(--text-dark);
+        min-height: 100vh;
+        padding: 40px 20px;
+      }
+
+      .container {
+        max-width: 860px;
+        margin: 0 auto;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding-bottom: 30px;
+        border-bottom: 2px solid var(--primary-blue);
+      }
+
+      header h1 {
+        font-family: "Playfair Display", serif;
+        font-size: 32px;
+        color: var(--primary-blue);
+        text-transform: uppercase;
+        letter-spacing: -0.5px;
+      }
+
+      header p {
+        color: var(--accent-gold);
+        font-weight: 700;
+        font-size: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        margin-top: 6px;
+      }
+
+      .section-label {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--text-light);
+        margin-bottom: 16px;
+      }
+
+      .invoices-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        gap: 16px;
+      }
+
+      .invoice-card {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        padding: 20px 22px;
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        transition:
+          box-shadow 0.15s,
+          border-color 0.15s;
+      }
+
+      .invoice-card:hover {
+        box-shadow: 0 6px 20px rgba(26, 35, 126, 0.12);
+        border-color: var(--primary-blue);
+      }
+
+      .card-number {
+        background: var(--primary-blue);
+        color: white;
+        font-size: 18px;
+        font-weight: 700;
+        min-width: 56px;
+        height: 56px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Playfair Display", serif;
+        flex-shrink: 0;
+      }
+
+      .card-info {
+        flex: 1;
+      }
+
+      .card-info .client {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--primary-blue);
+        margin-bottom: 4px;
+      }
+
+      .card-info .date {
+        font-size: 11px;
+        color: var(--text-light);
+        margin-bottom: 4px;
+      }
+
+      .card-info .amount {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-dark);
+      }
+
+      .card-arrow {
+        color: var(--text-light);
+        font-size: 18px;
+      }
+
+      .total-summary {
+        margin-top: 30px;
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        padding: 20px 22px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .total-summary .label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-light);
+      }
+
+      .total-summary .value {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--primary-blue);
+        font-family: "Playfair Display", serif;
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 50px;
+        font-size: 10px;
+        color: #94a3b8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Frank Mercado</h1>
+        <p>Cuentas de Cobro — Uso Personal</p>
+      </header>
+
+      <div class="section-label">Todas las cuentas</div>
+
+      <div class="invoices-grid" id="invoices-grid">
+        <!-- Cuenta 009 — más reciente primero -->
+        <a class="invoice-card" href="009-estibol/">
+          <div class="card-number">009</div>
+          <div class="card-info">
+            <div class="client">Estibol S.A.S.</div>
+            <div class="date">19 de Diciembre, 2025 · Cartagena</div>
+            <div class="amount">$ 700.000</div>
+          </div>
+          <div class="card-arrow">›</div>
+        </a>
+
+        <!-- Cuenta 002 -->
+        <a class="invoice-card" href="002-nouriye/">
+          <div class="card-number">002</div>
+          <div class="card-info">
+            <div class="client">Embarcación Nouriye — Sr. José Miguel Saab</div>
+            <div class="date">07 de Enero, 2026 · Cartagena</div>
+            <div class="amount">$ 540.000</div>
+          </div>
+          <div class="card-arrow">›</div>
+        </a>
+      </div>
+
+      <div class="total-summary">
+        <div class="label">Total facturado</div>
+        <div class="value">$ 1.240.000</div>
+      </div>
+
+      <footer>
+        Sección privada · No indexada por buscadores · frankmercado.com
+      </footer>
+    </div>
+  </body>
+</html>
