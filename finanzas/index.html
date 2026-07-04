@@ -1264,6 +1264,60 @@
             </div>
           </div>
 
+          <!-- TAB EMPRESA -->
+          <div id="panel-empresa" class="p-4 sm:p-6 hidden">
+
+            <!-- Hero KPIs -->
+            <div class="glass-card mb-5 p-4 sm:p-5" style="border: 1px solid rgba(167,139,250,0.18); background: linear-gradient(135deg, rgba(167,139,250,0.06) 0%, rgba(56,189,248,0.03) 100%)">
+              <div class="flex items-center gap-2 mb-3">
+                <i data-lucide="briefcase" class="w-4 h-4" style="color: var(--purple)"></i>
+                <span class="text-xs font-bold uppercase tracking-widest" style="color: var(--purple)">Empresa · Cuenta Falabella</span>
+                <div class="ml-auto flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full" style="background: var(--green); box-shadow: 0 0 6px var(--green)"></span>
+                  <span class="text-xs" style="color: var(--text2)">Tiempo real</span>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-2">
+                <div class="rounded-2xl p-3 text-center" style="background: rgba(34,214,138,0.07); border: 1px solid rgba(34,214,138,0.18)">
+                  <span class="block text-[10px] font-semibold uppercase tracking-wide mb-1" style="color: rgba(34,214,138,0.75)">Recibido</span>
+                  <span class="money block font-bold leading-tight" style="color: var(--green); font-size: clamp(0.8rem,3vw,1.1rem)" id="emp-total-ingresos">$0</span>
+                  <span class="block text-[9px] mt-0.5" style="color: var(--text3)">total proyectos</span>
+                </div>
+                <div class="rounded-2xl p-3 text-center" style="background: rgba(255,77,106,0.07); border: 1px solid rgba(255,77,106,0.18)">
+                  <span class="block text-[10px] font-semibold uppercase tracking-wide mb-1" style="color: rgba(255,77,106,0.75)">Gastado</span>
+                  <span class="money block font-bold leading-tight" style="color: var(--red); font-size: clamp(0.8rem,3vw,1.1rem)" id="emp-total-gastos">$0</span>
+                  <span class="block text-[9px] mt-0.5" style="color: var(--text3)">total proyectos</span>
+                </div>
+                <div class="rounded-2xl p-3 text-center" style="background: rgba(167,139,250,0.07); border: 1px solid rgba(167,139,250,0.18)">
+                  <span class="block text-[10px] font-semibold uppercase tracking-wide mb-1" style="color: rgba(167,139,250,0.75)">Disponible</span>
+                  <span class="money block font-bold leading-tight" id="emp-total-disponible" style="color: var(--purple); font-size: clamp(0.8rem,3vw,1.1rem)">$0</span>
+                  <span class="block text-[9px] mt-0.5" style="color: var(--text3)">en cuenta</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Header proyectos -->
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-sm font-semibold flex items-center gap-2" style="color: var(--text)">
+                <i data-lucide="folder-kanban" class="w-4 h-4" style="color: var(--purple)"></i>
+                Proyectos Activos
+              </h2>
+              <button onclick="abrirModalProyecto()" class="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl transition" style="background: rgba(167,139,250,0.12); color: var(--purple); border: 1px solid rgba(167,139,250,0.25)">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Nuevo Proyecto
+              </button>
+            </div>
+
+            <!-- Lista proyectos (llenado por JS) -->
+            <div id="empresa-proyectos-list" class="space-y-3 mb-4"></div>
+
+            <!-- Empty state -->
+            <div id="empresa-empty" class="hidden text-center py-12">
+              <i data-lucide="folder-open" class="w-12 h-12 mx-auto mb-3 opacity-20" style="color: var(--purple)"></i>
+              <p class="text-sm font-semibold" style="color: var(--text2)">Sin proyectos aún</p>
+              <p class="text-xs mt-1" style="color: var(--text3)">Crea tu primer proyecto para empezar a llevar el control</p>
+            </div>
+          </div>
+
           <!-- TAB DEUDAS -->
           <div id="panel-deudas" class="p-4 sm:p-6 hidden">
             <div class="flex items-center justify-between mb-4">
@@ -1556,9 +1610,9 @@
       <button class="nav-fab" id="nav-nuevo" onclick="showTab('nuevo')" title="Nuevo registro">
         <i data-lucide="plus"></i>
       </button>
-      <button class="nav-item" id="nav-estadisticas" onclick="showTab('estadisticas')">
-        <i data-lucide="bar-chart-2"></i>
-        <span>Estadísticas</span>
+      <button class="nav-item" id="nav-empresa" onclick="showTab('empresa')">
+        <i data-lucide="briefcase"></i>
+        <span>Empresa</span>
       </button>
       <button class="nav-item" id="nav-mas" onclick="toggleMasDrawer()">
         <i data-lucide="grid-2x2"></i>
@@ -1610,6 +1664,16 @@
         <div class="flex-1 text-left">
           <p class="font-semibold text-sm" style="color: var(--text)">Presupuestos</p>
           <p class="text-xs mt-0.5" style="color: var(--text2)">Edita tus límites por categoría</p>
+        </div>
+        <i data-lucide="chevron-right" style="color: var(--text3); width:18px; height:18px; flex-shrink:0"></i>
+      </button>
+      <button class="drawer-item" onclick="showTab('estadisticas'); closeMasDrawer()">
+        <div class="drawer-icon" style="background: rgba(56,189,248,0.12)">
+          <i data-lucide="bar-chart-2" style="color: var(--blue); width:20px; height:20px"></i>
+        </div>
+        <div class="flex-1 text-left">
+          <p class="font-semibold text-sm" style="color: var(--text)">Estadísticas</p>
+          <p class="text-xs mt-0.5" style="color: var(--text2)">Gráficas y tendencias</p>
         </div>
         <i data-lucide="chevron-right" style="color: var(--text3); width:18px; height:18px; flex-shrink:0"></i>
       </button>
@@ -2003,6 +2067,74 @@
       </div>
     </div>
 
+    <!-- MODAL PROYECTO EMPRESA -->
+    <div id="modal-proyecto" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+      <div class="rounded-2xl p-6 w-full max-w-sm shadow-2xl" style="background: #161b27; border: 1px solid #252d3f">
+        <h3 class="font-bold text-white mb-4 flex items-center gap-2">
+          <i data-lucide="folder-plus" class="w-4 h-4" style="color: var(--purple)"></i>
+          <span id="modal-proyecto-titulo">Nuevo Proyecto</span>
+        </h3>
+        <div class="space-y-3">
+          <input type="text" id="proy-nombre" placeholder="Nombre del proyecto (ej. Flota Azul)"
+            class="block w-full rounded-xl p-3 text-sm focus:outline-none text-white placeholder-slate-500"
+            style="background: #0f1117; border: 1px solid #252d3f" />
+          <textarea id="proy-desc" placeholder="Descripción (opcional)" rows="2"
+            class="block w-full rounded-xl p-3 text-sm focus:outline-none placeholder-slate-500 resize-none"
+            style="background: #0f1117; border: 1px solid #252d3f; color: var(--text)"></textarea>
+        </div>
+        <div class="flex gap-2 mt-4">
+          <button id="btn-eliminar-proyecto" onclick="eliminarProyecto()" class="hidden py-2.5 px-3 rounded-xl text-sm font-semibold flex items-center gap-1" style="background: rgba(255,77,106,0.12); color: var(--red); border: 1px solid rgba(255,77,106,0.25)">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          </button>
+          <button onclick="cerrarModalProyecto()" class="flex-1 py-2.5 rounded-xl text-sm font-semibold" style="border: 2px solid #252d3f; color: #8892B0; background: transparent">
+            Cancelar
+          </button>
+          <button onclick="guardarProyecto()" class="flex-1 py-2.5 rounded-xl text-sm font-bold" style="background: linear-gradient(135deg, #A78BFA, #7C3AED); color: white">
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL MOVIMIENTO EMPRESA -->
+    <div id="modal-mov-empresa" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+      <div class="rounded-2xl p-6 w-full max-w-sm shadow-2xl" style="background: #161b27; border: 1px solid #252d3f">
+        <h3 class="font-bold text-white mb-1 flex items-center gap-2">
+          <i data-lucide="plus-circle" class="w-4 h-4" style="color: var(--purple)"></i>
+          Movimiento Empresa
+        </h3>
+        <p id="mov-proy-label" class="text-xs mb-4" style="color: rgba(167,139,250,0.8)"></p>
+        <div class="space-y-3">
+          <div class="flex gap-2">
+            <button id="btn-mov-ingreso" type="button" onclick="setMovTipoEmpresa('ingreso')" class="toggle-btn flex-1 py-2.5 rounded-xl text-xs font-bold border-2 active-green" style="border-color: var(--green); background: rgba(34,214,138,0.12); color: var(--green)">
+              + Ingreso
+            </button>
+            <button id="btn-mov-gasto" type="button" onclick="setMovTipoEmpresa('gasto')" class="toggle-btn flex-1 py-2.5 rounded-xl text-xs font-bold border-2 inactive">
+              − Gasto
+            </button>
+          </div>
+          <input type="text" id="mov-concepto" placeholder="Concepto (ej. Anticipo cliente)"
+            class="block w-full rounded-xl p-3 text-sm focus:outline-none text-white placeholder-slate-500"
+            style="background: #0f1117; border: 1px solid #252d3f" />
+          <input type="text" id="mov-monto" placeholder="Monto" inputmode="numeric"
+            oninput="formatMontoInput(this)"
+            class="block w-full rounded-xl p-3 text-sm focus:outline-none font-semibold text-white placeholder-slate-500"
+            style="background: #0f1117; border: 1px solid #252d3f" />
+          <input type="date" id="mov-fecha"
+            class="block w-full rounded-xl p-3 text-sm focus:outline-none"
+            style="background: #0f1117; border: 1px solid #252d3f; color: var(--text)" />
+        </div>
+        <div class="flex gap-2 mt-4">
+          <button onclick="cerrarModalMovEmpresa()" class="flex-1 py-2.5 rounded-xl text-sm font-semibold" style="border: 2px solid #252d3f; color: #8892B0; background: transparent">
+            Cancelar
+          </button>
+          <button onclick="guardarMovEmpresa()" class="flex-1 py-2.5 rounded-xl text-sm font-bold" style="background: linear-gradient(135deg, #A78BFA, #7C3AED); color: white">
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div id="toast"></div>
 
     <script>
@@ -2136,6 +2268,13 @@
       let patrimonioHistorial = [];
       let _unsubPresupuestos = null;
       let _unsubPatrimonioHist = null;
+      let empresaProyectos = [];
+      let empresaMovimientos = [];
+      let _unsubEmpresaProyectos = null;
+      let _unsubEmpresaMovimientos = null;
+      let proyectoEditandoId = null;
+      let movEmpresaProyectoId = null;
+      let movEmpresaTipo = "ingreso";
 
       // Si está vacío, se muestran todas las categorías de gasto.
       const CATEGORIAS_RESUMEN_VISIBLES = new Set();
@@ -2319,22 +2458,23 @@
       function showTab(tab) {
         closeMasDrawer();
         currentTab = tab;
-        ["resumen","movimientos","estadisticas","deudas","nuevo","pagos","notas","presupuestos"].forEach(t => {
+        ["resumen","movimientos","estadisticas","empresa","deudas","nuevo","pagos","notas","presupuestos"].forEach(t => {
           const p = document.getElementById("panel-" + t);
           if (p) p.classList.toggle("hidden", t !== tab);
         });
         // Actualizar nav inferior
-        ["resumen","movimientos","estadisticas"].forEach(t => {
+        ["resumen","movimientos","empresa"].forEach(t => {
           const btn = document.getElementById("nav-" + t);
           if (btn) btn.classList.toggle("active", t === tab);
         });
         const navMas = document.getElementById("nav-mas");
-        if (navMas) navMas.classList.toggle("active", ["deudas","pagos","notas","presupuestos"].includes(tab));
+        if (navMas) navMas.classList.toggle("active", ["deudas","pagos","notas","presupuestos","estadisticas"].includes(tab));
         if (tab === "presupuestos") renderPresupuestos();
         const navFab = document.getElementById("nav-nuevo");
         if (navFab) navFab.style.opacity = tab === "nuevo" ? "0.7" : "1";
         window.scrollTo({ top: 0, behavior: "instant" });
         if (tab === "estadisticas") renderCharts();
+        if (tab === "empresa") renderEmpresa();
         if (tab === "movimientos") renderMovimientos();
         if (tab === "deudas") renderDeudas();
         if (tab === "pagos") renderPagos();
@@ -2535,6 +2675,8 @@
             if (_unsubNotas) _unsubNotas();
             if (_unsubPresupuestos) _unsubPresupuestos();
             if (_unsubPatrimonioHist) _unsubPatrimonioHist();
+            if (_unsubEmpresaProyectos) _unsubEmpresaProyectos();
+            if (_unsubEmpresaMovimientos) _unsubEmpresaMovimientos();
 
             // Cargar presupuestos desde Firestore
             _unsubPresupuestos = db.collection("config_frank").doc("presupuestos")
@@ -2692,6 +2834,20 @@
               },
               (err) => console.error("Firestore pagos_checks:", err),
             );
+
+            // Empresa: proyectos y movimientos
+            _unsubEmpresaProyectos = db.collection("proyectos_empresa_frank")
+              .orderBy("creadoEn", "asc")
+              .onSnapshot(snap => {
+                empresaProyectos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                if (currentTab === "empresa") renderEmpresa();
+              }, err => console.error("Firestore empresa proyectos:", err));
+            _unsubEmpresaMovimientos = db.collection("movimientos_empresa_frank")
+              .orderBy("fecha", "desc")
+              .onSnapshot(snap => {
+                empresaMovimientos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                if (currentTab === "empresa") renderEmpresa();
+              }, err => console.error("Firestore empresa movimientos:", err));
 
             // Inicializar notas
             initNotas();
@@ -5331,6 +5487,218 @@
         await db.collection("notas_frank").doc(notaEditandoId).delete();
         showToast("Nota eliminada", "delete");
         cerrarModalNota();
+      }
+
+      // ── Empresa ──────────────────────────────────────────
+
+      function renderEmpresa() {
+        const listEl = document.getElementById("empresa-proyectos-list");
+        const emptyEl = document.getElementById("empresa-empty");
+        if (!listEl) return;
+
+        // Totales globales
+        let totIng = 0, totGast = 0;
+        empresaMovimientos.forEach(m => {
+          const v = Number(m.monto) || 0;
+          if (m.tipo === "ingreso") totIng += v;
+          else totGast += v;
+        });
+        const disponible = totIng - totGast;
+
+        document.getElementById("emp-total-ingresos").textContent = fmt(totIng);
+        document.getElementById("emp-total-gastos").textContent = fmt(totGast);
+        const dispEl = document.getElementById("emp-total-disponible");
+        if (dispEl) {
+          dispEl.textContent = fmt(disponible);
+          dispEl.style.color = disponible >= 0 ? "var(--purple)" : "var(--red)";
+        }
+
+        if (empresaProyectos.length === 0) {
+          listEl.innerHTML = "";
+          emptyEl.classList.remove("hidden");
+          lucide.createIcons();
+          return;
+        }
+        emptyEl.classList.add("hidden");
+
+        listEl.innerHTML = empresaProyectos.map(p => {
+          const movs = empresaMovimientos.filter(m => m.proyectoId === p.id);
+          let ing = 0, gast = 0;
+          movs.forEach(m => {
+            const v = Number(m.monto) || 0;
+            if (m.tipo === "ingreso") ing += v;
+            else gast += v;
+          });
+          const bal = ing - gast;
+          const pct = ing > 0 ? Math.min(100, Math.round((gast / ing) * 100)) : 0;
+          const balColor = bal >= 0 ? "var(--green)" : "var(--red)";
+          const barColor = pct > 80 ? "var(--red)" : pct > 50 ? "var(--accent)" : "var(--green)";
+
+          const ultMovs = movs.slice(0, 4);
+          const movsHtml = ultMovs.map(m => {
+            const esIng = m.tipo === "ingreso";
+            const con = (m.concepto || (esIng ? "Ingreso" : "Gasto")).replace(/</g, "&lt;");
+            const fechaLabel = m.fecha ? m.fecha.slice(5).replace("-", "/") : "";
+            return `<div class="flex items-center gap-2 py-1.5" style="border-bottom:1px solid rgba(255,255,255,0.05)">
+              <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:${esIng ? "var(--green)" : "var(--red)"}"></span>
+              <span class="text-xs flex-1 truncate" style="color:var(--text2)">${con}</span>
+              <span class="text-[10px] flex-shrink-0 mr-1" style="color:var(--text3)">${fechaLabel}</span>
+              <span class="text-xs font-semibold flex-shrink-0" style="color:${esIng ? "var(--green)" : "var(--red)"}">${esIng ? "+" : "−"}${fmt(Number(m.monto)||0)}</span>
+              <button onclick="eliminarMovEmpresa('${m.id}')" style="background:transparent;border:none;cursor:pointer;padding:2px 4px;color:var(--text3);opacity:0.5;flex-shrink:0">
+                <i data-lucide="x" style="width:11px;height:11px"></i>
+              </button>
+            </div>`;
+          }).join("");
+
+          const nomSafe = (p.nombre || "").replace(/'/g, "\\'").replace(/</g, "&lt;");
+          const descHtml = p.descripcion
+            ? `<p class="text-xs mt-0.5 truncate" style="color:var(--text3)">${p.descripcion.replace(/</g,"&lt;")}</p>`
+            : "";
+          const masMovs = movs.length > 4
+            ? `<p class="text-[10px] mt-1.5 text-center" style="color:var(--text3)">${movs.length - 4} movimiento${movs.length - 4 > 1 ? "s" : ""} m&aacute;s</p>`
+            : "";
+
+          return `<div class="glass-card p-4">
+            <div class="flex items-start justify-between mb-3">
+              <div class="min-w-0 flex-1">
+                <h3 class="font-bold text-sm" style="color:var(--text)">${nomSafe}</h3>
+                ${descHtml}
+              </div>
+              <div class="flex gap-2 ml-3 flex-shrink-0">
+                <button onclick="abrirModalMovEmpresa('${p.id}','${nomSafe}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl transition" style="background:rgba(167,139,250,0.12);color:var(--purple);border:1px solid rgba(167,139,250,0.25)">
+                  + Mov
+                </button>
+                <button onclick="editarProyecto('${p.id}')" class="text-xs px-2 py-1.5 rounded-xl transition flex items-center" style="background:var(--glass);border:1px solid var(--glass-b);color:var(--text3)">
+                  <i data-lucide="pencil" style="width:13px;height:13px"></i>
+                </button>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-2 mb-3">
+              <div class="rounded-xl p-2 text-center" style="background:rgba(34,214,138,0.07);border:1px solid rgba(34,214,138,0.12)">
+                <p class="text-[9px] font-semibold uppercase tracking-wide mb-0.5" style="color:rgba(34,214,138,0.65)">Recibido</p>
+                <p class="text-xs font-bold" style="color:var(--green)">${fmt(ing)}</p>
+              </div>
+              <div class="rounded-xl p-2 text-center" style="background:rgba(255,77,106,0.07);border:1px solid rgba(255,77,106,0.12)">
+                <p class="text-[9px] font-semibold uppercase tracking-wide mb-0.5" style="color:rgba(255,77,106,0.65)">Gastado</p>
+                <p class="text-xs font-bold" style="color:var(--red)">${fmt(gast)}</p>
+              </div>
+              <div class="rounded-xl p-2 text-center" style="background:rgba(167,139,250,0.07);border:1px solid rgba(167,139,250,0.12)">
+                <p class="text-[9px] font-semibold uppercase tracking-wide mb-0.5" style="color:rgba(167,139,250,0.65)">Balance</p>
+                <p class="text-xs font-bold" style="color:${balColor}">${fmt(bal)}</p>
+              </div>
+            </div>
+            <div class="progress-bar-track mb-3">
+              <div class="progress-bar-fill" style="width:${pct}%;background:${barColor}"></div>
+            </div>
+            ${ultMovs.length > 0
+              ? `<div>${movsHtml}</div>${masMovs}`
+              : `<p class="text-xs text-center py-2" style="color:var(--text3)">Sin movimientos &middot; toca &ldquo;+ Mov&rdquo; para agregar</p>`
+            }
+          </div>`;
+        }).join("");
+
+        lucide.createIcons();
+      }
+
+      // ── Proyecto modal ────────────────────────────────────
+      function abrirModalProyecto(id) {
+        proyectoEditandoId = id || null;
+        const p = id ? empresaProyectos.find(x => x.id === id) : null;
+        document.getElementById("modal-proyecto-titulo").textContent = id ? "Editar Proyecto" : "Nuevo Proyecto";
+        document.getElementById("proy-nombre").value = p ? p.nombre : "";
+        document.getElementById("proy-desc").value = p ? (p.descripcion || "") : "";
+        const btnEl = document.getElementById("btn-eliminar-proyecto");
+        if (btnEl) btnEl.classList.toggle("hidden", !id);
+        document.getElementById("modal-proyecto").classList.remove("hidden");
+        lucide.createIcons();
+        setTimeout(() => document.getElementById("proy-nombre").focus(), 120);
+      }
+      function editarProyecto(id) { abrirModalProyecto(id); }
+      function cerrarModalProyecto() {
+        document.getElementById("modal-proyecto").classList.add("hidden");
+        proyectoEditandoId = null;
+      }
+      async function guardarProyecto() {
+        const nombre = document.getElementById("proy-nombre").value.trim();
+        const descripcion = document.getElementById("proy-desc").value.trim();
+        if (!nombre) { document.getElementById("proy-nombre").focus(); return; }
+        if (proyectoEditandoId) {
+          await db.collection("proyectos_empresa_frank").doc(proyectoEditandoId).update({ nombre, descripcion });
+          showToast("Proyecto actualizado ✓");
+        } else {
+          await db.collection("proyectos_empresa_frank").add({ nombre, descripcion, creadoEn: new Date().toISOString(), activo: true });
+          showToast("Proyecto creado ✓");
+        }
+        cerrarModalProyecto();
+      }
+      async function eliminarProyecto() {
+        if (!proyectoEditandoId) return;
+        const p = empresaProyectos.find(x => x.id === proyectoEditandoId);
+        if (!confirm(`¿Eliminar el proyecto "${p ? p.nombre : ""}" y todos sus movimientos?`)) return;
+        const batch = db.batch();
+        batch.delete(db.collection("proyectos_empresa_frank").doc(proyectoEditandoId));
+        empresaMovimientos.filter(m => m.proyectoId === proyectoEditandoId).forEach(m => {
+          batch.delete(db.collection("movimientos_empresa_frank").doc(m.id));
+        });
+        await batch.commit();
+        showToast("Proyecto eliminado", "delete");
+        cerrarModalProyecto();
+      }
+
+      // ── Movimiento empresa modal ──────────────────────────
+      function abrirModalMovEmpresa(proyId, proyNombre) {
+        movEmpresaProyectoId = proyId;
+        document.getElementById("mov-proy-label").textContent = proyNombre || "";
+        document.getElementById("mov-concepto").value = "";
+        document.getElementById("mov-monto").value = "";
+        document.getElementById("mov-fecha").value = todayStr;
+        setMovTipoEmpresa("ingreso");
+        document.getElementById("modal-mov-empresa").classList.remove("hidden");
+        lucide.createIcons();
+        setTimeout(() => document.getElementById("mov-concepto").focus(), 120);
+      }
+      function cerrarModalMovEmpresa() {
+        document.getElementById("modal-mov-empresa").classList.add("hidden");
+        movEmpresaProyectoId = null;
+      }
+      function setMovTipoEmpresa(tipo) {
+        movEmpresaTipo = tipo;
+        const btnI = document.getElementById("btn-mov-ingreso");
+        const btnG = document.getElementById("btn-mov-gasto");
+        if (!btnI || !btnG) return;
+        if (tipo === "ingreso") {
+          btnI.className = "toggle-btn flex-1 py-2.5 rounded-xl text-xs font-bold border-2 active-green";
+          btnI.style.cssText = "border-color:var(--green);background:rgba(34,214,138,0.12);color:var(--green)";
+          btnG.className = "toggle-btn flex-1 py-2.5 rounded-xl text-xs font-bold border-2 inactive";
+          btnG.style.cssText = "";
+        } else {
+          btnG.className = "toggle-btn flex-1 py-2.5 rounded-xl text-xs font-bold border-2 active-red";
+          btnG.style.cssText = "border-color:var(--red);background:rgba(255,77,106,0.12);color:var(--red)";
+          btnI.className = "toggle-btn flex-1 py-2.5 rounded-xl text-xs font-bold border-2 inactive";
+          btnI.style.cssText = "";
+        }
+      }
+      async function guardarMovEmpresa() {
+        const monto = getMontoValue("mov-monto");
+        const concepto = document.getElementById("mov-concepto").value.trim();
+        const fecha = document.getElementById("mov-fecha").value;
+        if (!monto || monto <= 0) { document.getElementById("mov-monto").focus(); return; }
+        if (!movEmpresaProyectoId) return;
+        await db.collection("movimientos_empresa_frank").add({
+          proyectoId: movEmpresaProyectoId,
+          tipo: movEmpresaTipo,
+          monto,
+          concepto: concepto || (movEmpresaTipo === "ingreso" ? "Ingreso" : "Gasto"),
+          fecha: fecha || todayStr,
+          creadoEn: new Date().toISOString(),
+        });
+        cerrarModalMovEmpresa();
+        showToast(movEmpresaTipo === "ingreso" ? "Ingreso registrado ✓" : "Gasto registrado ✓");
+      }
+      async function eliminarMovEmpresa(id) {
+        if (!confirm("¿Eliminar este movimiento?")) return;
+        await db.collection("movimientos_empresa_frank").doc(id).delete();
+        showToast("Movimiento eliminado", "delete");
       }
 
       lucide.createIcons();
