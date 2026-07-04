@@ -2837,7 +2837,7 @@
 
             // Empresa: proyectos y movimientos
             _unsubEmpresaProyectos = db.collection("proyectos_empresa_frank")
-              .orderBy("creadoEn", "asc")
+              .orderBy("creadoEn", "desc")
               .onSnapshot(snap => {
                 empresaProyectos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 if (currentTab === "empresa") renderEmpresa();
