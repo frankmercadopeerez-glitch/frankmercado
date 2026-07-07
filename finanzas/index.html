@@ -2101,7 +2101,7 @@
       <div class="rounded-2xl p-6 w-full max-w-sm shadow-2xl" style="background: #161b27; border: 1px solid #252d3f">
         <h3 class="font-bold text-white mb-1 flex items-center gap-2">
           <i data-lucide="plus-circle" class="w-4 h-4" style="color: var(--purple)"></i>
-          Movimiento Empresa
+          <span id="mov-modal-titulo">Movimiento Empresa</span>
         </h3>
         <p id="mov-proy-label" class="text-xs mb-4" style="color: rgba(167,139,250,0.8)"></p>
         <div class="space-y-3">
@@ -2275,6 +2275,8 @@
       let proyectoEditandoId = null;
       let movEmpresaProyectoId = null;
       let movEmpresaTipo = "ingreso";
+      let movEmpresaEditandoId = null;
+      const empresaExpandidos = new Set();
 
       // Si está vacío, se muestran todas las categorías de gasto.
       const CATEGORIAS_RESUMEN_VISIBLES = new Set();
@@ -5534,8 +5536,9 @@
           const balColor = bal >= 0 ? "var(--green)" : "var(--red)";
           const barColor = pct > 80 ? "var(--red)" : pct > 50 ? "var(--accent)" : "var(--green)";
 
-          const ultMovs = movs.slice(0, 4);
-          const movsHtml = ultMovs.map(m => {
+          const expandido = empresaExpandidos.has(p.id);
+          const movsVisibles = expandido ? movs : movs.slice(0, 4);
+          const movsHtml = movsVisibles.map(m => {
             const esIng = m.tipo === "ingreso";
             const con = (m.concepto || (esIng ? "Ingreso" : "Gasto")).replace(/</g, "&lt;");
             const fechaLabel = m.fecha ? m.fecha.slice(5).replace("-", "/") : "";
@@ -5544,7 +5547,10 @@
               <span class="text-xs flex-1 truncate" style="color:var(--text2)">${con}</span>
               <span class="text-[10px] flex-shrink-0 mr-1" style="color:var(--text3)">${fechaLabel}</span>
               <span class="text-xs font-semibold flex-shrink-0" style="color:${esIng ? "var(--green)" : "var(--red)"}">${esIng ? "+" : "−"}${fmt(Number(m.monto)||0)}</span>
-              <button onclick="eliminarMovEmpresa('${m.id}')" style="background:transparent;border:none;cursor:pointer;padding:2px 4px;color:var(--text3);opacity:0.5;flex-shrink:0">
+              <button onclick="editarMovEmpresa('${m.id}')" style="background:transparent;border:none;cursor:pointer;padding:2px 4px;color:var(--text3);opacity:0.6;flex-shrink:0" title="Editar">
+                <i data-lucide="pencil" style="width:11px;height:11px"></i>
+              </button>
+              <button onclick="eliminarMovEmpresa('${m.id}')" style="background:transparent;border:none;cursor:pointer;padding:2px 4px;color:var(--text3);opacity:0.5;flex-shrink:0" title="Eliminar">
                 <i data-lucide="x" style="width:11px;height:11px"></i>
               </button>
             </div>`;
@@ -5554,8 +5560,11 @@
           const descHtml = p.descripcion
             ? `<p class="text-xs mt-0.5 truncate" style="color:var(--text3)">${p.descripcion.replace(/</g,"&lt;")}</p>`
             : "";
+          const restantes = movs.length - 4;
           const masMovs = movs.length > 4
-            ? `<p class="text-[10px] mt-1.5 text-center" style="color:var(--text3)">${movs.length - 4} movimiento${movs.length - 4 > 1 ? "s" : ""} m&aacute;s</p>`
+            ? expandido
+              ? `<button onclick="colapsarProyecto('${p.id}')" style="background:transparent;border:none;cursor:pointer;width:100%;padding:6px 0 2px;font-size:0.68rem;color:var(--text3);text-align:center">Ver menos ↑</button>`
+              : `<button onclick="expandirProyecto('${p.id}')" style="background:transparent;border:none;cursor:pointer;width:100%;padding:6px 0 2px;font-size:0.68rem;color:var(--purple);text-align:center">+ ${restantes} movimiento${restantes > 1 ? "s" : ""} m&aacute;s</button>`
             : "";
 
           return `<div class="glass-card p-4">
@@ -5590,7 +5599,7 @@
             <div class="progress-bar-track mb-3">
               <div class="progress-bar-fill" style="width:${pct}%;background:${barColor}"></div>
             </div>
-            ${ultMovs.length > 0
+            ${movsVisibles.length > 0
               ? `<div>${movsHtml}</div>${masMovs}`
               : `<p class="text-xs text-center py-2" style="color:var(--text3)">Sin movimientos &middot; toca &ldquo;+ Mov&rdquo; para agregar</p>`
             }
@@ -5646,8 +5655,34 @@
       }
 
       // ── Movimiento empresa modal ──────────────────────────
+      function expandirProyecto(proyId) {
+        empresaExpandidos.add(proyId);
+        renderEmpresa();
+      }
+      function colapsarProyecto(proyId) {
+        empresaExpandidos.delete(proyId);
+        renderEmpresa();
+      }
+      function editarMovEmpresa(movId) {
+        const m = empresaMovimientos.find(x => x.id === movId);
+        if (!m) return;
+        const proy = empresaProyectos.find(x => x.id === m.proyectoId);
+        movEmpresaEditandoId = movId;
+        movEmpresaProyectoId = m.proyectoId;
+        document.getElementById("mov-modal-titulo").textContent = "Editar Movimiento";
+        document.getElementById("mov-proy-label").textContent = proy ? proy.nombre : "";
+        document.getElementById("mov-concepto").value = m.concepto || "";
+        document.getElementById("mov-monto").value = m.monto ? parseInt(m.monto, 10).toLocaleString("es-CO") : "";
+        document.getElementById("mov-fecha").value = m.fecha || todayStr;
+        setMovTipoEmpresa(m.tipo || "ingreso");
+        document.getElementById("modal-mov-empresa").classList.remove("hidden");
+        lucide.createIcons();
+        setTimeout(() => document.getElementById("mov-concepto").focus(), 120);
+      }
       function abrirModalMovEmpresa(proyId, proyNombre) {
+        movEmpresaEditandoId = null;
         movEmpresaProyectoId = proyId;
+        document.getElementById("mov-modal-titulo").textContent = "Movimiento Empresa";
         document.getElementById("mov-proy-label").textContent = proyNombre || "";
         document.getElementById("mov-concepto").value = "";
         document.getElementById("mov-monto").value = "";
@@ -5660,6 +5695,7 @@
       function cerrarModalMovEmpresa() {
         document.getElementById("modal-mov-empresa").classList.add("hidden");
         movEmpresaProyectoId = null;
+        movEmpresaEditandoId = null;
       }
       function setMovTipoEmpresa(tipo) {
         movEmpresaTipo = tipo;
@@ -5683,6 +5719,17 @@
         const concepto = document.getElementById("mov-concepto").value.trim();
         const fecha = document.getElementById("mov-fecha").value;
         if (!monto || monto <= 0) { document.getElementById("mov-monto").focus(); return; }
+        if (movEmpresaEditandoId) {
+          await db.collection("movimientos_empresa_frank").doc(movEmpresaEditandoId).update({
+            tipo: movEmpresaTipo,
+            monto,
+            concepto: concepto || (movEmpresaTipo === "ingreso" ? "Ingreso" : "Gasto"),
+            fecha: fecha || todayStr,
+          });
+          cerrarModalMovEmpresa();
+          showToast("Movimiento actualizado ✓");
+          return;
+        }
         if (!movEmpresaProyectoId) return;
         await db.collection("movimientos_empresa_frank").add({
           proyectoId: movEmpresaProyectoId,
