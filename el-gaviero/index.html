@@ -182,11 +182,33 @@
         font-family: "Playfair Display", serif;
       }
 
-      footer {
-        text-align: center;
-        margin-top: 50px;
-        font-size: 10px;
-        color: #94a3b8;
+      @media print {
+        @page {
+          size: A4 portrait;
+          margin: 18mm 16mm;
+        }
+
+        body {
+          background: white;
+          padding: 0;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+
+        .container {
+          max-width: 100%;
+        }
+
+        .task-card,
+        .summary-bar {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+
+        .task-icon.red    { background: #fef2f2 !important; }
+        .task-icon.amber  { background: #fffbeb !important; }
+        .badge-pendiente      { background: #fef2f2 !important; color: #dc2626 !important; }
+        .badge-por-gestionar  { background: #fffbeb !important; color: #d97706 !important; }
       }
     </style>
   </head>
@@ -294,9 +316,6 @@
         <div class="value">6 ítems</div>
       </div>
 
-      <footer>
-        Sección privada · No indexada por buscadores · frankmercado.com
-      </footer>
     </div>
   </body>
 </html>
