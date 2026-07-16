@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg" />
+    <title>El Gaviero — Frank Mercado</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-blue: #1a237e;
+        --accent-gold: #c5a059;
+        --text-dark: #2c3e50;
+        --text-light: #64748b;
+        --danger-red: #dc2626;
+        --warning-amber: #d97706;
+        --success-green: #16a34a;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: #f0f4f8;
+        font-family: "Montserrat", sans-serif;
+        color: var(--text-dark);
+        min-height: 100vh;
+        padding: 40px 20px;
+      }
+
+      .container {
+        max-width: 860px;
+        margin: 0 auto;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding-bottom: 30px;
+        border-bottom: 2px solid var(--primary-blue);
+      }
+
+      header h1 {
+        font-family: "Playfair Display", serif;
+        font-size: 32px;
+        color: var(--primary-blue);
+        text-transform: uppercase;
+        letter-spacing: -0.5px;
+      }
+
+      header p {
+        color: var(--accent-gold);
+        font-weight: 700;
+        font-size: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        margin-top: 6px;
+      }
+
+      .section-label {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--text-light);
+        margin-bottom: 16px;
+        margin-top: 30px;
+      }
+
+      .section-label:first-of-type {
+        margin-top: 0;
+      }
+
+      .tasks-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .task-card {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        padding: 18px 22px;
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+      }
+
+      .task-icon {
+        min-width: 44px;
+        height: 44px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+
+      .task-icon.red    { background: #fef2f2; }
+      .task-icon.amber  { background: #fffbeb; }
+      .task-icon.blue   { background: #eff6ff; }
+
+      .task-body {
+        flex: 1;
+      }
+
+      .task-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 4px;
+        line-height: 1.4;
+      }
+
+      .task-desc {
+        font-size: 12px;
+        color: var(--text-light);
+        line-height: 1.6;
+      }
+
+      .task-badge {
+        display: inline-block;
+        margin-top: 8px;
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        padding: 3px 8px;
+        border-radius: 4px;
+      }
+
+      .badge-pendiente {
+        background: #fef2f2;
+        color: var(--danger-red);
+      }
+
+      .badge-por-gestionar {
+        background: #fffbeb;
+        color: var(--warning-amber);
+      }
+
+      .summary-bar {
+        margin-top: 30px;
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        padding: 18px 22px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .summary-bar .label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-light);
+      }
+
+      .summary-bar .value {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--primary-blue);
+        font-family: "Playfair Display", serif;
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 50px;
+        font-size: 10px;
+        color: #94a3b8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Frank Mercado</h1>
+        <p>El Gaviero — Pendientes por Solucionar</p>
+      </header>
+
+      <!-- Sección: Motor y Combustible -->
+      <div class="section-label">Motor y combustible</div>
+      <div class="tasks-list">
+        <div class="task-card">
+          <div class="task-icon red">⛽</div>
+          <div class="task-body">
+            <div class="task-title">Llenado de combustible ineficiente</div>
+            <div class="task-desc">
+              El proceso de llenado no está siendo eficiente — se detiene cuando
+              hay mucho caudal. Revisar válvula de venteo o manguera de llenado.
+            </div>
+            <span class="task-badge badge-pendiente">Pendiente</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección: Pantallas y Electrónica -->
+      <div class="section-label">Pantallas y electrónica</div>
+      <div class="tasks-list">
+        <div class="task-card">
+          <div class="task-icon red">🧭</div>
+          <div class="task-body">
+            <div class="task-title">Carta de navegación solo aparece en babor</div>
+            <div class="task-desc">
+              La carta de navegación no se muestra en ambas pantallas. Solo está
+              disponible en la pantalla de babor. Revisar configuración de
+              fuente/multipantalla en el plotter.
+            </div>
+            <span class="task-badge badge-pendiente">Pendiente</span>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <div class="task-icon red">📊</div>
+          <div class="task-body">
+            <div class="task-title">Medición de nivel de combustible falla</div>
+            <div class="task-desc">
+              El indicador de nivel de combustible en pantalla no funciona
+              correctamente. Revisar sensor de tanque y conexión NMEA.
+            </div>
+            <span class="task-badge badge-pendiente">Pendiente</span>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <div class="task-icon red">🔊</div>
+          <div class="task-body">
+            <div class="task-title">Ecosonda no aparece en pantalla principal</div>
+            <div class="task-desc">
+              La ecosonda solo marca en una de las pantallas y no se puede ver
+              en la pantalla principal. Para verla hay que abrir la aplicación
+              manualmente. Revisar asignación de fuente y overlay en el MFD
+              principal.
+            </div>
+            <span class="task-badge badge-pendiente">Pendiente</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección: Embarcación -->
+      <div class="section-label">Embarcación</div>
+      <div class="tasks-list">
+        <div class="task-card">
+          <div class="task-icon amber">🧵</div>
+          <div class="task-body">
+            <div class="task-title">Mandar a hacer forro completo para el bote</div>
+            <div class="task-desc">
+              Gestionar la confección de un forro completo para la embarcación.
+            </div>
+            <span class="task-badge badge-por-gestionar">Por gestionar</span>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <div class="task-icon amber">🛠️</div>
+          <div class="task-body">
+            <div class="task-title">Plataforma para altura de consola</div>
+            <div class="task-desc">
+              Mandar a fabricar una plataforma que eleve la consola a una altura
+              más adecuada para la conducción.
+            </div>
+            <span class="task-badge badge-por-gestionar">Por gestionar</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="summary-bar">
+        <div class="label">Total de pendientes</div>
+        <div class="value">6 ítems</div>
+      </div>
+
+      <footer>
+        Sección privada · No indexada por buscadores · frankmercado.com
+      </footer>
+    </div>
+  </body>
+</html>
