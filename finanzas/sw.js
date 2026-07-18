@@ -4,7 +4,7 @@
 //   • Assets de CDN (tailwind, lucide, chart.js, fuentes, icono): stale-while-revalidate
 //   • Firebase / Firestore / Auth: NUNCA se interceptan (manejan su propio offline)
 
-const CACHE = "finanzas-frank-v1";
+const CACHE = "finanzas-frank-v2";
 const APP_SHELL = [
   "./index.html",
   "./manifest.json",
@@ -64,7 +64,7 @@ self.addEventListener("fetch", (event) => {
     caches.match(req).then((cached) => {
       const network = fetch(req)
         .then((res) => {
-          if (res && res.status === 200) {
+          if (res && res.status === 200 && (url.origin === self.location.origin || url.protocol === "https:")) {
             const copy = res.clone();
             caches.open(CACHE).then((c) => c.put(req, copy));
           }

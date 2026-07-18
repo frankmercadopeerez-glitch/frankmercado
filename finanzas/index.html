@@ -797,7 +797,7 @@
             <button onclick="togglePrivacy()" id="btn-privacy" class="text-xs flex items-center gap-1 transition px-2 py-1.5 rounded-xl" style="color: var(--text2); background: var(--glass); border: 1px solid var(--glass-b)" title="Ocultar montos">
               <i data-lucide="eye" id="icon-privacy" class="w-3.5 h-3.5"></i>
             </button>
-            <button onclick="exportarTodoCSV()" class="text-xs flex items-center gap-1 transition px-2 py-1.5 rounded-xl" style="color: var(--text2); background: var(--glass); border: 1px solid var(--glass-b)" title="Exportar CSV">
+            <button onclick="exportarRespaldoJSON()" class="text-xs flex items-center gap-1 transition px-2 py-1.5 rounded-xl" style="color: var(--text2); background: var(--glass); border: 1px solid var(--glass-b)" title="Descargar respaldo completo" aria-label="Descargar respaldo completo">
               <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
               <span class="hidden sm:inline">CSV</span>
             </button>
@@ -2435,22 +2435,42 @@
         }, 2800);
       }
 
+      // Escapa texto ingresado por el usuario antes de insertarlo en plantillas HTML.
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>'"]/g, (char) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          "'": "&#39;",
+          '"': "&quot;",
+        })[char]);
+      }
+
       // ── Reset ─────────────────────────────────────────────
       async function resetAllTransactions() {
-        if (
-          !confirm(
-            "¿Seguro? Esto borrará TODOS los registros de Firestore permanentemente.",
-          )
-        )
+        const confirmation = prompt(
+          'Esta acción es permanente. Escribe "BORRAR TODO" para eliminar todos los movimientos.',
+        );
+        if (confirmation !== "BORRAR TODO") {
+          showToast("Eliminación cancelada", "info");
           return;
-        const snap = await db.collection("transacciones_frank").get();
-        const batch = db.batch();
-        snap.docs.forEach((d) => batch.delete(d.ref));
-        await batch.commit();
-        transactions = [];
-        renderAll();
-        showToast("Todos los registros eliminados ✓");
-        document.getElementById("btn-reset").remove();
+        }
+        exportarRespaldoJSON();
+        try {
+          const snap = await db.collection("transacciones_frank").get();
+          for (let i = 0; i < snap.docs.length; i += 450) {
+            const batch = db.batch();
+            snap.docs.slice(i, i + 450).forEach((doc) => batch.delete(doc.ref));
+            await batch.commit();
+          }
+          transactions = [];
+          renderAll();
+          showToast("Todos los movimientos fueron eliminados ✓");
+          document.getElementById("btn-reset")?.remove();
+        } catch (error) {
+          console.error("resetAllTransactions:", error);
+          showToast("No se pudieron eliminar los movimientos", "delete");
+        }
       }
 
       // ── Tabs ──────────────────────────────────────────────
@@ -2722,51 +2742,10 @@
                 (err) => { console.error("Firestore tx:", err); hideDataLoading(); },
               );
 
-            // Cargar / inicializar deudas
-            let _seedingDeudas = false;
+            // Cargar deudas. Nunca borrar ni resembrar datos automáticamente:
+            // una preferencia local no puede decidir sobre datos financieros remotos.
             _unsubDeudas = db.collection("deudas_frank").onSnapshot(
               (snap) => {
-                if (_seedingDeudas) return;
-
-                const RESET_KEY = "deudas_reset_v5";
-                const resetDone = localStorage.getItem(RESET_KEY);
-
-                if (!resetDone) {
-                  // Reset de una sola vez: borrar todo y resembrar limpio
-                  _seedingDeudas = true;
-                  const batch = db.batch();
-                  snap.docs.forEach((d) =>
-                    batch.delete(db.collection("deudas_frank").doc(d.id)),
-                  );
-                  DEUDAS_SEMILLA.forEach((seed) => {
-                    const ref = db.collection("deudas_frank").doc();
-                    batch.set(ref, {
-                      ...seed,
-                      creadoEn: new Date().toISOString(),
-                    });
-                  });
-                  batch.commit().then(() => {
-                    localStorage.setItem(RESET_KEY, "1");
-                    _seedingDeudas = false;
-                  });
-                  return;
-                }
-
-                if (snap.empty) {
-                  // Re-sembrar si alguien borró todo manualmente
-                  _seedingDeudas = true;
-                  const batch = db.batch();
-                  DEUDAS_SEMILLA.forEach((seed) => {
-                    const ref = db.collection("deudas_frank").doc();
-                    batch.set(ref, {
-                      ...seed,
-                      creadoEn: new Date().toISOString(),
-                    });
-                  });
-                  batch.commit().then(() => (_seedingDeudas = false));
-                  return;
-                }
-
                 deudas = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
                 if (currentTab === "deudas") renderDeudas();
                 renderNetWorth();
@@ -2774,55 +2753,9 @@
               (err) => console.error("Firestore deudas:", err),
             );
 
-            // Cargar / inicializar pagos recurrentes
-            let _seedingPagos = false;
+            // Cargar pagos recurrentes sin reinicializaciones destructivas.
             _unsubPagos = db.collection("pagos_recurrentes_frank").onSnapshot(
               (snap) => {
-                if (_seedingPagos) return;
-                // Reset v2: borrar todo y re-sembrar con semilla actualizada
-                if (!localStorage.getItem("pagos_reset_v3")) {
-                  _seedingPagos = true;
-                  const batch = db.batch();
-                  snap.docs.forEach((d) =>
-                    batch.delete(db.collection("pagos_recurrentes_frank").doc(d.id)),
-                  );
-                  PAGOS_SEMILLA.forEach((seed) => {
-                    const ref = db.collection("pagos_recurrentes_frank").doc();
-                    batch.set(ref, { ...seed, creadoEn: new Date().toISOString() });
-                  });
-                  batch.commit().then(() => {
-                    localStorage.setItem("pagos_reset_v3", "1");
-                    localStorage.setItem("pagos_seeded_v1", "1");
-                    _seedingPagos = false;
-                  }).catch(() => { _seedingPagos = false; });
-                  return;
-                }
-                if (snap.empty && !localStorage.getItem("pagos_seeded_v1")) {
-                  _seedingPagos = true;
-                  const batch = db.batch();
-                  PAGOS_SEMILLA.forEach((seed) => {
-                    const ref = db.collection("pagos_recurrentes_frank").doc();
-                    batch.set(ref, { ...seed, creadoEn: new Date().toISOString() });
-                  });
-                  batch.commit().then(() => {
-                    localStorage.setItem("pagos_seeded_v1", "1");
-                    _seedingPagos = false;
-                  }).catch(() => { _seedingPagos = false; });
-                  return;
-                }
-                if (snap.empty) {
-                  // Re-sembrar si alguien borró todo manualmente
-                  _seedingPagos = true;
-                  const rebatch = db.batch();
-                  PAGOS_SEMILLA.forEach((seed) => {
-                    const ref = db.collection("pagos_recurrentes_frank").doc();
-                    rebatch.set(ref, { ...seed, creadoEn: new Date().toISOString() });
-                  });
-                  rebatch.commit()
-                    .then(() => { _seedingPagos = false; })
-                    .catch(() => { _seedingPagos = false; });
-                  return;
-                }
                 pagosRecurrentes = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
                 if (currentTab === "pagos") renderPagos();
               },
@@ -3533,13 +3466,17 @@
           const sign = isTransf ? "⇄" : isIn ? "+" : "-";
           const cuentaColor = CUENTA_COLORS[cuentaNombre] || "#8892B0";
           const destinoColor = CUENTA_COLORS[destinoNombre] || "#8892B0";
+          const cuentaSafe = escapeHtml(cuentaNombre);
+          const destinoSafe = escapeHtml(destinoNombre);
+          const categoriaSafe = escapeHtml(categoriaNombre);
+          const descripcionSafe = escapeHtml(tx.descripcion || categoriaNombre);
           const cuentaBadges =
             isTransf && tx.destino
-              ? `<span class="cuenta-chip" style="background:${cuentaColor}20;color:${cuentaColor}">${cuentaNombre}</span><span class="text-xs text-slate-400 font-semibold">→</span><span class="cuenta-chip" style="background:${destinoColor}20;color:${destinoColor}">${destinoNombre}</span>`
-              : `<span class="cuenta-chip" style="background:${cuentaColor}20;color:${cuentaColor}">${cuentaNombre}</span>`;
+              ? `<span class="cuenta-chip" style="background:${cuentaColor}20;color:${cuentaColor}">${cuentaSafe}</span><span class="text-xs text-slate-400 font-semibold">→</span><span class="cuenta-chip" style="background:${destinoColor}20;color:${destinoColor}">${destinoSafe}</span>`
+              : `<span class="cuenta-chip" style="background:${cuentaColor}20;color:${cuentaColor}">${cuentaSafe}</span>`;
           const div = document.createElement("div");
           div.className = "rounded-xl border p-3 w-full max-w-full overflow-hidden " + color;
-          div.innerHTML = `<div class="space-y-2"><div class="flex items-start justify-between gap-3"><span class="text-xs text-slate-400 truncate">${fmtDate(tx.fecha)}${tx.hora ? " · " + tx.hora : ""}</span><span class="text-base font-bold ${amountColor} whitespace-nowrap flex-shrink-0">${sign}${fmt(tx.monto)}</span></div><div class="flex items-center gap-2 flex-wrap min-w-0">${cuentaBadges}</div><p class="text-sm font-medium text-slate-800 truncate">${tx.descripcion || categoriaNombre}</p><div class="flex items-center justify-between gap-2"><span class="text-xs px-1.5 py-0.5 rounded-full font-medium ${isIn ? "bg-green-100 text-green-800" : isTransf ? "bg-blue-100 text-blue-800" : "bg-red-100 text-red-800"} inline-block truncate max-w-[72%]">${categoriaNombre}</span><div class="flex gap-2 flex-shrink-0"><button onclick="editTransaction('${tx.id}')" class="text-slate-300 hover:text-blue-500 transition"><i data-lucide="pencil" class="w-4 h-4"></i></button><button onclick="deleteTransaction('${tx.id}')" class="text-slate-300 hover:text-red-500 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div></div>`;
+          div.innerHTML = `<div class="space-y-2"><div class="flex items-start justify-between gap-3"><span class="text-xs text-slate-400 truncate">${fmtDate(tx.fecha)}${tx.hora ? " · " + escapeHtml(tx.hora) : ""}</span><span class="text-base font-bold ${amountColor} whitespace-nowrap flex-shrink-0">${sign}${fmt(tx.monto)}</span></div><div class="flex items-center gap-2 flex-wrap min-w-0">${cuentaBadges}</div><p class="text-sm font-medium text-slate-800 truncate">${descripcionSafe}</p><div class="flex items-center justify-between gap-2"><span class="text-xs px-1.5 py-0.5 rounded-full font-medium ${isIn ? "bg-green-100 text-green-800" : isTransf ? "bg-blue-100 text-blue-800" : "bg-red-100 text-red-800"} inline-block truncate max-w-[72%]">${categoriaSafe}</span><div class="flex gap-2 flex-shrink-0"><button onclick="editTransaction('${tx.id}')" class="text-slate-300 hover:text-blue-500 transition" aria-label="Editar movimiento"><i data-lucide="pencil" class="w-4 h-4"></i></button><button onclick="deleteTransaction('${tx.id}')" class="text-slate-300 hover:text-red-500 transition" aria-label="Eliminar movimiento"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div></div>`;
           tc.appendChild(div);
         });
 
@@ -3563,13 +3500,16 @@
           const sign = isTransf ? "⇄" : isIn ? "+" : "-";
           const cuentaColor = CUENTA_COLORS[cuentaNombre] || "#8892B0";
           const destinoColor = CUENTA_COLORS[destinoNombre] || "#8892B0";
+          const cuentaSafe = escapeHtml(cuentaNombre);
+          const destinoSafe = escapeHtml(destinoNombre);
+          const categoriaSafe = escapeHtml(categoriaNombre);
           const cuentaBadges =
             isTransf && tx.destino
-              ? `<span class="cuenta-chip" style="background:${cuentaColor}20;color:${cuentaColor}">${cuentaNombre}</span><span class="text-xs text-slate-400 font-semibold">→</span><span class="cuenta-chip" style="background:${destinoColor}20;color:${destinoColor}">${destinoNombre}</span>`
-              : `<span class="cuenta-chip" style="background:${cuentaColor}20;color:${cuentaColor}">${cuentaNombre}</span>`;
+              ? `<span class="cuenta-chip" style="background:${cuentaColor}20;color:${cuentaColor}">${cuentaSafe}</span><span class="text-xs text-slate-400 font-semibold">→</span><span class="cuenta-chip" style="background:${destinoColor}20;color:${destinoColor}">${destinoSafe}</span>`
+              : `<span class="cuenta-chip" style="background:${cuentaColor}20;color:${cuentaColor}">${cuentaSafe}</span>`;
           const tr = document.createElement("tr");
           tr.className = "hover:bg-slate-50 transition";
-          tr.innerHTML = `<td class="px-3 py-3 whitespace-nowrap text-xs text-slate-500">${fmtDate(tx.fecha)}<br><span class="text-slate-400">${tx.hora || ""}</span></td><td class="px-3 py-3 text-sm text-slate-500 max-w-xs truncate">${tx.descripcion || "--"}</td><td class="px-3 py-3 whitespace-nowrap"><span class="px-2 py-0.5 text-xs font-semibold rounded-full ${isIn ? "bg-green-100 text-green-800" : isTransf ? "bg-blue-100 text-blue-800" : "bg-red-100 text-red-800"}">${categoriaNombre}</span></td><td class="px-3 py-3 whitespace-nowrap"><div class="flex items-center gap-1.5 flex-wrap">${cuentaBadges}</div></td><td class="px-3 py-3 whitespace-nowrap text-sm text-right font-bold ${amountColor}"><span class="money">${sign}${fmt(tx.monto)}</span></td><td class="px-3 py-3 text-center"><div class="flex items-center justify-center gap-1"><button onclick="editTransaction('${tx.id}')" class="text-slate-300 hover:text-blue-500 p-1 transition"><i data-lucide="pencil" class="w-4 h-4"></i></button><button onclick="deleteTransaction('${tx.id}')" class="text-slate-300 hover:text-red-500 p-1 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></td>`;
+          tr.innerHTML = `<td class="px-3 py-3 whitespace-nowrap text-xs text-slate-500">${fmtDate(tx.fecha)}<br><span class="text-slate-400">${escapeHtml(tx.hora || "")}</span></td><td class="px-3 py-3 text-sm text-slate-500 max-w-xs truncate">${escapeHtml(tx.descripcion || "--")}</td><td class="px-3 py-3 whitespace-nowrap"><span class="px-2 py-0.5 text-xs font-semibold rounded-full ${isIn ? "bg-green-100 text-green-800" : isTransf ? "bg-blue-100 text-blue-800" : "bg-red-100 text-red-800"}">${categoriaSafe}</span></td><td class="px-3 py-3 whitespace-nowrap"><div class="flex items-center gap-1.5 flex-wrap">${cuentaBadges}</div></td><td class="px-3 py-3 whitespace-nowrap text-sm text-right font-bold ${amountColor}"><span class="money">${sign}${fmt(tx.monto)}</span></td><td class="px-3 py-3 text-center"><div class="flex items-center justify-center gap-1"><button onclick="editTransaction('${tx.id}')" class="text-slate-300 hover:text-blue-500 p-1 transition" aria-label="Editar movimiento"><i data-lucide="pencil" class="w-4 h-4"></i></button><button onclick="deleteTransaction('${tx.id}')" class="text-slate-300 hover:text-red-500 p-1 transition" aria-label="Eliminar movimiento"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></td>`;
           tb.appendChild(tr);
         });
         lucide.createIcons();
@@ -3630,7 +3570,7 @@
               : `<p class="text-xs mt-0.5" style="color:#6e7681">Original: ${fmtDeuda(d.montoInicial)}</p>`;
             const div = document.createElement("div");
             div.className = "deuda-card";
-            div.innerHTML = `<div class="flex justify-between items-start mb-2"><div class="flex-1 min-w-0 pr-2"><p class="font-semibold text-sm" style="color:#e2e8f0">${d.nombre}</p>${origenLine}<p class="text-xs mt-1">Saldo restante: <span style="font-weight:700;color:#FF4D6A">${fmtDeuda(d.saldo)}</span></p></div><div class="flex flex-col gap-1.5"><button onclick="abrirModalAbonar('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl text-white" style="background:#22D68A">Abonar</button><button onclick="abrirModalEditarDeuda('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl text-white" style="background:#b8904d">Editar</button><button onclick="archivarDeuda('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl border text-center" style="border-color:#252d3f;color:#6e7681">✓ Pagada</button><button onclick="eliminarDeuda('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl border text-center" style="border-color:rgba(239,68,68,0.3);color:#FF9DAD;background:rgba(239,68,68,0.07)">🗑 Borrar</button></div></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%;background:${pct >= 100 ? "#22D68A" : "#b8904d"}"></div></div><p class="text-xs mt-1" style="color:#6e7681">${pct}% pagado de ${fmtDeuda(negociado)}</p>`;
+            div.innerHTML = `<div class="flex justify-between items-start mb-2"><div class="flex-1 min-w-0 pr-2"><p class="font-semibold text-sm" style="color:#e2e8f0">${escapeHtml(d.nombre)}</p>${origenLine}<p class="text-xs mt-1">Saldo restante: <span style="font-weight:700;color:#FF4D6A">${fmtDeuda(d.saldo)}</span></p></div><div class="flex flex-col gap-1.5"><button onclick="abrirModalAbonar('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl text-white" style="background:#22D68A">Abonar</button><button onclick="abrirModalEditarDeuda('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl text-white" style="background:#b8904d">Editar</button><button onclick="archivarDeuda('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl border text-center" style="border-color:#252d3f;color:#6e7681">✓ Pagada</button><button onclick="eliminarDeuda('${d.id}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl border text-center" style="border-color:rgba(239,68,68,0.3);color:#FF9DAD;background:rgba(239,68,68,0.07)">🗑 Borrar</button></div></div><div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%;background:${pct >= 100 ? "#22D68A" : "#b8904d"}"></div></div><p class="text-xs mt-1" style="color:#6e7681">${pct}% pagado de ${fmtDeuda(negociado)}</p>`;
             el.appendChild(div);
           });
       }
@@ -4753,9 +4693,48 @@
       }
 
       function csvEscape(value) {
-        const str = String(value ?? "");
+        let str = String(value ?? "");
+        // Evita que Excel/Sheets interpreten texto importado como una fórmula.
+        if (/^[=+\-@\t\r]/.test(str)) str = "'" + str;
         if (/[,"\n]/.test(str)) return '"' + str.replace(/"/g, '""') + '"';
         return str;
+      }
+
+      function descargarArchivo(nombreArchivo, contenido, tipo) {
+        const blob = new Blob([contenido], { type: tipo });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = nombreArchivo;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 0);
+      }
+
+      function exportarRespaldoJSON() {
+        const respaldo = {
+          formato: "FinanzasFrankBackup",
+          version: 1,
+          exportadoEn: new Date().toISOString(),
+          transacciones: transactions,
+          deudas,
+          pagosRecurrentes,
+          pagosChecks,
+          notas,
+          presupuestos,
+          presupuestosQuincenal,
+          patrimonioHistorial,
+          empresaProyectos,
+          empresaMovimientos,
+        };
+        const fecha = new Date().toISOString().slice(0, 10);
+        descargarArchivo(
+          `FinanzasFrank-respaldo-${fecha}.json`,
+          JSON.stringify(respaldo, null, 2),
+          "application/json;charset=utf-8",
+        );
+        showToast("Respaldo completo descargado ✓");
       }
 
       function rowsToCSV(rows) {
@@ -5078,7 +5057,7 @@
                   <span
                     class="text-sm font-semibold truncate"
                     style="color:${pagado ? "#3D4A6B" : "#e2e8f0"};${pagado ? "text-decoration:line-through" : ""}"
-                  >${pago.nombre}</span>
+                  >${escapeHtml(pago.nombre)}</span>
                   ${pago.moneda === "USD" ? '<span class="text-xs px-1.5 py-0.5 rounded-full font-bold" style="background:#1e3a5f;color:#60a5fa">USD</span>' : ""}
                   ${pago.esAproximado ? '<span class="text-xs px-1.5 py-0.5 rounded-full" style="background:#292211;color:#d97706">aprox</span>' : ""}
                 </div>
@@ -5342,20 +5321,20 @@
           const itemsHtml = items.slice(0, 6).map(item => `
             <div class="nota-item-check ${item.checked ? 'done' : ''}">
               <input type="checkbox" ${item.checked ? 'checked' : ''} onclick="toggleNotaItem('${nota.id}','${item.id}',event)" />
-              <span>${item.texto}</span>
+              <span>${escapeHtml(item.texto)}</span>
             </div>`).join('');
           const extra = items.length > 6 ? `<div style="color:var(--text3);font-size:0.65rem;margin-top:3px">+${items.length-6} más</div>` : '';
           return `<div class="nota-card" onclick="abrirModalNota('${nota.id}')">
             ${colorBarHtml}
-            ${nota.titulo ? `<p class="nota-title">${nota.titulo}</p>` : '<div style="margin-top:6px"></div>'}
+            ${nota.titulo ? `<p class="nota-title">${escapeHtml(nota.titulo)}</p>` : '<div style="margin-top:6px"></div>'}
             <div class="nota-body">${itemsHtml}${extra}</div>
             ${tsHtml}
           </div>`;
         }
         return `<div class="nota-card" onclick="abrirModalNota('${nota.id}')">
           ${colorBarHtml}
-          ${nota.titulo ? `<p class="nota-title">${nota.titulo}</p>` : '<div style="margin-top:6px"></div>'}
-          <p class="nota-body">${nota.texto || ''}</p>
+          ${nota.titulo ? `<p class="nota-title">${escapeHtml(nota.titulo)}</p>` : '<div style="margin-top:6px"></div>'}
+          <p class="nota-body">${escapeHtml(nota.texto || '')}</p>
           ${tsHtml}
         </div>`;
       }
@@ -5540,7 +5519,7 @@
           const movsVisibles = expandido ? movs : movs.slice(0, 4);
           const movsHtml = movsVisibles.map(m => {
             const esIng = m.tipo === "ingreso";
-            const con = (m.concepto || (esIng ? "Ingreso" : "Gasto")).replace(/</g, "&lt;");
+            const con = escapeHtml(m.concepto || (esIng ? "Ingreso" : "Gasto"));
             const fechaLabel = m.fecha ? m.fecha.slice(5).replace("-", "/") : "";
             return `<div class="flex items-center gap-2 py-1.5" style="border-bottom:1px solid rgba(255,255,255,0.05)">
               <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:${esIng ? "var(--green)" : "var(--red)"}"></span>
@@ -5556,9 +5535,10 @@
             </div>`;
           }).join("");
 
-          const nomSafe = (p.nombre || "").replace(/'/g, "\\'").replace(/</g, "&lt;");
+          const nomSafe = escapeHtml(p.nombre || "");
+          const nomAttrSafe = String(p.nombre || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/[\r\n]/g, " ");
           const descHtml = p.descripcion
-            ? `<p class="text-xs mt-0.5 truncate" style="color:var(--text3)">${p.descripcion.replace(/</g,"&lt;")}</p>`
+            ? `<p class="text-xs mt-0.5 truncate" style="color:var(--text3)">${escapeHtml(p.descripcion)}</p>`
             : "";
           const restantes = movs.length - 4;
           const masMovs = movs.length > 4
@@ -5574,7 +5554,7 @@
                 ${descHtml}
               </div>
               <div class="flex gap-2 ml-3 flex-shrink-0">
-                <button onclick="abrirModalMovEmpresa('${p.id}','${nomSafe}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl transition" style="background:rgba(167,139,250,0.12);color:var(--purple);border:1px solid rgba(167,139,250,0.25)">
+                <button onclick="abrirModalMovEmpresa('${p.id}','${nomAttrSafe}')" class="text-xs font-semibold px-2.5 py-1.5 rounded-xl transition" style="background:rgba(167,139,250,0.12);color:var(--purple);border:1px solid rgba(167,139,250,0.25)">
                   + Mov
                 </button>
                 <button onclick="editarProyecto('${p.id}')" class="text-xs px-2 py-1.5 rounded-xl transition flex items-center" style="background:var(--glass);border:1px solid var(--glass-b);color:var(--text3)">
@@ -5747,6 +5727,32 @@
         await db.collection("movimientos_empresa_frank").doc(id).delete();
         showToast("Movimiento eliminado", "delete");
       }
+
+      function mejorarAccesibilidad() {
+        document.querySelectorAll('[id^="modal-"]').forEach((modal) => {
+          modal.setAttribute("role", "dialog");
+          modal.setAttribute("aria-modal", "true");
+          modal.setAttribute("tabindex", "-1");
+        });
+        document.querySelectorAll("button[title]:not([aria-label])").forEach((button) => {
+          button.setAttribute("aria-label", button.getAttribute("title"));
+        });
+        document.querySelectorAll("input, select, textarea").forEach((field) => {
+          if (field.getAttribute("aria-label") || (field.id && document.querySelector(`label[for="${field.id}"]`))) return;
+          const label = field.getAttribute("placeholder") || field.getAttribute("name") || field.id;
+          if (label) field.setAttribute("aria-label", label.replace(/[-_]/g, " "));
+        });
+      }
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        const visibleModal = [...document.querySelectorAll('[id^="modal-"]')]
+          .find((modal) => !modal.classList.contains("hidden"));
+        if (visibleModal) visibleModal.classList.add("hidden");
+        closeMasDrawer();
+      });
+
+      mejorarAccesibilidad();
 
       lucide.createIcons();
 
