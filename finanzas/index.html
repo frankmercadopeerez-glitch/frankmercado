@@ -797,7 +797,7 @@
             <button onclick="togglePrivacy()" id="btn-privacy" class="text-xs flex items-center gap-1 transition px-2 py-1.5 rounded-xl" style="color: var(--text2); background: var(--glass); border: 1px solid var(--glass-b)" title="Ocultar montos">
               <i data-lucide="eye" id="icon-privacy" class="w-3.5 h-3.5"></i>
             </button>
-            <button onclick="exportarRespaldoJSON()" class="text-xs flex items-center gap-1 transition px-2 py-1.5 rounded-xl" style="color: var(--text2); background: var(--glass); border: 1px solid var(--glass-b)" title="Descargar respaldo completo" aria-label="Descargar respaldo completo">
+            <button onclick="exportarTodoCSV()" class="text-xs flex items-center gap-1 transition px-2 py-1.5 rounded-xl" style="color: var(--text2); background: var(--glass); border: 1px solid var(--glass-b)" title="Descargar CSV financiero completo" aria-label="Descargar CSV financiero completo">
               <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
               <span class="hidden sm:inline">CSV</span>
             </button>
@@ -4756,6 +4756,84 @@
         URL.revokeObjectURL(url);
       }
 
+      function agregarSeccionesCSVCompletas(rows) {
+        rows.push(["SECCION", "RESUMEN MENSUAL GENERAL"]);
+        rows.push(["Mes", "Ingresos", "Gastos", "Flujo Neto", "Cantidad Movimientos"]);
+        const resumenMensual = {};
+        transactions.forEach((t) => {
+          const key = String(t.fecha || "").slice(0, 7);
+          if (!/^\d{4}-\d{2}$/.test(key)) return;
+          if (!resumenMensual[key]) resumenMensual[key] = { ingresos: 0, gastos: 0, cantidad: 0 };
+          const monto = Number(t.monto) || 0;
+          if (t.tipo === "ingreso") resumenMensual[key].ingresos += monto;
+          if (t.tipo === "gasto") resumenMensual[key].gastos += monto;
+          resumenMensual[key].cantidad += 1;
+        });
+        Object.keys(resumenMensual).sort().forEach((key) => {
+          const item = resumenMensual[key];
+          rows.push([key, item.ingresos, item.gastos, item.ingresos - item.gastos, item.cantidad]);
+        });
+        rows.push([]);
+
+        rows.push(["SECCION", "INGRESOS MENSUALES DEL CARRO"]);
+        rows.push(["Mes", "Ingresos Producidos", "Gastos del Carro", "Cuota Vehiculo", "Egresos Totales", "Profit del Carro", "Cantidad Movimientos"]);
+        const resumenCarro = {};
+        transactions.forEach((t) => {
+          if (!["Producido Carro", "Gastos del Carro", "Cuota de Vehiculo"].includes(t.categoria)) return;
+          const key = String(t.fecha || "").slice(0, 7);
+          if (!/^\d{4}-\d{2}$/.test(key)) return;
+          if (!resumenCarro[key]) resumenCarro[key] = { ingresos: 0, gastos: 0, cuota: 0, cantidad: 0 };
+          const monto = Number(t.monto) || 0;
+          if (t.tipo === "ingreso" && t.categoria === "Producido Carro") resumenCarro[key].ingresos += monto;
+          if (t.tipo === "gasto" && t.categoria === "Gastos del Carro") resumenCarro[key].gastos += monto;
+          if (t.tipo === "gasto" && t.categoria === "Cuota de Vehiculo") resumenCarro[key].cuota += monto;
+          resumenCarro[key].cantidad += 1;
+        });
+        Object.keys(resumenCarro).sort().forEach((key) => {
+          const item = resumenCarro[key];
+          const egresos = item.gastos + item.cuota;
+          rows.push([key, item.ingresos, item.gastos, item.cuota, egresos, item.ingresos - egresos, item.cantidad]);
+        });
+        rows.push([]);
+
+        rows.push(["SECCION", "PAGOS RECURRENTES"]);
+        rows.push(["ID", "Nombre", "Monto", "Moneda", "Dias de Pago", "Aproximado", "Activo", "Creado En"]);
+        pagosRecurrentes.forEach((p) => rows.push([p.id || "", p.nombre || "", p.monto || 0, p.moneda || "COP", Array.isArray(p.diasPago) ? p.diasPago.join(" | ") : "", p.esAproximado ? "Si" : "No", p.activo === false ? "No" : "Si", p.creadoEn || ""]));
+        rows.push([]);
+
+        rows.push(["SECCION", "CONTROL DE PAGOS"]);
+        rows.push(["ID", "Mes", "Pago", "Dia", "Pagado", "Creado En"]);
+        const pagosPorId = Object.fromEntries(pagosRecurrentes.map((p) => [p.id, p.nombre || p.id]));
+        pagosChecks.forEach((p) => rows.push([p.id || "", p.mes || "", pagosPorId[p.pagoId] || p.pagoId || "", p.diaPago || "", p.pagado ? "Si" : "No", p.creadoEn || ""]));
+        rows.push([]);
+
+        rows.push(["SECCION", "PRESUPUESTOS"]);
+        rows.push(["Periodo", "Categoria", "Monto"]);
+        Object.entries(presupuestos || {}).forEach(([categoria, monto]) => rows.push(["Mensual", categoria, monto || 0]));
+        Object.entries(presupuestosQuincenal || {}).forEach(([categoria, monto]) => rows.push(["Quincenal", categoria, monto || 0]));
+        rows.push([]);
+
+        rows.push(["SECCION", "HISTORIAL DE PATRIMONIO"]);
+        rows.push(["Fecha", "Total", "Disponible", "Deudas", "Net Worth", "Bolsillos", "Guardado En"]);
+        patrimonioHistorial.forEach((p) => rows.push([p.fecha || "", p.total || 0, p.disponible || 0, p.deudas || 0, p.netWorth || 0, JSON.stringify(p.bolsillos || {}), p.savedAt || ""]));
+        rows.push([]);
+
+        rows.push(["SECCION", "PROYECTOS DE EMPRESA"]);
+        rows.push(["ID", "Nombre", "Descripcion", "Activo", "Creado En"]);
+        empresaProyectos.forEach((p) => rows.push([p.id || "", p.nombre || "", p.descripcion || "", p.activo === false ? "No" : "Si", p.creadoEn || ""]));
+        rows.push([]);
+
+        rows.push(["SECCION", "MOVIMIENTOS DE EMPRESA"]);
+        rows.push(["ID", "Fecha", "Tipo", "Proyecto", "Concepto", "Monto", "Creado En"]);
+        const proyectosPorId = Object.fromEntries(empresaProyectos.map((p) => [p.id, p.nombre || p.id]));
+        empresaMovimientos.forEach((m) => rows.push([m.id || "", m.fecha || "", m.tipo || "", proyectosPorId[m.proyectoId] || m.proyectoId || "", m.concepto || "", m.monto || 0, m.creadoEn || ""]));
+        rows.push([]);
+
+        rows.push(["SECCION", "NOTAS"]);
+        rows.push(["ID", "Titulo", "Tipo", "Contenido", "Creado En", "Actualizado En"]);
+        notas.forEach((n) => rows.push([n.id || "", n.titulo || "", n.tipo || "", n.contenido || n.texto || JSON.stringify(n.items || []), n.creadoEn || "", n.actualizadoEn || ""]));
+        rows.push([]);
+      }
       function exportarTodoCSV() {
         const saldos = calcularSaldoCuentas();
         const totalCuentas = [...CUENTAS, ...BOLSILLOS].reduce(
@@ -4789,6 +4867,8 @@
         rows.push(["Flujo Mes", flujoMes]);
         rows.push([]);
 
+        agregarSeccionesCSVCompletas(rows);
+
         rows.push(["SECCION", "SALDOS POR CUENTA"]);
         rows.push(["Cuenta", "Saldo"]);
         [...CUENTAS, ...BOLSILLOS].forEach((cuenta) => {
@@ -4821,6 +4901,7 @@
 
         rows.push(["SECCION", "MOVIMIENTOS (TODOS)"]);
         rows.push([
+          "ID",
           "Fecha",
           "Hora",
           "Tipo",
@@ -4838,6 +4919,7 @@
           )
           .forEach((t) => {
             rows.push([
+              t.id || "",
               t.fecha || "",
               t.hora || "",
               t.tipo || "",
