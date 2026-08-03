@@ -34,25 +34,12 @@
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="tailwind.css?v=3" />
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              navy: { 900: "#060910", 800: "#0c1019", 700: "#131929" },
-              gold: { 500: "#F5BC45" },
-            },
-            fontFamily: { sans: ["Poppins", "system-ui", "sans-serif"] },
-          },
-        },
-      };
-    </script>
     <style>
       :root {
         --sat: env(safe-area-inset-top, 0px);
@@ -2947,9 +2934,16 @@
       // ── PWA: registrar Service Worker ─────────────────────
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
-          navigator.serviceWorker.register("sw.js").catch((err) =>
-            console.warn("SW no registrado:", err)
-          );
+          const swReloadKey = "finanzas-frank-local-styles-v3";
+          navigator.serviceWorker.addEventListener("controllerchange", () => {
+            if (sessionStorage.getItem(swReloadKey)) return;
+            sessionStorage.setItem(swReloadKey, "1");
+            window.location.reload();
+          });
+          navigator.serviceWorker
+            .register("sw.js?build=local-styles-v3", { updateViaCache: "none" })
+            .then((registration) => registration.update())
+            .catch((err) => console.warn("SW no registrado:", err));
         });
       }
 
@@ -6083,11 +6077,6 @@
 
       lucide.createIcons();
 
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker.register("/sw.js").catch(() => {});
-        });
-      }
     </script>
   </body>
 </html>

@@ -1,14 +1,15 @@
 // Service Worker — Finanzas Frank PWA
 // Estrategia:
 //   • HTML (navegación): network-first → fallback a caché (offline funciona)
-//   • Assets de CDN (tailwind, lucide, chart.js, fuentes, icono): stale-while-revalidate
+//   • CSS local y demás assets: stale-while-revalidate
 //   • Firebase / Firestore / Auth: NUNCA se interceptan (manejan su propio offline)
 
-const CACHE = "finanzas-frank-v2";
+const CACHE = "finanzas-frank-v3";
 const APP_SHELL = [
   "./index.html",
   "./manifest.json",
   "./icon.svg",
+  "./tailwind.css?v=3",
 ];
 
 // Dominios que el SW debe ignorar por completo (tiempo real / auth)
