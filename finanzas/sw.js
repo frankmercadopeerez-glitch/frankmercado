@@ -4,12 +4,13 @@
 //   • CSS local y demás assets: stale-while-revalidate
 //   • Firebase / Firestore / Auth: NUNCA se interceptan (manejan su propio offline)
 
-const CACHE = "finanzas-frank-v3";
+const CACHE = "finanzas-frank-v4";
 const APP_SHELL = [
-  "./index.html",
-  "./manifest.json",
-  "./icon.svg",
-  "./tailwind.css?v=3",
+  "/finanzas",
+  "/finanzas/index.html",
+  "/finanzas/manifest.json?v=4",
+  "/finanzas/icon.svg",
+  "/finanzas/tailwind.css?v=4",
 ];
 
 // Dominios que el SW debe ignorar por completo (tiempo real / auth)
@@ -52,10 +53,10 @@ self.addEventListener("fetch", (event) => {
       fetch(req)
         .then((res) => {
           const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put("./index.html", copy));
+          caches.open(CACHE).then((c) => c.put("/finanzas/index.html", copy));
           return res;
         })
-        .catch(() => caches.match("./index.html"))
+        .catch(() => caches.match("/finanzas/index.html"))
     );
     return;
   }

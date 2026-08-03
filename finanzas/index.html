@@ -28,13 +28,13 @@
     <meta name="apple-mobile-web-app-title" content="Finanzas Frank" />
     <meta name="theme-color" content="#060910" />
     <!-- PWA -->
-    <link rel="manifest" href="manifest.json" />
+    <link rel="manifest" href="/finanzas/manifest.json?v=4" />
     <link rel="apple-touch-icon" href="../images/favicon.svg" />
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="tailwind.css?v=3" />
+    <link rel="stylesheet" href="/finanzas/tailwind.css?v=4" />
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -2934,14 +2934,17 @@
       // ── PWA: registrar Service Worker ─────────────────────
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
-          const swReloadKey = "finanzas-frank-local-styles-v3";
+          const swReloadKey = "finanzas-frank-local-styles-v4";
           navigator.serviceWorker.addEventListener("controllerchange", () => {
             if (sessionStorage.getItem(swReloadKey)) return;
             sessionStorage.setItem(swReloadKey, "1");
             window.location.reload();
           });
           navigator.serviceWorker
-            .register("sw.js?build=local-styles-v3", { updateViaCache: "none" })
+            .register("/finanzas/sw.js?build=local-styles-v4", {
+              scope: "/finanzas/",
+              updateViaCache: "none",
+            })
             .then((registration) => registration.update())
             .catch((err) => console.warn("SW no registrado:", err));
         });
