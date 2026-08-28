@@ -678,6 +678,28 @@ button {
   line-height: 1.55;
 }
 
+.customization-offer {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.65fr);
+  gap: clamp(1.5rem, 4vw, 4rem);
+  align-items: center;
+  margin-top: 2rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+  padding: clamp(1.5rem, 4vw, 3rem);
+}
+
+.customization-offer h3 { margin: 0.4rem 0 0.8rem; font-size: clamp(2rem, 4vw, 3.8rem); line-height: 0.98; letter-spacing: -0.045em; }
+.customization-offer p { color: var(--muted-strong); }
+.customization-action { display: grid; gap: 0.8rem; }
+.customization-action strong { font-size: 1.35rem; }
+.customization-action small { color: var(--muted); line-height: 1.5; }
+
+@media (max-width: 760px) {
+  .customization-offer { grid-template-columns: 1fr; }
+}
+
 .referral-panel {
   position: relative;
   overflow: hidden;
