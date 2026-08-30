@@ -247,10 +247,8 @@ button {
 
 .hero {
   position: relative;
-  min-height: 49rem;
-  display: grid;
-  align-items: center;
-  padding: calc(var(--nav-height) + 3.75rem) 0 4.5rem;
+  min-height: 0;
+  padding: calc(var(--nav-height) + clamp(1.75rem, 4vh, 3rem)) 0 clamp(3rem, 6vh, 4.5rem);
 }
 
 .hero::before {
@@ -264,9 +262,9 @@ button {
 
 .hero-grid {
   display: grid;
-  align-items: center;
+  align-items: start;
   grid-template-columns: minmax(0, 1.1fr) minmax(21rem, 0.9fr);
-  gap: clamp(3rem, 7vw, 7rem);
+  gap: clamp(2.5rem, 5vw, 5rem);
 }
 
 .eyebrow {
@@ -306,7 +304,7 @@ button {
 }
 
 .hero h1 {
-  font-size: clamp(3.45rem, 6.2vw, 6.5rem);
+  font-size: clamp(3.45rem, 5.4vw, 5.8rem);
 }
 
 .hero-copy {
@@ -1054,7 +1052,7 @@ button {
 }
 
 .page-hero {
-  padding: clamp(5rem, 9vw, 8rem) 0 clamp(3rem, 6vw, 5rem);
+  padding: clamp(2.5rem, 5vw, 4.5rem) 0 clamp(3rem, 6vw, 5rem);
 }
 
 .page-hero h1 {
@@ -1914,11 +1912,11 @@ button {
 
   .hero {
     min-height: auto;
-    padding-top: calc(var(--nav-height) + 4rem);
+    padding-top: calc(var(--nav-height) + clamp(1.75rem, 6vw, 3rem));
   }
 
   .hero::before { display: none; }
-  .hero-grid { gap: 3rem; }
+  .hero-grid { gap: 2.5rem; }
   .system-board { min-height: auto; }
   .section-head-row { gap: 1.25rem; }
   .section-head-row .section-intro { margin-top: 0; }
@@ -1984,6 +1982,26 @@ button {
   .guide-steps li::before { width: 2.75rem; height: 2.75rem; }
   .form-field input,
   .form-field select { font-size: 1rem; }
+}
+
+/* Keep the complete hero visible on short desktop and laptop viewports. */
+@media (min-width: 960px) and (max-height: 900px) {
+  .hero {
+    padding-top: calc(var(--nav-height) + 1.5rem);
+    padding-bottom: 2.5rem;
+  }
+
+  .hero-grid {
+    align-items: center;
+    gap: clamp(2rem, 4vw, 4rem);
+  }
+
+  .hero h1 { font-size: clamp(3.35rem, 4.8vw, 5rem); }
+  .hero-copy { margin-top: 1.25rem; font-size: clamp(1rem, 1.35vw, 1.15rem); }
+  .actions { margin-top: 1.35rem; }
+  .microcopy { margin-top: 0.75rem; }
+  .system-board { min-height: 27rem; }
+  .board-card { min-height: 6rem; }
 }
 
 @media (max-width: 390px) {
