@@ -54,4 +54,75 @@
 
   updateHeader();
   window.addEventListener("scroll", updateHeader, { passive: true });
+
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (!reduceMotion && "IntersectionObserver" in window) {
+    document.documentElement.classList.add("motion-ready");
+    var revealTargets = document.querySelectorAll(
+      ".section-head-row, .template-card, .customization-offer, .referral-panel, .venture-media, .venture-copy, .service-panel, .service-item, .about-copy, .about-facts, .note-card, .contact-panel, .detail-preview, .detail-sidebar",
+    );
+
+    revealTargets.forEach(function (element, index) {
+      element.classList.add("reveal");
+      element.style.setProperty("--reveal-delay", String((index % 3) * 80) + "ms");
+    });
+
+    var revealObserver = new IntersectionObserver(
+      function (entries, observer) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("in-view");
+          observer.unobserve(entry.target);
+        });
+      },
+      { rootMargin: "0px 0px -8%", threshold: 0.08 },
+    );
+
+    revealTargets.forEach(function (element) {
+      revealObserver.observe(element);
+    });
+  }
+
+  var precisePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
+
+  if (!reduceMotion && precisePointer.matches) {
+    var ring = document.createElement("span");
+    var dot = document.createElement("span");
+    var pointerX = -80;
+    var pointerY = -80;
+    var ringX = -80;
+    var ringY = -80;
+
+    ring.className = "cursor-ring";
+    dot.className = "cursor-dot";
+    ring.setAttribute("aria-hidden", "true");
+    dot.setAttribute("aria-hidden", "true");
+    document.body.appendChild(ring);
+    document.body.appendChild(dot);
+
+    function drawCursor() {
+      ringX += (pointerX - ringX) * 0.18;
+      ringY += (pointerY - ringY) * 0.18;
+      ring.style.transform = "translate3d(" + (ringX - 16) + "px," + (ringY - 16) + "px,0)";
+      dot.style.transform = "translate3d(" + (pointerX - 2) + "px," + (pointerY - 2) + "px,0)";
+      window.requestAnimationFrame(drawCursor);
+    }
+
+    document.addEventListener("mousemove", function (event) {
+      pointerX = event.clientX;
+      pointerY = event.clientY;
+      document.documentElement.classList.add("custom-cursor-active");
+    });
+
+    document.addEventListener("mouseover", function (event) {
+      ring.classList.toggle("is-hovering", Boolean(event.target.closest("a, button, input, select, textarea")));
+    });
+    document.addEventListener("mousedown", function () { ring.classList.add("is-pressed"); });
+    document.addEventListener("mouseup", function () { ring.classList.remove("is-pressed"); });
+    document.addEventListener("mouseleave", function () { document.documentElement.classList.remove("custom-cursor-active"); });
+    document.addEventListener("mouseenter", function () { document.documentElement.classList.add("custom-cursor-active"); });
+
+    drawCursor();
+  }
 })();

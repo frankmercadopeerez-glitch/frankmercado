@@ -12,10 +12,10 @@
   --acid-dark: #93bb14;
   --blue: #4f73ff;
   --orange: #ff6b24;
-  --radius-sm: 0.65rem;
-  --radius: 1.15rem;
-  --radius-lg: 1.75rem;
-  --shadow: 0 32px 80px rgba(0, 0, 0, 0.28);
+  --radius-sm: 0.15rem;
+  --radius: 0.25rem;
+  --radius-lg: 0.4rem;
+  --shadow: 14px 14px 0 rgba(0, 0, 0, 0.3);
   --max: 76rem;
   --nav-height: 4.75rem;
 }
@@ -108,14 +108,13 @@ button {
   inset: 0 0 auto;
   z-index: 100;
   border-bottom: 1px solid transparent;
-  background: rgba(7, 9, 8, 0.78);
-  backdrop-filter: blur(18px) saturate(130%);
+  background: rgba(7, 9, 8, 0.97);
   transition: border-color 180ms ease, background 180ms ease;
 }
 
 .site-header.is-scrolled {
   border-color: var(--line);
-  background: rgba(7, 9, 8, 0.92);
+  background: var(--ink);
 }
 
 .nav-shell {
@@ -224,19 +223,19 @@ button {
   display: inline-flex;
   min-height: 2.75rem;
   align-items: center;
-  border-radius: 999px;
+  border-radius: 0;
   color: var(--muted-strong);
   padding: 0 0.78rem;
   font-size: 0.82rem;
   font-weight: 650;
   text-decoration: none;
-  transition: background 160ms ease, color 160ms ease;
+  transition: color 160ms ease, transform 160ms ease;
 }
 
 .nav-links a:hover,
 .nav-links a[aria-current="page"] {
-  background: rgba(241, 245, 236, 0.08);
   color: var(--paper);
+  transform: translateY(-2px);
 }
 
 .nav-links .language-link {
@@ -329,18 +328,21 @@ button {
   justify-content: center;
   gap: 0.6rem;
   border: 1px solid var(--line-strong);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   padding: 0.77rem 1.15rem;
   font-size: 0.88rem;
   font-weight: 800;
   line-height: 1.2;
   text-decoration: none;
-  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+  text-transform: uppercase;
+  letter-spacing: 0.055em;
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), background 160ms ease, border-color 160ms ease, box-shadow 180ms ease;
 }
 
 .button:hover {
-  transform: translateY(-2px);
+  transform: translate(-3px, -3px);
   border-color: var(--paper);
+  box-shadow: 5px 5px 0 var(--paper);
 }
 
 .button-primary {
@@ -352,6 +354,7 @@ button {
 .button-primary:hover {
   border-color: var(--paper);
   background: var(--paper);
+  box-shadow: 5px 5px 0 var(--acid-dark);
 }
 
 .button-secondary {
@@ -457,7 +460,7 @@ button {
   height: 4.25rem;
   place-items: center;
   border: 1px solid var(--line);
-  border-radius: 50%;
+  border-radius: var(--radius-sm);
   color: var(--acid);
   font-size: 0.72rem;
   font-weight: 850;
@@ -625,7 +628,7 @@ button {
   top: 1rem;
   right: 1rem;
   border: 1px solid rgba(7, 9, 8, 0.2);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--acid);
   color: var(--ink);
   padding: 0.45rem 0.75rem;
@@ -2010,6 +2013,166 @@ button {
   .board-index { width: 2.8rem; height: 2.8rem; }
   .board-arrow { display: none; }
   .service-item { grid-template-columns: 2rem 1fr; padding: 1.05rem; }
+}
+
+/* Editorial motion system: sharp surfaces, deliberate reveals and pointer feedback. */
+.system-board,
+.template-card,
+.customization-offer,
+.venture-media,
+.venture-copy,
+.service-panel,
+.about-copy,
+.about-facts,
+.note-card,
+.contact-panel,
+.detail-preview,
+.detail-sidebar {
+  box-shadow: var(--shadow);
+}
+
+.board-card,
+.service-item,
+.note-card,
+.template-card {
+  transition:
+    transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.board-card:hover,
+.service-item:hover {
+  z-index: 1;
+  border-color: var(--acid);
+  transform: translateX(0.45rem);
+}
+
+.template-card:hover,
+.note-card:hover {
+  transform: translate(-5px, -5px);
+}
+
+.template-card:hover {
+  box-shadow: 10px 10px 0 rgba(200, 245, 66, 0.3);
+}
+
+.hero-copy-block {
+  position: relative;
+}
+
+.hero-copy-block::after {
+  display: block;
+  width: min(8rem, 28vw);
+  height: 2px;
+  margin-top: 1.6rem;
+  background: var(--acid);
+  content: "";
+  transform-origin: left;
+  animation: line-grow 900ms 420ms both cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.system-board::before {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  left: -1px;
+  width: 2px;
+  background: linear-gradient(transparent, var(--acid), transparent);
+  content: "";
+  animation: board-scan 4.8s 1.2s infinite cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.motion-ready .reveal {
+  opacity: 0;
+  transform: translateY(2rem);
+  transition:
+    opacity 700ms cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms),
+    transform 700ms cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms);
+}
+
+.motion-ready .reveal.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.cursor-ring,
+.cursor-dot {
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.cursor-ring {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--acid);
+  border-radius: 50%;
+  transition: width 180ms ease, height 180ms ease, background 180ms ease, opacity 180ms ease;
+}
+
+.cursor-dot {
+  width: 0.28rem;
+  height: 0.28rem;
+  border-radius: 50%;
+  background: var(--acid);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.custom-cursor-active,
+.custom-cursor-active a,
+.custom-cursor-active button,
+.custom-cursor-active input,
+.custom-cursor-active select,
+.custom-cursor-active textarea {
+  cursor: none;
+}
+
+.custom-cursor-active .cursor-ring,
+.custom-cursor-active .cursor-dot { opacity: 1; }
+.custom-cursor-active .cursor-ring.is-hovering {
+  width: 3.25rem;
+  height: 3.25rem;
+  background: rgba(200, 245, 66, 0.12);
+}
+.custom-cursor-active .cursor-ring.is-pressed { width: 1.4rem; height: 1.4rem; }
+
+@keyframes line-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes board-scan {
+  0%, 12% { transform: translateY(-100%); opacity: 0; }
+  25%, 70% { opacity: 0.75; }
+  88%, 100% { transform: translateY(100%); opacity: 0; }
+}
+
+@media (max-width: 959px), (hover: none), (pointer: coarse) {
+  .cursor-ring,
+  .cursor-dot { display: none; }
+  .custom-cursor-active,
+  .custom-cursor-active a,
+  .custom-cursor-active button,
+  .custom-cursor-active input,
+  .custom-cursor-active select,
+  .custom-cursor-active textarea { cursor: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+  .motion-ready .reveal { opacity: 1; transform: none; }
+  .cursor-ring, .cursor-dot { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
