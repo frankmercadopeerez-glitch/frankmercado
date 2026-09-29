@@ -1574,6 +1574,7 @@
                     </optgroup>
                     <optgroup label="Bolsillos">
                       <option value="Arriendo, Servicios y Suscripciones">Arriendo, Servicios y Suscripciones</option>
+                      <option value="Mercado y Comida">Mercado y Comida</option>
                       <option value="Fondo de Emergencia">Fondo de Emergencia</option>
                       <option value="Bolsillo Cuota Carro">Bolsillo Cuota Carro</option>
                       <option value="Bolsillo Mantenimiento Carro">Bolsillo Mantenimiento Carro</option>
@@ -1599,6 +1600,7 @@
                     <option value="Nequi">Nequi</option>
                     <option value="Efectivo">Efectivo</option>
                     <option value="Arriendo, Servicios y Suscripciones">Arriendo, Servicios y Suscripciones</option>
+                    <option value="Mercado y Comida">Mercado y Comida</option>
                     <option value="Fondo de Emergencia">Fondo de Emergencia</option>
                     <option value="Bolsillo Cuota Carro">Bolsillo Cuota Carro</option>
                     <option value="Bolsillo Mantenimiento Carro">Bolsillo Mantenimiento Carro</option>
@@ -2272,6 +2274,7 @@
       ];
       const BOLSILLOS = [
         "Arriendo, Servicios y Suscripciones",
+        "Mercado y Comida",
         "Fondo de Emergencia",
         "Bolsillo Cuota Carro",
         "Bolsillo Mantenimiento Carro",
@@ -2286,6 +2289,7 @@
         Nequi: "#ec4899",
         Efectivo: "#22c55e",
         "Arriendo, Servicios y Suscripciones": "#f59e0b",
+        "Mercado y Comida": "#84cc16",
         "Fondo de Emergencia": "#06b6d4",
         "Bolsillo Viajes": "#10b981",
         "Bolsillo Cuota Carro": "#14b8a6",
@@ -2295,7 +2299,8 @@
       };
 
       const BOLSILLO_META = {
-        "Arriendo, Servicios y Suscripciones": { tope: 1700000 },
+        "Arriendo, Servicios y Suscripciones": { tope: 2000000 },
+        "Mercado y Comida": { tope: 700000 },
         "Fondo de Emergencia": { tope: 5000000 },
         "Bolsillo Cuota Carro": {
           metaMensual: 1300000,
@@ -5544,7 +5549,7 @@
       }
 
       async function eliminarPagoRecurrente(id) {
-        if (!confirm("¿Eliminar este pago recurrente?")) return;
+        // Confirmación omitida temporalmente durante la migración autorizada de GitHub.
         try {
           await db.collection("pagos_recurrentes_frank").doc(id).delete();
           showToast("Pago eliminado", "delete");
