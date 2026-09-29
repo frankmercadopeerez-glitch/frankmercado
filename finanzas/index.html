@@ -6,8 +6,8 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
-    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg" />
-    <link rel="shortcut icon" href="../images/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/finanzas/icon.svg?v=5" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/finanzas/icon-192.png?v=5" />
     <title>Finanzas Frank</title>
     <meta name="robots" content="noindex, nofollow" />
     <script>
@@ -28,8 +28,8 @@
     <meta name="apple-mobile-web-app-title" content="Finanzas Frank" />
     <meta name="theme-color" content="#060910" />
     <!-- PWA -->
-    <link rel="manifest" href="/finanzas/manifest.json?v=4" />
-    <link rel="apple-touch-icon" href="../images/favicon.svg" />
+    <link rel="manifest" href="/finanzas/manifest.json?v=5" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/finanzas/apple-touch-icon.png?v=5" />
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
@@ -5549,7 +5549,7 @@
       }
 
       async function eliminarPagoRecurrente(id) {
-        // Confirmación omitida temporalmente durante la migración autorizada de GitHub.
+        if (!confirm("¿Eliminar este pago recurrente?")) return;
         try {
           await db.collection("pagos_recurrentes_frank").doc(id).delete();
           showToast("Pago eliminado", "delete");

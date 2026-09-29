@@ -4,12 +4,15 @@
 //   • CSS local y demás assets: stale-while-revalidate
 //   • Firebase / Firestore / Auth: NUNCA se interceptan (manejan su propio offline)
 
-const CACHE = "finanzas-frank-v4";
+const CACHE = "finanzas-frank-v5";
 const APP_SHELL = [
   "/finanzas",
   "/finanzas/index.html",
-  "/finanzas/manifest.json?v=4",
+  "/finanzas/manifest.json?v=5",
   "/finanzas/icon.svg",
+  "/finanzas/icon-192.png",
+  "/finanzas/icon-512.png",
+  "/finanzas/apple-touch-icon.png",
   "/finanzas/tailwind.css?v=4",
 ];
 
