@@ -1,4 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "trailingSlash": true
+  "trailingSlash": true,
+  "crons": [
+    {
+      "path": "/api/cron/pagos",
+      "schedule": "0 14 * * *"
+    }
+  ]
 }

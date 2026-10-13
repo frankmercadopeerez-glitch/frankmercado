@@ -1,0 +1,14 @@
+{
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.0.0",
+    "web-push": "^3.6.7"
+  },
+  "scripts": {
+    "test:payment-reminders": "node test/payment-reminders.test.cjs",
+    "generate:vapid": "node scripts/generate-vapid-keys.cjs"
+  }
+}
