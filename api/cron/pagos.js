@@ -59,6 +59,7 @@ module.exports = async (req, res) => {
 
     for (const paymentDoc of paymentsSnapshot.docs) {
       const payment = paymentDoc.data();
+      if (payment.recordatorioActivo === false) continue;
       for (const configuredDay of payment.diasPago || []) {
         for (const offsetMonth of [0, 1]) {
           const month = addMonths(today, offsetMonth);

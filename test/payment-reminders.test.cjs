@@ -13,6 +13,7 @@ const collections = {
   pagos_recurrentes_frank: [
     doc("wifi", { activo: true, nombre: "WiFi", monto: 120000, moneda: "COP", diasPago: [13, 14, 15] }),
     doc("already-paid", { activo: true, nombre: "Ya pagado", monto: 1, moneda: "COP", diasPago: [13] }),
+    doc("muted", { activo: true, recordatorioActivo: false, nombre: "Sin aviso", monto: 2, moneda: "COP", diasPago: [13] }),
   ],
   pagos_checks_frank: [
     doc("check", { pagoId: "already-paid", mes: "2026-10", diaPago: 13, pagado: true }),
@@ -66,7 +67,7 @@ const response = {
 
 moduleUnderTest.exports({ headers: { authorization: "Bearer secret" } }, response).then(() => {
   assert.equal(response.statusCode, 200);
-  assert.equal(notifications.length, 3, "sends today, tomorrow, and two-day reminders while skipping a paid one");
+  assert.equal(notifications.length, 3, "sends today, tomorrow, and two-day reminders while skipping paid and muted payments");
   const bodies = notifications.map((notification) => notification[1].body).join("\n");
   assert.match(bodies, /vence hoy/);
   assert.match(bodies, /vence mañana/);
