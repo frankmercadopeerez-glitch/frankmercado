@@ -4,7 +4,7 @@
 //   • CSS local y demás assets: stale-while-revalidate
 //   • Firebase / Firestore / Auth: NUNCA se interceptan (manejan su propio offline)
 
-const CACHE = "finanzas-frank-v7";
+const CACHE = "finanzas-frank-v8";
 const APP_SHELL = [
   "/finanzas",
   "/finanzas/index.html",

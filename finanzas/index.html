@@ -1735,9 +1735,9 @@
       <button class="nav-fab" id="nav-nuevo" onclick="showTab('nuevo')" title="Nuevo registro">
         <i data-lucide="plus"></i>
       </button>
-      <button class="nav-item" id="nav-empresa" onclick="showTab('empresa')">
-        <i data-lucide="briefcase"></i>
-        <span>Empresa</span>
+      <button class="nav-item" id="nav-pagos" onclick="showTab('pagos')">
+        <i data-lucide="calendar-check"></i>
+        <span>Pagos recurrentes</span>
       </button>
       <button class="nav-item" id="nav-mas" onclick="toggleMasDrawer()">
         <i data-lucide="grid-2x2"></i>
@@ -1762,13 +1762,13 @@
         </div>
         <i data-lucide="chevron-right" style="color: var(--text3); width:18px; height:18px; flex-shrink:0"></i>
       </button>
-      <button class="drawer-item" onclick="showTab('pagos'); closeMasDrawer()">
-        <div class="drawer-icon" style="background: rgba(56,189,248,0.12)">
-          <i data-lucide="calendar-check" style="color: var(--blue); width:20px; height:20px"></i>
+      <button class="drawer-item" onclick="showTab('empresa'); closeMasDrawer()">
+        <div class="drawer-icon" style="background: rgba(167,139,250,0.12)">
+          <i data-lucide="briefcase" style="color: var(--purple); width:20px; height:20px"></i>
         </div>
         <div class="flex-1 text-left">
-          <p class="font-semibold text-sm" style="color: var(--text)">Pagos Recurrentes</p>
-          <p class="text-xs mt-0.5" style="color: var(--text2)">Suscripciones y pagos fijos</p>
+          <p class="font-semibold text-sm" style="color: var(--text)">Empresa</p>
+          <p class="text-xs mt-0.5" style="color: var(--text2)">Proyectos y movimientos del negocio</p>
         </div>
         <i data-lucide="chevron-right" style="color: var(--text3); width:18px; height:18px; flex-shrink:0"></i>
       </button>
@@ -2640,12 +2640,12 @@
           if (p) p.classList.toggle("hidden", t !== tab);
         });
         // Actualizar nav inferior
-        ["resumen","movimientos","empresa"].forEach(t => {
+        ["resumen","movimientos","pagos"].forEach(t => {
           const btn = document.getElementById("nav-" + t);
           if (btn) btn.classList.toggle("active", t === tab);
         });
         const navMas = document.getElementById("nav-mas");
-        if (navMas) navMas.classList.toggle("active", ["deudas","pagos","notas","presupuestos","estadisticas"].includes(tab));
+        if (navMas) navMas.classList.toggle("active", ["deudas","empresa","notas","presupuestos","estadisticas"].includes(tab));
         if (tab === "presupuestos") renderPresupuestos();
         const navFab = document.getElementById("nav-nuevo");
         if (navFab) navFab.style.opacity = tab === "nuevo" ? "0.7" : "1";
@@ -2962,14 +2962,14 @@
       // ── PWA: registrar Service Worker ─────────────────────
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
-          const swReloadKey = "finanzas-frank-push-v7";
+          const swReloadKey = "finanzas-frank-push-v8";
           navigator.serviceWorker.addEventListener("controllerchange", () => {
             if (sessionStorage.getItem(swReloadKey)) return;
             sessionStorage.setItem(swReloadKey, "1");
             window.location.reload();
           });
           navigator.serviceWorker
-            .register("/finanzas/sw.js?build=push-v7", {
+            .register("/finanzas/sw.js?build=push-v8", {
               scope: "/finanzas/",
               updateViaCache: "none",
             })
